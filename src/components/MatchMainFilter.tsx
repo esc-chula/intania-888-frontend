@@ -9,7 +9,7 @@ export const MatchMainFilter = (props: {
           props.mainFilter === "upcomming"
             ? "bg-neutral-700 text-white"
             : "bg-neutral-800 text-neutral-300 "
-        } flex items-center justify-center h-10 w-40 sm:h-14 text-[0.8rem] sm:text-md sm:w-48 rounded-lg font-semibold`}
+        } flex items-center justify-center h-10 w-40 sm:h-14 text-[0.8rem] sm:text-lg sm:w-48 rounded-lg font-semibold`}
         onClick={() => props.handdleChangeMainFilter("upcomming")}
       >
         ตารางการแข่งขัน
@@ -19,7 +19,7 @@ export const MatchMainFilter = (props: {
           props.mainFilter === "result"
             ? "bg-neutral-700 text-white"
             : "bg-neutral-800 text-neutral-300 "
-        } flex items-center justify-center h-10 w-40 sm:h-14 text-[0.8rem] sm:text-md sm:w-48 rounded-lg font-semibold`}
+        } flex items-center justify-center h-10 w-40 sm:h-14 text-[0.8rem] sm:text-lg sm:w-48 rounded-lg font-semibold`}
         onClick={() => props.handdleChangeMainFilter("result")}
       >
         ผลการแข่งขัน
@@ -29,7 +29,7 @@ export const MatchMainFilter = (props: {
           props.mainFilter === "overall"
             ? "bg-neutral-700 text-white"
             : "bg-neutral-800 text-neutral-300 "
-        } flex items-center justify-center h-10 w-40 sm:h-14 text-[0.8rem] sm:text-md sm:w-48 rounded-lg font-semibold`}
+        } flex items-center justify-center h-10 w-40 sm:h-14 text-[0.8rem] sm:text-lg sm:w-48 rounded-lg font-semibold`}
         onClick={() => props.handdleChangeMainFilter("overall")}
       >
         ภาพรวม

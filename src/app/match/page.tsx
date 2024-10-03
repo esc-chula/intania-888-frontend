@@ -3,10 +3,10 @@ import { Header } from "@/components/Header";
 import { MatchMainFilter } from "@/components/MatchMainFilter";
 import { Navbar } from "@/components/Navbar";
 import { useState } from "react";
+import { Selector } from "@/components/Selector";
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcomming");
-  const [filter, setFilter] = useState("upcomming");
-
+  const [filter, setFilter] = useState("");
   const handdleChangeMainFilter = (text: string) => {
     setMainFilter(text);
     setFilter("");
@@ -27,6 +27,11 @@ export default function Home() {
         <MatchMainFilter
           mainFilter={mainFilter}
           handdleChangeMainFilter={handdleChangeMainFilter}
+        />
+        <Selector
+          mainFilter={mainFilter}
+          filter={filter}
+          setFilter={setFilter}
         />
       </div>
     </div>
