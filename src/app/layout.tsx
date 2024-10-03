@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { IBM_Plex_Sans_Thai } from "next/font/google";
-import { Header } from "@/components/Header";
-import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Intania 888",
@@ -24,10 +22,6 @@ export default function RootLayout({
       <body
         className={`${IBMFont.className} antialiased bg-gradient-to-b from-[#171717] to-[#000]`}
       >
-        <div className="relative m-0 p-0 top-0 flex flex-col">
-          <Header />
-          <Navbar />
-        </div>
         {children}
       </body>
     </html>

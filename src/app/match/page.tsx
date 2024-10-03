@@ -1,4 +1,3 @@
-import Playground from "@/components/Playground";
 import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
@@ -15,7 +14,6 @@ export default function Home() {
           "แมตช์ > เลือกแมตช์ที่ต้องการทาย > เพิ่งลงสลิป",
         ]}
       />
-      <Playground />
     </div>
   );
 }
