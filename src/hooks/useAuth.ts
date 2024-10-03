@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { apiClient } from "@/utils/axios";
 
 const useAuth = () => {
     const [user, setUser] = useState(null);
@@ -10,7 +10,7 @@ const useAuth = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get("/auth/me", {withCredentials: true});
+                const response = await apiClient.get("/auth/me");
                 setUser(response.data);
             } catch (error) {
                 console.error(error);
