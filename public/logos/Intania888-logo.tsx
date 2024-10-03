@@ -18,7 +18,7 @@ export const Intania888Logo = () => {
           y2="43"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="white" />
+          <stop stopColor="white" />
           <stop offset="0.8" stop-color="#A2790D" />
         </linearGradient>
       </defs>
