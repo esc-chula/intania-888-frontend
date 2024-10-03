@@ -1,7 +1,7 @@
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 export const Navbar = (props: { pagenow: string }) => {
   return (
-    <div className="w-full h-[55px] bg-neutral-900 flex flex-row items-center m-0 text-white select-none cursor-pointer">
+    <div className="w-full h-[55px] bg-neutral-900 flex flex-row items-center m-0 text-white select-none cursor-pointer overflow-hidden">
       <a
         href="/match"
         className="w-1/4 h-full items-center justify-center group relative"
@@ -56,7 +56,7 @@ export const Navbar = (props: { pagenow: string }) => {
         {props.pagenow == "coins" ? (
           <div className="h-1 w-full bg-base-gold absolute bottom-0"></div>
         ) : (
-          <div className="group-hover:h-1  w-full h-0 group-hover:bg-white transition-all absolute bottom-0"></div>
+          <div className="group-hover:h-1 w-full h-0 group-hover:bg-white transition-all absolute bottom-0"></div>
         )}
       </a>
     </div>
