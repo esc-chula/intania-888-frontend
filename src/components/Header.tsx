@@ -7,7 +7,7 @@ export const Header = () => {
         <Intania888Logo />
       </div>
 
-      <div className="flex-col hidden lg:block space-y-1 w-1/2 text-white font-semibold">
+      <div className="flex-col hidden lg:block space-y-1 w-1/2 ml-4 text-white font-semibold">
         <p>ดูและทายผลการแข่งกีฬา intania game ฟรี!</p>
         <p>เว็บเดียวในวิศวะจุฬา แชร์กันเยอะๆ</p>
       </div>
