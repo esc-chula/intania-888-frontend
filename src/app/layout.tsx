@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${IBMFont.className} antialiased bg-gradient-to-b from-[#171717] to-[#000]`}
+        className={`${IBMFont.className} antialiased bg-black`}
       >
         {children}
       </body>
