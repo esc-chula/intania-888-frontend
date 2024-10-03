@@ -18,7 +18,7 @@ export const Header = () => {
           href="https://www.instagram.com/intania.games/"
           className="bg-[#FE0966] items-center justify-start w-44 sm:w-64 px-2 sm:px-4 font-semibold rounded-lg flex flex-row space-x-2 sm:space-x-5 py-1"
         >
-          <Image src="/logos/IgLogo.png" alt="ig_logo" height={30} width={30} />
+          <Image src="/logos/IgLogo.webp" alt="ig_logo" height={30} width={30} />
           <p>@intania.games</p>
         </a>
         <a
@@ -27,7 +27,7 @@ export const Header = () => {
           className="bg-[#00C300] items-center justify-start w-44 sm:w-64 px-2 sm:px-4 font-semibold rounded-lg flex flex-row space-x-2 sm:space-x-5 py-1"
         >
           <Image
-            src="/logos/LineLogo.png"
+            src="/logos/LineLogo.webp"
             alt="ig_logo"
             height={30}
             width={30}
