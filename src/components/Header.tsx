@@ -2,7 +2,7 @@ import { Intania888Logo } from "../../public/logos/Intania888-logo";
 import Image from "next/image";
 export const Header = () => {
   return (
-    <div className="w-screen h-28 p-2 md:py-2 md:px-12 flex flex-row justify-between items-center bg-neutral-900">
+    <div className="w-full h-28 p-2 md:py-2 md:px-12 flex flex-row justify-between items-center bg-neutral-900">
       <div className="sm:w-1/4 sm:min-w-[300px] w-[160px]">
         <Intania888Logo />
       </div>
