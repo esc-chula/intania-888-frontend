@@ -10,7 +10,7 @@ export const Banner = ({
 }) => {
   return (
     <div
-      className="flex flex-row h-14 w-full text-sm sm:text-lg font-semibold overflow-hidden"
+      className="flex flex-row h-14 w-full text-[0.7rem] sm:text-lg font-semibold overflow-hidden relative"
       style={{ backgroundColor: colorBgMap[league] }}
     >
       <div className="w-[25%] flex items-center justify-center">{sport}</div>
@@ -18,7 +18,7 @@ export const Banner = ({
         <MapPin />
         <p>{location}</p>
       </div>
-      <div className="w-[25%] flex items-center justify-center overflow-hidden">
+      <div className="w-[25%] flex items-center justify-center">
         <BannerDeco league={league} />
         <p className="z-10 absolute">{textMap[league]}</p>
       </div>
@@ -32,7 +32,7 @@ const BannerDeco = (props: { league: string }) => {
       viewBox="0 0 202 60"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-full"
+      className="absolute h-full max-sm:translate-x-9"
     >
       <g mask="url(#mask0_350_856)">
         <rect

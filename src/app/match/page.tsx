@@ -1,10 +1,11 @@
 "use client";
 import { Header } from "@/components/Header";
-import { MatchMainFilter } from "@/components/MatchMainFilter";
+import { MatchMainFilter } from "@/components/match/MatchMainFilter";
 import { Navbar } from "@/components/Navbar";
 import { useState } from "react";
 import { Selector } from "@/components/Selector";
-import { DisplayMatchs } from "@/components/DisplayMatchs";
+import { DisplayMatchs } from "@/components/match/DisplayMatchs";
+
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
@@ -48,27 +49,56 @@ export default function Home() {
           setFilter={setFilter}
         />
         <DisplayMatchs matchs={matchs} />
+        <span className="w-2 h-4" />
       </div>
     </div>
   );
 }
 
-const matchs = {
-  location: "ลานพระบรมรูปสองรัชกาล",
-  sport: "ฟุตบอลชาย",
-  league: "all",
-  round: [
-    {
-      time: "15:00",
-      colorA: "pink",
-      colorB: "purple",
-      status: "bet",
-    },
-    {
-      time: "17:00",
-      colorA: "blue",
-      colorB: "green",
-      status: "bet",
-    },
-  ],
-};
+const matchs = [
+  {
+    location: "ลานพระบรมรูปสองรัชกาล",
+    sport: "ฟุตบอลชาย",
+    league: "all",
+    round: [
+      {
+        time: "15:00",
+        colorA: "pink",
+        colorB: "purple",
+        status: "bet",
+      },
+      {
+        time: "17:00",
+        colorA: "blue",
+        colorB: "green",
+        status: "bet",
+      },
+    ],
+  },
+  {
+    location: "สนามกีฬาในร่ม 1",
+    sport: "บาสเก็ตบอลหญิง",
+    league: "freshman",
+    round: [
+      {
+        time: "15:00",
+        colorA: "yellow",
+        colorB: "orange",
+        status: "bet",
+      },
+    ],
+  },
+  {
+    location: "สนามกีฬาในร่ม 1",
+    sport: "บาสเก็ตบอลหญิง",
+    league: "senior",
+    round: [
+      {
+        time: "15:00",
+        colorA: "pink",
+        colorB: "TBA",
+        status: "bet",
+      },
+    ],
+  },
+];
