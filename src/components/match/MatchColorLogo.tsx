@@ -6,7 +6,7 @@ export const MatchColorLogo = (props: { color: string }) => {
   );
 };
 
-const colorMap: { [key: string]: { name: string; color: string } } = {
+export const colorMap: { [key: string]: { name: string; color: string } } = {
   pink: {
     name: "สีชมพู",
     color: "#EC6FBF",

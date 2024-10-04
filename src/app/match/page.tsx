@@ -64,13 +64,13 @@ const matchs = [
       {
         time: "15:00",
         colorA: "pink",
-        colorB: "purple",
+        colorB: "green",
         status: "bet",
       },
       {
         time: "17:00",
         colorA: "blue",
-        colorB: "green",
+        colorB: "purple",
         status: "done",
       },
     ],

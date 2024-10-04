@@ -1,3 +1,4 @@
+import { Matchbar } from "./MatchBar";
 import { MatchColorLogo } from "./MatchColorLogo";
 
 export const Round = ({
@@ -17,8 +18,12 @@ export const Round = ({
       </div>
       <div className="w-[60%] flex items-center justify-center space-x-2">
         <MatchColorLogo color={round.colorA} />
+
         {(round.colorA === "TBA" || round.colorB === "TBA") && (
           <p className="text-gray-500 font-light text-sm">VS</p>
+        )}
+        {round.status === "bet" && (
+          <Matchbar colorA={round.colorA} colorB={round.colorB} />
         )}
         {round.status === "playing" && (
           <p className="text-red-900 text-[0.7rem] sm:text-lg font-semibold">
