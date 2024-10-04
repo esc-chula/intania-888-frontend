@@ -20,6 +20,18 @@ export const Round = ({
         {(round.colorA === "TBA" || round.colorB === "TBA") && (
           <p className="text-gray-500 font-light text-sm">VS</p>
         )}
+        {round.status === "playing" && (
+          <p className="text-red-900 text-[0.7rem] sm:text-lg font-semibold">
+            กำลังแข่งขัน
+          </p>
+        )}
+        {round.status === "done" && (
+          <div className="flex flex-row space-x-2">
+            <p className="max-sm:text-[0.7rem] text-lg font-semibold">24</p>
+            <p className="max-sm:text-[0.7rem] text-lg font-semibold">-</p>
+            <p className="max-sm:text-[0.7rem] text-lg font-semibold">13</p>
+          </div>
+        )}
 
         <MatchColorLogo color={round.colorB} />
       </div>

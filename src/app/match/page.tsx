@@ -48,7 +48,7 @@ export default function Home() {
           filter={filter}
           setFilter={setFilter}
         />
-        <DisplayMatchs matchs={matchs} />
+        <DisplayMatchs matchs={matchs} date={"วันจันทร์ที่ 28 ตุลาคม 2567"} />
         <span className="w-2 h-4" />
       </div>
     </div>
@@ -71,7 +71,7 @@ const matchs = [
         time: "17:00",
         colorA: "blue",
         colorB: "green",
-        status: "bet",
+        status: "done",
       },
     ],
   },
@@ -84,7 +84,7 @@ const matchs = [
         time: "15:00",
         colorA: "yellow",
         colorB: "orange",
-        status: "bet",
+        status: "playing",
       },
     ],
   },
@@ -97,7 +97,7 @@ const matchs = [
         time: "15:00",
         colorA: "pink",
         colorB: "TBA",
-        status: "bet",
+        status: "none",
       },
     ],
   },
