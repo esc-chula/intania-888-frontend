@@ -4,6 +4,7 @@ import { MatchMainFilter } from "@/components/MatchMainFilter";
 import { Navbar } from "@/components/Navbar";
 import { useState } from "react";
 import { Selector } from "@/components/Selector";
+import { DisplayMatchs } from "@/components/DisplayMatchs";
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
@@ -33,7 +34,28 @@ export default function Home() {
           filter={filter}
           setFilter={setFilter}
         />
+        <DisplayMatchs matchs={matchs} />
       </div>
     </div>
   );
 }
+
+const matchs = {
+  location: "ลานพระบรมรูปสองรัชกาล",
+  sport: "ฟุตบอลชาย",
+  league: "all",
+  round: [
+    {
+      time: "15:00",
+      colorA: "pink",
+      colorB: "purple",
+      status: "bet",
+    },
+    {
+      time: "17:00",
+      colorA: "blue",
+      colorB: "green",
+      status: "bet",
+    },
+  ],
+};
