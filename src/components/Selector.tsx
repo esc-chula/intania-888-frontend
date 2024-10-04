@@ -1,30 +1,22 @@
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-export const Selector = ({
-  mainFilter,
-  filter,
-  setFilter,
-}: {
+
+interface SelectorProps {
+  choicesList: string[];
   mainFilter: string;
   filter: string;
   setFilter: React.Dispatch<React.SetStateAction<string>>;
+}
+export const Selector: React.FC<SelectorProps> = ({
+  choicesList,
+  mainFilter,
+  filter,
+  setFilter,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     setIsOpen(false);
   }, [mainFilter, filter]);
-  const choicesList = [
-    "รวมกีฬาทุกประเภท",
-    "ฟุตบอลชาย ปี 1",
-    "ฟุตบอลชาย ปี 2-4",
-    "บาสเก็ตบอลชาย ปี 1",
-    "บาสเก็ตบอลชาย ปี 2-4",
-    "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
-    "วอลเลย์บอลชาย รวมทุกชั้นปี",
-    "วอลเลย์บอลหญิง รวมทุกชั้นปี",
-    "แชร์บอลหญิง ปี 1",
-    "แชร์บอลหญิง ปี 2-4",
-  ];
   return (
     <div>
       <button

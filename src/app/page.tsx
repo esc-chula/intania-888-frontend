@@ -21,11 +21,12 @@ export default function Home() {
     if (code) {
       const handleOAuthCallback = async () => {
         try {
-          const response = await apiClient.post(`/auth/login/callback`, { code }, { withCredentials: true });
+          const response = await apiClient.post(`/auth/login/callback`, { code });
 
           if (response.status === 200) {
-            const { credentials } = response.data;
-            localStorage.setItem('credentials', JSON.stringify(credentials));
+            const credential = response.data.credential;
+
+            localStorage.setItem('credentials', JSON.stringify(credential));
 
             router.replace('/register/profile');
           }
