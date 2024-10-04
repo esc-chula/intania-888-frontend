@@ -15,6 +15,11 @@ export const DisplayMatchs = (props: { matchs: matchInterface }) => {
       {props.matchs.round.map((item, index) => (
         <Round round={item} key={index} />
       ))}
+      <Banner
+        location={props.matchs.location}
+        sport={props.matchs.sport}
+        league="freshman"
+      />
     </div>
   );
 };

@@ -13,8 +13,8 @@ export const Banner = ({
       className="flex flex-row h-14 w-full text-sm sm:text-lg font-semibold overflow-hidden"
       style={{ backgroundColor: colorBgMap[league] }}
     >
-      <div className="w-[20%] flex items-center justify-center">{sport}</div>
-      <div className="w-[55%] flex items-center justify-center flex-row space-x-1">
+      <div className="w-[25%] flex items-center justify-center">{sport}</div>
+      <div className="w-[50%] flex items-center justify-center flex-row space-x-1">
         <MapPin />
         <p>{location}</p>
       </div>
