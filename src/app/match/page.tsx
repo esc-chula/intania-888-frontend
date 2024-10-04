@@ -12,6 +12,18 @@ export default function Home() {
     setMainFilter(text);
     setFilter("");
   };
+  const choicesList = [
+    "รวมกีฬาทุกประเภท",
+    "ฟุตบอลชาย ปี 1",
+    "ฟุตบอลชาย ปี 2-4",
+    "บาสเก็ตบอลชาย ปี 1",
+    "บาสเก็ตบอลชาย ปี 2-4",
+    "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
+    "วอลเลย์บอลชาย รวมทุกชั้นปี",
+    "วอลเลย์บอลหญิง รวมทุกชั้นปี",
+    "แชร์บอลหญิง ปี 1",
+    "แชร์บอลหญิง ปี 2-4",
+  ];
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen text-white">
@@ -30,6 +42,7 @@ export default function Home() {
           handdleChangeMainFilter={handdleChangeMainFilter}
         />
         <Selector
+          choicesList={choicesList}
           mainFilter={mainFilter}
           filter={filter}
           setFilter={setFilter}
