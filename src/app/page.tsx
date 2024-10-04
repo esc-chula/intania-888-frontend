@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { apiClient } from "@/utils/axios";
+import { handleCallback } from "@/api/auth/google";
 
 export default function Home() {
   const router = useRouter();
@@ -21,15 +21,11 @@ export default function Home() {
     if (code) {
       const handleOAuthCallback = async () => {
         try {
-          const response = await apiClient.post(`/auth/login/callback`, { code });
+          const credential = await handleCallback(code);
+          
+          localStorage.setItem('credentials', JSON.stringify(credential));
+          router.replace('/register/profile');
 
-          if (response.status === 200) {
-            const credential = response.data.credential;
-
-            localStorage.setItem('credentials', JSON.stringify(credential));
-
-            router.replace('/register/profile');
-          }
         } catch (error) {
           console.error('Error processing login callback:', error);
         }

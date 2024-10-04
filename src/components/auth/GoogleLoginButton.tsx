@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react'
-import { handleGoogleLogin } from '@/utils/google'
+import { handleGoogleLogin } from '@/api/auth/google'
 
 const GoogleLoginButton = () => {
   return (
