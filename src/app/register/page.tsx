@@ -18,7 +18,7 @@ const RegisterPage = () => {
             <GoogleLoginButton />
         </section>
         <p className='text-xs'>ใช้อีเมลนิสิตจุฬาในการยืนยันตัวตน</p>
-        <Link href='/condition' className='text-sm underline cursor-pointer'>ข้อกำหนดและเงื่อนไขการใช้งาน</Link>
+        <Link href='/register/condition' className='text-sm underline cursor-pointer'>ข้อกำหนดและเงื่อนไขการใช้งาน</Link>
     </div>
   )
 }
