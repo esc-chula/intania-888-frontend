@@ -34,9 +34,9 @@ export const selectorTextMap: { [key: string]: string } = Object.fromEntries(
   Object.entries(sportTextMap).map(([key, value]) => [value, key])
 );
 export const leagueTextMap: { [key: string]: string } = {
-  freshman: "เฉพาะชั้นปีที่ี 1",
-  senior: "ชั้นปีที่ 2 ถึง 4",
-  all: "รวมทุกชั้นปี",
+  freshman: "ชั้นปีที่ 1",
+  senior: "ชั้นปีที่ 2-4",
+  all: "รวมชั้นปี",
 };
 
 export const cleanData = (props: {
