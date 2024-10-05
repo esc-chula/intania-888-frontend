@@ -1,6 +1,6 @@
 import { Matchbar } from "./MatchBar";
 import { MatchColorLogo } from "./MatchColorLogo";
-import { RoundItem } from "./MatchUtils";
+import { RoundItem } from "./MatchInterface";
 
 export const Round = ({ round }: { round: RoundItem }) => {
   return (

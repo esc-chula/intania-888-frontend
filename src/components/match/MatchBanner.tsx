@@ -4,7 +4,7 @@ import {
   colorDecoMap,
   leagueTextMap,
   sportTextMap,
-} from "./MatchUtils";
+} from "./MatchMapAndList";
 export const Banner = ({
   location,
   sport,

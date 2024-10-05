@@ -1,14 +1,19 @@
 "use client";
-import { Header } from "@/components/Header";
-import { MatchMainFilter } from "@/components/match/MatchMainFilter";
-import { Navbar } from "@/components/Navbar";
 import { useEffect, useState } from "react";
+import { Header } from "@/components/Header";
+import { Navbar } from "@/components/Navbar";
 import { Selector } from "@/components/Selector";
+import { MatchMainFilter } from "@/components/match/MatchMainFilter";
 import { DisplayMatchs } from "@/components/match/DisplayMatchs";
 import { getMatch } from "@/api/match/getmatch";
-import { allMatchInterface, cleanData } from "@/components/match/MatchUtils";
-import { selectorTextMap } from "@/components/match/MatchUtils";
+import { allMatchInterface } from "@/components/match/MatchInterface";
+import {
+  selectorTextMap,
+  choicesList,
+} from "@/components/match/MatchMapAndList";
+
 export default function Home() {
+  // declare useState
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
   const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(
@@ -17,18 +22,23 @@ export default function Home() {
   const [showMatch, setShowMatch] = useState<allMatchInterface[] | undefined>(
     undefined
   );
+
+  // handle filter selection
   const handdleChangeMainFilter = (text: string) => {
     setMainFilter(text);
     setFilter("");
   };
+
+  // get date when loaded page
   const fetchMatchData = async () => {
     const data = (await getMatch())?.data;
-    const cleanedData = cleanData({ rawData: data });
-    setAllMatch(cleanedData);
+    setAllMatch(data);
   };
   useEffect(() => {
     fetchMatchData();
   }, []);
+
+  // filter data
   useEffect(() => {
     let show = allMatch;
 
@@ -57,15 +67,13 @@ export default function Home() {
     setShowMatch(show);
   }, [mainFilter, filter, allMatch]);
 
+  // JSX element
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen text-white">
       <div className="relative m-0 p-0 top-0 flex flex-col w-full">
         <Header />
         <Navbar pagenow="match" />
       </div>
-
-      <p>{mainFilter}</p>
-      <p>{selectorTextMap[filter]}</p>
 
       <div className="w-[95%] sm:w-[700px] items-center flex flex-col space-y-4">
         <p className="text-center max-w-[70vw] sm:hidden text-sm">
@@ -99,16 +107,3 @@ export default function Home() {
     </div>
   );
 }
-
-const choicesList = [
-  "รวมกีฬาทุกประเภท",
-  "ฟุตบอลชาย ปี 1",
-  "ฟุตบอลชาย ปี 2-4",
-  "บาสเก็ตบอลชาย ปี 1",
-  "บาสเก็ตบอลชาย ปี 2-4",
-  "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
-  "วอลเลย์บอลชาย รวมทุกชั้นปี",
-  "วอลเลย์บอลหญิง รวมทุกชั้นปี",
-  "แชร์บอลหญิง ปี 1",
-  "แชร์บอลหญิง ปี 2-4",
-];

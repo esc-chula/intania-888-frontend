@@ -1,6 +1,6 @@
 import { Banner } from "./MatchBanner";
 import { Round } from "./MatchRound";
-import { allMatchInterface } from "./MatchUtils";
+import { allMatchInterface } from "./MatchInterface";
 
 export const DisplayMatchs = (props: allMatchInterface) => {
   return (
