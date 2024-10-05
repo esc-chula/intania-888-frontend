@@ -1,5 +1,6 @@
 import { Banner } from "./MatchBanner";
 import { Round } from "./MatchRound";
+import { matchInterface } from "./MatchUtils";
 
 export const DisplayMatchs = (props: {
   matchs: matchInterface[];
@@ -27,14 +28,3 @@ export const DisplayMatchs = (props: {
     </div>
   );
 };
-export interface matchInterface {
-  location: string;
-  sport: string;
-  league: string;
-  round: {
-    time: string;
-    colorA: string;
-    colorB: string;
-    status: string;
-  }[];
-}

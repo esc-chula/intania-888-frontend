@@ -4,7 +4,6 @@ import { apiClient } from "../axios";
 const getMatch = async () => {
     try {
         const response: AxiosResponse = await apiClient.get("/matches")
-        console.log("why it not show?");
         console.log(response);
         
         if (response.status == 200) {

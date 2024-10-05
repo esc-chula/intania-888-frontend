@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { colorBgMap, colorDecoMap, leagueTextMap } from "./MatchUtils";
 export const Banner = ({
   location,
   sport,
@@ -20,7 +21,7 @@ export const Banner = ({
       </div>
       <div className="w-[25%] flex items-center justify-center">
         <BannerDeco league={league} />
-        <p className="z-10 absolute">{textMap[league]}</p>
+        <p className="z-10 absolute">{leagueTextMap[league]}</p>
       </div>
     </div>
   );
@@ -47,20 +48,4 @@ const BannerDeco = (props: { league: string }) => {
       </g>
     </svg>
   );
-};
-
-const colorBgMap: { [key: string]: string } = {
-  freshman: "#DD742C",
-  senior: "#0284C7",
-  all: "#4D7C0F",
-};
-const colorDecoMap: { [key: string]: string } = {
-  freshman: "#FB923C",
-  senior: "#38BDF8",
-  all: "#65A30D",
-};
-const textMap: { [key: string]: string } = {
-  freshman: "เฉพาะชั้นปีที่ี 1",
-  senior: "ชั้นปีที่ 2 ถึง 4",
-  all: "รวมทุกชั้นปี",
 };

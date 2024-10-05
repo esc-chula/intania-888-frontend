@@ -1,19 +1,18 @@
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-
+import { selectorTextMap, sportTextMap } from "./match/MatchUtils";
 interface SelectorProps {
-  choicesList: string[];
   mainFilter: string;
   filter: string;
   setFilter: React.Dispatch<React.SetStateAction<string>>;
 }
 export const Selector: React.FC<SelectorProps> = ({
-  choicesList,
   mainFilter,
   filter,
   setFilter,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const choicesList = Object.keys(selectorTextMap);
   useEffect(() => {
     setIsOpen(false);
   }, [mainFilter, filter]);
@@ -23,7 +22,7 @@ export const Selector: React.FC<SelectorProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="w-80 h-10 max-sm:text-[0.9rem] sm:h-12 bg-white text-black rounded-xl flex items-center justify-between px-4"
       >
-        {filter === "" ? "--รวมกีฬาทุกประเภท--" : filter}
+        {filter === "" ? "--รวมกีฬาทุกประเภท--" : sportTextMap[filter]}
         <span>{isOpen ? "▲" : "▼"}</span>
       </button>
       {isOpen && (
@@ -34,7 +33,7 @@ export const Selector: React.FC<SelectorProps> = ({
               className={`${
                 filter === choice ? "bg-neutral-100" : "bg-white"
               } h-9 max-sm:text-[0.8rem] sm:h-10 text-black flex items-center px-4 hover:bg-neutral-200 cursor-pointer z-30 relative`}
-              onClick={() => setFilter(choice)}
+              onClick={() => setFilter(selectorTextMap[choice])}
             >
               {filter === choice ? (
                 <Check className="w-6 h-5" />
