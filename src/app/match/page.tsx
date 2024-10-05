@@ -23,17 +23,37 @@ export default function Home() {
   };
   const fetchMatchData = async () => {
     const data = (await getMatch())?.data;
-
     const cleanedData = cleanData({ rawData: data });
-    console.log(cleanedData);
-
     setAllMatch(cleanedData);
   };
   useEffect(() => {
     fetchMatchData();
   }, []);
   useEffect(() => {
-    const show = allMatch;
+    let show = allMatch;
+
+    if (mainFilter === "overall") {
+      setShowMatch(allMatch);
+      return;
+    }
+
+    if (mainFilter === "upcomming") {
+      show = allMatch?.filter((item) => item.date_D >= new Date(Date.now()));
+    } else if (mainFilter === "result") {
+      show = allMatch?.filter((item) => item.date_D < new Date(Date.now()));
+    }
+
+    if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
+      const sport = selectorTextMap[filter];
+
+      show = show
+        ?.map((match) => {
+          const filterM = match.matches.filter((m) => m.sport === sport);
+          return { ...match, matches: filterM };
+        })
+        .filter((match) => match.matches.length > 0);
+    }
+
     setShowMatch(show);
   }, [mainFilter, filter, allMatch]);
 
@@ -68,6 +88,7 @@ export default function Home() {
               key={index}
               matches={match.matches}
               date={match.date}
+              date_D={match.date_D}
             />
           ))
         ) : (

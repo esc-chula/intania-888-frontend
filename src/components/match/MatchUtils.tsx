@@ -6,6 +6,7 @@ export interface matchInterface {
 }
 export interface allMatchInterface {
   date: string;
+  date_D: Date;
   matches: matchInterface[];
 }
 export const colorBgMap: { [key: string]: string } = {
@@ -48,6 +49,7 @@ export const cleanData = (props: {
   );
   temp.map((itemsDate) => {
     const date = formatThaiDate(itemsDate.date);
+    const date_D = new Date(itemsDate.date);
     const matches: matchInterface[] = [];
     itemsDate.types.map((itemTypes) => {
       // each match (banner match)
@@ -97,6 +99,7 @@ export const cleanData = (props: {
     data.push({
       date,
       matches,
+      date_D,
     });
   });
 
