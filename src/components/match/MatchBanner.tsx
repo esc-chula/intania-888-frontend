@@ -1,5 +1,10 @@
 import { MapPin } from "lucide-react";
-import { colorBgMap, colorDecoMap, leagueTextMap } from "./MatchUtils";
+import {
+  colorBgMap,
+  colorDecoMap,
+  leagueTextMap,
+  sportTextMap,
+} from "./MatchUtils";
 export const Banner = ({
   location,
   sport,
@@ -14,7 +19,9 @@ export const Banner = ({
       className="flex flex-row h-14 w-full text-[0.7rem] sm:text-lg font-semibold overflow-hidden relative"
       style={{ backgroundColor: colorBgMap[league] }}
     >
-      <div className="w-[25%] flex items-center justify-center">{sport}</div>
+      <div className="w-[25%] flex items-center justify-center">
+        {sportTextMap[sport]}
+      </div>
       <div className="w-[50%] flex items-center justify-center flex-row space-x-1">
         <MapPin />
         <p>{location}</p>

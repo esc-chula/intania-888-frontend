@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Selector } from "@/components/Selector";
 import { DisplayMatchs } from "@/components/match/DisplayMatchs";
 import { getMatch } from "@/api/match/getmatch";
-import { allMatchInterface } from "@/components/match/MatchUtils";
+import { allMatchInterface, cleanData } from "@/components/match/MatchUtils";
 import { selectorTextMap } from "@/components/match/MatchUtils";
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcomming");
@@ -23,19 +23,14 @@ export default function Home() {
   };
   const fetchMatchData = async () => {
     const data = (await getMatch())?.data;
-    console.log(data);
 
-    return data;
+    const cleanedData = cleanData({ rawData: data });
+    console.log(cleanedData);
+
+    setAllMatch(cleanedData);
   };
   useEffect(() => {
     fetchMatchData();
-    // const data = fetchMatchData();
-    setAllMatch([
-      {
-        date: "วันจันทร์ที่ 28 ตุลาคม 2567",
-        matchs: allmatchs,
-      },
-    ]);
   }, []);
   useEffect(() => {
     const show = allMatch;
@@ -71,7 +66,7 @@ export default function Home() {
           showMatch.map((match, index) => (
             <DisplayMatchs
               key={index}
-              matchs={match.matchs}
+              matches={match.matches}
               date={match.date}
             />
           ))
@@ -84,53 +79,53 @@ export default function Home() {
   );
 }
 
-const allmatchs = [
-  {
-    location: "ลานพระบรมรูปสองรัชกาล",
-    sport: "ฟุตบอลชาย",
-    league: "all",
-    round: [
-      {
-        time: "15:00",
-        colorA: "pink",
-        colorB: "green",
-        status: "bet",
-      },
-      {
-        time: "17:00",
-        colorA: "blue",
-        colorB: "purple",
-        status: "done",
-      },
-    ],
-  },
-  {
-    location: "สนามกีฬาในร่ม 1",
-    sport: "บาสเก็ตบอลหญิง",
-    league: "freshman",
-    round: [
-      {
-        time: "15:00",
-        colorA: "yellow",
-        colorB: "orange",
-        status: "playing",
-      },
-    ],
-  },
-  {
-    location: "สนามกีฬาในร่ม 1",
-    sport: "บาสเก็ตบอลหญิง",
-    league: "senior",
-    round: [
-      {
-        time: "15:00",
-        colorA: "pink",
-        colorB: "TBA",
-        status: "none",
-      },
-    ],
-  },
-];
+// const allmatches = [
+//   {
+//     location: "ลานพระบรมรูปสองรัชกาล",
+//     sport: "ฟุตบอลชาย",
+//     league: "all",
+//     round: [
+//       {
+//         time: "15:00",
+//         colorA: "pink",
+//         colorB: "green",
+//         status: "bet",
+//       },
+//       {
+//         time: "17:00",
+//         colorA: "blue",
+//         colorB: "purple",
+//         status: "done",
+//       },
+//     ],
+//   },
+//   {
+//     location: "สนามกีฬาในร่ม 1",
+//     sport: "บาสเก็ตบอลหญิง",
+//     league: "freshman",
+//     round: [
+//       {
+//         time: "15:00",
+//         colorA: "yellow",
+//         colorB: "orange",
+//         status: "playing",
+//       },
+//     ],
+//   },
+//   {
+//     location: "สนามกีฬาในร่ม 1",
+//     sport: "บาสเก็ตบอลหญิง",
+//     league: "senior",
+//     round: [
+//       {
+//         time: "15:00",
+//         colorA: "pink",
+//         colorB: "TBA",
+//         status: "none",
+//       },
+//     ],
+//   },
+// ];
 
 const choicesList = [
   "รวมกีฬาทุกประเภท",

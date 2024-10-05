@@ -6,7 +6,7 @@ export interface matchInterface {
 }
 export interface allMatchInterface {
   date: string;
-  matchs: matchInterface[];
+  matches: matchInterface[];
 }
 export const colorBgMap: { [key: string]: string } = {
   freshman: "#DD742C",
@@ -39,21 +39,29 @@ export const leagueTextMap: { [key: string]: string } = {
   all: "รวมทุกชั้นปี",
 };
 
-export const CleanData = ({ rawData }: { rawData: rawDataInterface[] }) => {
-  const data = [];
-  rawData.map((itemsDate) => {
+export const cleanData = (props: {
+  rawData: rawDataInterface[];
+}): allMatchInterface[] => {
+  const data: allMatchInterface[] = [];
+
+  props.rawData.map((itemsDate) => {
     const date = formatThaiDate(itemsDate.date);
+    const matches: matchInterface[] = [];
     itemsDate.types.map((itemTypes) => {
-      const sport = itemTypes.match[0].type;
+      // each match (banner match)
+
+      const sport = itemTypes.matches[0].type;
       const league =
-        itemTypes.match[0].type.slice(-2) == "JR"
+        itemTypes.matches[0].type.slice(-2) == "JR"
           ? "freshman"
-          : itemTypes.match[0].type.slice(-2) == "SR"
+          : itemTypes.matches[0].type.slice(-2) == "SR"
           ? "senior"
           : "all";
       const location = "สนามกีฬาคิดไปเอง";
+
+      // each round (a white row)
       const round: RoundItem[] = [];
-      itemTypes.match.map((item) => {
+      itemTypes.matches.map((item) => {
         const strTime = new Date(item.start_time);
         const endTime = new Date(item.end_time);
         round.push({
@@ -75,21 +83,25 @@ export const CleanData = ({ rawData }: { rawData: rawDataInterface[] }) => {
               : "bet",
         });
       });
-      data.push({
-        date,
+      matches.push({
         location,
         sport,
         league,
         round,
       });
     });
+    data.push({
+      date,
+      matches,
+    });
   });
+  return data;
 };
 
 interface rawDataInterface {
   date: string;
   types: {
-    match: {
+    matches: {
       end_time: string;
       start_time: string;
       team_a: string;
@@ -102,6 +114,7 @@ interface rawDataInterface {
     }[];
   }[];
 }
+
 export type RoundItem = {
   time_start: string;
   time_end: string;
