@@ -11,6 +11,7 @@ import {
   selectorTextMap,
   choicesList,
 } from "@/components/match/MatchMapAndList";
+import { EmptyState } from "@/components/EmptyState";
 
 export default function Home() {
   // declare useState
@@ -65,6 +66,7 @@ export default function Home() {
     }
 
     setShowMatch(show);
+    console.log(show);
   }, [mainFilter, filter, allMatch]);
 
   // JSX element
@@ -90,7 +92,9 @@ export default function Home() {
           filter={filter}
           setFilter={setFilter}
         />
-        {showMatch !== undefined ? (
+        {mainFilter === "overall" ? (
+          <div>EIEI</div>
+        ) : showMatch?.length ? (
           showMatch.map((match, index) => (
             <DisplayMatchs
               key={index}
@@ -99,9 +103,12 @@ export default function Home() {
               date_D={match.date_D}
             />
           ))
+        ) : mainFilter === "upcoming" ? (
+          <EmptyState texts={["ไม่มีการแข่งขันที่กำลังแข่งในขณะนี้"]} />
         ) : (
-          <div></div>
+          <EmptyState texts={["ยังไม่มีการแข่งขันที่เสร็จสิ้นในขณะนี้"]} />
         )}
+
         <span className="w-2 h-4" />
       </div>
     </div>
