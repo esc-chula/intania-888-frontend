@@ -2,12 +2,7 @@ export interface matchInterface {
   location: string;
   sport: string;
   league: string;
-  round: {
-    time: string;
-    colorA: string;
-    colorB: string;
-    status: string;
-  }[];
+  round: RoundItem[];
 }
 export interface allMatchInterface {
   date: string;
@@ -43,3 +38,118 @@ export const leagueTextMap: { [key: string]: string } = {
   senior: "ชั้นปีที่ 2 ถึง 4",
   all: "รวมทุกชั้นปี",
 };
+
+export const CleanData = ({ rawData }: { rawData: rawDataInterface[] }) => {
+  const data = [];
+  rawData.map((itemsDate) => {
+    const date = formatThaiDate(itemsDate.date);
+    itemsDate.types.map((itemTypes) => {
+      const sport = itemTypes.match[0].type;
+      const league =
+        itemTypes.match[0].type.slice(-2) == "JR"
+          ? "freshman"
+          : itemTypes.match[0].type.slice(-2) == "SR"
+          ? "senior"
+          : "all";
+      const location = "สนามกีฬาคิดไปเอง";
+      const round: RoundItem[] = [];
+      itemTypes.match.map((item) => {
+        const strTime = new Date(item.start_time);
+        const endTime = new Date(item.end_time);
+        round.push({
+          time_start: formatTime(strTime),
+          time_end: formatTime(endTime),
+          colorA: item.team_a,
+          colorB: item.team_b,
+          rateA: item.team_a_rate === null ? 0 : Number(item.team_a_rate),
+          scoreA: item.team_a_score === null ? 0 : Number(item.team_a_score),
+          rateB: item.team_b_rate === null ? 0 : Number(item.team_b_rate),
+          scoreB: item.team_b_score === null ? 0 : Number(item.team_b_score),
+          status:
+            item.team_a === null || item.team_b === null
+              ? "TBA"
+              : Date.now() > endTime.getTime()
+              ? "done"
+              : Date.now() > strTime.getTime()
+              ? "playing"
+              : "bet",
+        });
+      });
+      data.push({
+        date,
+        location,
+        sport,
+        league,
+        round,
+      });
+    });
+  });
+};
+
+interface rawDataInterface {
+  date: string;
+  types: {
+    match: {
+      end_time: string;
+      start_time: string;
+      team_a: string;
+      team_b: string;
+      team_a_score: string;
+      team_b_score: string;
+      team_a_rate: string;
+      team_b_rate: string;
+      type: string;
+    }[];
+  }[];
+}
+export type RoundItem = {
+  time_start: string;
+  time_end: string;
+  colorA: string;
+  colorB: string;
+  rateA: number;
+  scoreA: number;
+  rateB: number;
+  scoreB: number;
+  status: string;
+};
+const formatTime = (date: Date) => {
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
+function formatThaiDate(dateString: string): string {
+  const daysOfWeek = [
+    "อาทิตย์",
+    "จันทร์",
+    "อังคาร",
+    "พุธ",
+    "พฤหัสบดี",
+    "ศุกร์",
+    "เสาร์",
+  ];
+  const monthsOfYear = [
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
+  ];
+
+  const date = new Date(dateString);
+
+  const buddhistYear = date.getFullYear() + 543;
+
+  const dayOfWeek = daysOfWeek[date.getDay()];
+  const day = date.getDate();
+  const month = monthsOfYear[date.getMonth()];
+
+  return `วัน${dayOfWeek}ที่ ${day} ${month} ${buddhistYear}`;
+}

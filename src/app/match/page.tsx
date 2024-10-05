@@ -7,6 +7,7 @@ import { Selector } from "@/components/Selector";
 import { DisplayMatchs } from "@/components/match/DisplayMatchs";
 import { getMatch } from "@/api/match/getmatch";
 import { allMatchInterface } from "@/components/match/MatchUtils";
+import { selectorTextMap } from "@/components/match/MatchUtils";
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
@@ -21,7 +22,9 @@ export default function Home() {
     setFilter("");
   };
   const fetchMatchData = async () => {
-    const data = await getMatch();
+    const data = (await getMatch())?.data;
+    console.log(data);
+
     return data;
   };
   useEffect(() => {
@@ -45,6 +48,9 @@ export default function Home() {
         <Header />
         <Navbar pagenow="match" />
       </div>
+
+      <p>{mainFilter}</p>
+      <p>{selectorTextMap[filter]}</p>
 
       <div className="w-[95%] sm:w-[700px] items-center flex flex-col space-y-4">
         <p className="text-center max-w-[70vw] sm:hidden text-sm">

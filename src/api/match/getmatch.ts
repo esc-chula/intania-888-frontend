@@ -4,10 +4,9 @@ import { apiClient } from "../axios";
 const getMatch = async () => {
     try {
         const response: AxiosResponse = await apiClient.get("/matches")
-        console.log(response);
         
         if (response.status == 200) {
-            return { success: true }
+            return { success: true, data :  response.data }
         } else {
             return { success: false }
         }
