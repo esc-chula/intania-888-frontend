@@ -2,29 +2,40 @@
 import { Header } from "@/components/Header";
 import { MatchMainFilter } from "@/components/match/MatchMainFilter";
 import { Navbar } from "@/components/Navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Selector } from "@/components/Selector";
 import { DisplayMatchs } from "@/components/match/DisplayMatchs";
-
+import { matchInterface } from "@/components/match/DisplayMatchs";
+import { getMatch } from "@/api/match/getmatch";
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
+  const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(
+    undefined
+  );
+  const [showMatch, setShowMatch] = useState<allMatchInterface[] | undefined>(
+    undefined
+  );
   const handdleChangeMainFilter = (text: string) => {
     setMainFilter(text);
     setFilter("");
   };
-  const choicesList = [
-    "รวมกีฬาทุกประเภท",
-    "ฟุตบอลชาย ปี 1",
-    "ฟุตบอลชาย ปี 2-4",
-    "บาสเก็ตบอลชาย ปี 1",
-    "บาสเก็ตบอลชาย ปี 2-4",
-    "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
-    "วอลเลย์บอลชาย รวมทุกชั้นปี",
-    "วอลเลย์บอลหญิง รวมทุกชั้นปี",
-    "แชร์บอลหญิง ปี 1",
-    "แชร์บอลหญิง ปี 2-4",
-  ];
+  const fetchMatchData = async () => {
+    const data = await getMatch();
+    console.log("data----");
+    console.log(data);
+    // return data;
+  };
+  useEffect(() => {
+    fetchMatchData();
+    // const data = fetchMatchData();
+    setAllMatch([
+      {
+        date: "วันจันทร์ที่ 28 ตุลาคม 2567",
+        matchs: allmatchs,
+      },
+    ]);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen text-white">
@@ -48,14 +59,29 @@ export default function Home() {
           filter={filter}
           setFilter={setFilter}
         />
-        <DisplayMatchs matchs={matchs} date={"วันจันทร์ที่ 28 ตุลาคม 2567"} />
+        {allMatch !== undefined ? (
+          allMatch.map((match, index) => (
+            <DisplayMatchs
+              key={index}
+              matchs={match.matchs}
+              date={match.date}
+            />
+          ))
+        ) : (
+          <div></div>
+        )}
         <span className="w-2 h-4" />
       </div>
     </div>
   );
 }
 
-const matchs = [
+interface allMatchInterface {
+  date: string;
+  matchs: matchInterface[];
+}
+
+const allmatchs = [
   {
     location: "ลานพระบรมรูปสองรัชกาล",
     sport: "ฟุตบอลชาย",
@@ -101,4 +127,17 @@ const matchs = [
       },
     ],
   },
+];
+
+const choicesList = [
+  "รวมกีฬาทุกประเภท",
+  "ฟุตบอลชาย ปี 1",
+  "ฟุตบอลชาย ปี 2-4",
+  "บาสเก็ตบอลชาย ปี 1",
+  "บาสเก็ตบอลชาย ปี 2-4",
+  "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
+  "วอลเลย์บอลชาย รวมทุกชั้นปี",
+  "วอลเลย์บอลหญิง รวมทุกชั้นปี",
+  "แชร์บอลหญิง ปี 1",
+  "แชร์บอลหญิง ปี 2-4",
 ];

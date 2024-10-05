@@ -16,7 +16,7 @@ const handleGoogleLogin = async () => {
 const handleCallback = async (code: string) => {
     try {
         const response: AxiosResponse = await apiClient.post('/auth/login/callback', { code })
-
+        
         const { credential } = response.data;
 
         return credential;
