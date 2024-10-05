@@ -24,11 +24,11 @@ export const sportTextMap: { [key: string]: string } = {
   FOOTBALL_MALE_SR: "ฟุตบอลชาย ปี 2-4",
   BASKETBALL_MALE_JR: "บาสเก็ตบอลชาย ปี 1",
   BASKETBALL_MALE_SR: "บาสเก็ตบอลชาย ปี 2-4",
-  BASKETBALL_FEMALE_SR: "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
-  VOLLEYBALL_MALE: "วอลเลย์บอลชาย รวมทุกชั้นปี",
-  VOLLEYBALL_FEMALE: "วอลเลย์บอลหญิง รวมทุกชั้นปี",
-  SHAREBALL_FEMALE_JR: "แชร์บอลหญิง ปี 1",
-  SHAREBALL_FEMALE_SR: "แชร์บอลหญิง ปี 2-4",
+  BASKETBALL_FEMALE_ALL: "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
+  VOLLEYBALL_MALE_ALL: "วอลเลย์บอลชาย รวมทุกชั้นปี",
+  VOLLEYBALL_FEMALE_ALL: "วอลเลย์บอลหญิง รวมทุกชั้นปี",
+  CHAIRBALL_FEMALE_JR: "แชร์บอลหญิง ปี 1",
+  CHAIRBALL_FEMALE_SR: "แชร์บอลหญิง ปี 2-4",
 };
 export const selectorTextMap: { [key: string]: string } = Object.fromEntries(
   Object.entries(sportTextMap).map(([key, value]) => [value, key])
@@ -43,8 +43,10 @@ export const cleanData = (props: {
   rawData: rawDataInterface[];
 }): allMatchInterface[] => {
   const data: allMatchInterface[] = [];
-
-  props.rawData.map((itemsDate) => {
+  const temp = props.rawData.sort((a: rawDataInterface, b: rawDataInterface) =>
+    Number(new Date(a.date).getDate() - new Date(b.date).getDate())
+  );
+  temp.map((itemsDate) => {
     const date = formatThaiDate(itemsDate.date);
     const matches: matchInterface[] = [];
     itemsDate.types.map((itemTypes) => {
@@ -63,7 +65,9 @@ export const cleanData = (props: {
       const round: RoundItem[] = [];
       itemTypes.matches.map((item) => {
         const strTime = new Date(item.start_time);
+        strTime.setHours(strTime.getHours() - 7);
         const endTime = new Date(item.end_time);
+        endTime.setHours(endTime.getHours() - 7);
         round.push({
           time_start: formatTime(strTime),
           time_end: formatTime(endTime),
@@ -95,6 +99,7 @@ export const cleanData = (props: {
       matches,
     });
   });
+
   return data;
 };
 

@@ -15,7 +15,12 @@ export const Round = ({ round }: { round: RoundItem }) => {
           <p className="text-gray-500 font-light text-sm">VS</p>
         )}
         {round.status === "bet" && (
-          <Matchbar colorA={round.colorA} colorB={round.colorB} />
+          <Matchbar
+            colorA={round.colorA}
+            colorB={round.colorB}
+            scoreA={round.scoreA}
+            scoreB={round.scoreB}
+          />
         )}
         {round.status === "playing" && (
           <p className="text-red-900 text-[0.7rem] sm:text-lg font-semibold">

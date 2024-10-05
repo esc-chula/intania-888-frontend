@@ -79,54 +79,6 @@ export default function Home() {
   );
 }
 
-// const allmatches = [
-//   {
-//     location: "ลานพระบรมรูปสองรัชกาล",
-//     sport: "ฟุตบอลชาย",
-//     league: "all",
-//     round: [
-//       {
-//         time: "15:00",
-//         colorA: "pink",
-//         colorB: "green",
-//         status: "bet",
-//       },
-//       {
-//         time: "17:00",
-//         colorA: "blue",
-//         colorB: "purple",
-//         status: "done",
-//       },
-//     ],
-//   },
-//   {
-//     location: "สนามกีฬาในร่ม 1",
-//     sport: "บาสเก็ตบอลหญิง",
-//     league: "freshman",
-//     round: [
-//       {
-//         time: "15:00",
-//         colorA: "yellow",
-//         colorB: "orange",
-//         status: "playing",
-//       },
-//     ],
-//   },
-//   {
-//     location: "สนามกีฬาในร่ม 1",
-//     sport: "บาสเก็ตบอลหญิง",
-//     league: "senior",
-//     round: [
-//       {
-//         time: "15:00",
-//         colorA: "pink",
-//         colorB: "TBA",
-//         status: "none",
-//       },
-//     ],
-//   },
-// ];
-
 const choicesList = [
   "รวมกีฬาทุกประเภท",
   "ฟุตบอลชาย ปี 1",
