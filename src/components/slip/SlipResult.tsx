@@ -23,11 +23,11 @@ const SlipResult: React.FC<SlipResultProps> = ({match, rate, betting_on, classNa
             <div className='flex items-center space-x-2'>
                 <div className='flex justify-center items-center space-x-1.5 text-black font-semibold'>
                     <div>
-                        <MatchColorLogo color={(match.team_a).toLowerCase()} size= "25" />
+                        <MatchColorLogo color={(match.team_a)} size= "25" />
                     </div>
                     <p className='font-light'>vs</p>
                     <div>
-                        <MatchColorLogo color={(match.team_b).toLowerCase()} size = "25"/>
+                        <MatchColorLogo color={(match.team_b)} size = "25"/>
                     </div>
                 </div>
                 <div className='flex justify-center items-center space-x-1.5'>

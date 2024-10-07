@@ -10,7 +10,7 @@ export const Round = ({ round }: { round: RoundItem }) => {
         {formatTime(round.time_start)}
       </div>
       <div className="w-[60%] flex items-center justify-center space-x-2">
-        <MatchColorLogo color={round.colorA.toLowerCase()} />
+        <MatchColorLogo color={round.colorA} />
 
         {round.status === "TBA" && (
           <p className="text-gray-500 font-light text-sm">VS</p>
@@ -40,7 +40,7 @@ export const Round = ({ round }: { round: RoundItem }) => {
           </div>
         )}
 
-        <MatchColorLogo color={round.colorB.toLowerCase()} />
+        <MatchColorLogo color={round.colorB} />
       </div>
       <div className="w-[20%] flex items-center justify-center max-sm:text-[0.6rem]">
         {round.status === "bet" && (

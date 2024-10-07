@@ -22,14 +22,14 @@ export const Matchbar = (props: {
         <div
           className="h-full border-r-[2.5px] border-neutral-900 absolute"
           style={{
-            backgroundColor: colorMap[props.colorA.toLowerCase()].color,
+            backgroundColor: colorMap[props.colorA].color,
             width: `${scoreA}%`,
           }}
         ></div>
         <div
           className="h-full absolute right-0"
           style={{
-            backgroundColor: colorMap[props.colorB.toLowerCase()].color,
+            backgroundColor: colorMap[props.colorB].color,
             width: `${scoreB}%`,
           }}
         ></div>

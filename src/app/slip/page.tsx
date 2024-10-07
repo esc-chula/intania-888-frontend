@@ -13,15 +13,15 @@ export default function Home() {
     {
       date: "วันจันทร์ที่ 28 ตุลาคม 2567",
       sportType: "ฟุตบอลชาย ปี 1",
-      teamAColor: "pink",
-      teamBColor: "yellow",
+      teamAColor: "PINK",
+      teamBColor: "YELLOW",
       currentRate: 2.00,
     },
     {
       date: "วันจันทร์ที่ 28 ตุลาคม 2567",
       sportType: "ฟุตบอลชาย ปี 1",
-      teamAColor: "pink",
-      teamBColor: "yellow",
+      teamAColor: "PINK",
+      teamBColor: "YELLOW",
       currentRate: 2.00,
     },
   ];

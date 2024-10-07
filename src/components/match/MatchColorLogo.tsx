@@ -7,31 +7,31 @@ export const MatchColorLogo = (props: { color: string, size?: string }) => {
   };
   
   export const colorMap: { [key: string]: { name: string; color: string } } = {
-    pink: {
+    PINK: {
       name: "สีชมพู",
       color: "#EC6FBF",
     },
-    purple : {
+    PURPLE : {
       name: "สีม่วง",
       color: "#C450F5",
     },
-    violet : {
+    VIOLET : {
       name: "สีม่วง",
       color: "#C450F5",
     },
-    yellow: {
+    YELLOW: {
       name: "สีเหลือง",
       color: "#F9DF70",
     },
-    green: {
+    GREEN: {
       name: "สีเขียว",
       color: "#67DF80",
     },
-    orange: {
+    ORANGE: {
       name: "สีส้ม",
       color: "#EF965C",
     },
-    blue: {
+    BLUE: {
       name: "สีฟ้า",
       color: "#60B4F7",
     },
