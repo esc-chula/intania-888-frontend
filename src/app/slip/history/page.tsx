@@ -1,29 +1,26 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
+import { getMySlipHistoryDto } from "@/api/slip/slip.dto";
 import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
-import { SlipResultProps } from "@/components/slip/SlipResult";
-import SlipGroupResult from "@/components/slip/SlipGroupResult";
 import Link from "next/link";
 import { getMySlipHistory } from "@/api/slip/slip";
+import SlipGroupResult from "@/components/slip/SlipGroupResult";
 
 export default function Home() {
-  const [slipHistory, setHistory] = useState<Bill[] | undefined>(undefined);
-  
-  useEffect(() => {
-    const fetchHistory = async () => {
-      const response = await getMySlipHistory();
-      
-      if (!response) {
-          return;
-      }
+  const [history, setHistory] = useState<getMySlipHistoryDto[]>(null);
 
-      setHistory(response.data.lines);
-    };
-    fetchHistory();
-  });
+  useEffect(() => {
+    const getHistory = async () => {
+      const response = await getMySlipHistory();
+      if (response?.success) {
+        setHistory(response.data);
+      }
+    }
+
+    getHistory();
+  }, [history]);
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen">
@@ -43,8 +40,14 @@ export default function Home() {
             ประวัติ
           </Link>
         </div>
-        {slipHistory ? (
-          <SlipGroupResult slipId={slipId} netProfit={100} slipResult={[]} />
+        {history ? (
+          history?.map((bill, index) => (
+            <div key={index}><SlipGroupResult
+              slipId={bill.id}
+              netProfit={bill.total}
+              slipResult={bill.lines}
+            /></div>
+          ))
         ) : (
           <EmptyState
             texts={[
@@ -52,8 +55,7 @@ export default function Home() {
               "แมตช์ > เลือกแมตช์ที่ต้องการทาย > เพิ่งลงสลิป",
             ]}
           />
-        )
-        }
+        )}
       </div>
     </div>
   );

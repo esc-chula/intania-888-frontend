@@ -1,16 +1,7 @@
 import { AxiosResponse } from "axios";
 import { apiClient } from "../axios";
-
-interface createMySlipDto {
-    total: number;
-    lines: Slip[];
-}
-
-interface Slip {
-    match_id: string;
-    rate: number;
-    betting_on: string;
-}
+import { createMySlipDto } from "./slip.dto";
+import { getMySlipHistoryDto } from "./slip.dto";
 
 const createMySlip = async (slip: createMySlipDto) => {
     try {
@@ -26,37 +17,9 @@ const createMySlip = async (slip: createMySlipDto) => {
     }
 }
 
-interface getMySlipHistoryDto {
-    id: string;
-    total: number;
-    user_id: string;
-    lines: Bill[];
-}
-
-export interface Bill {
-    bill_id: string;
-    match_id: string;
-    rate: number;
-    betting_on: string;
-    match: Match;
-}
-
-interface Match {
-    id: string;
-    team_a: string;
-    team_b: string;
-    team_a_score: number;
-    team_b_score: number;
-    team_a_rate: number;
-    team_b_rate: number;
-    winner: string;
-    type: string;
-    start_time: string;
-    end_time: string;
-}
 const getMySlipHistory = async () => {
     try {
-        const response: AxiosResponse<getMySlipHistoryDto> = await apiClient.get(`/bills`)
+        const response: AxiosResponse<getMySlipHistoryDto[]> = await apiClient.get(`/bills`)
 
         if (response.status == 200) {
             return { success: true, data: response.data }

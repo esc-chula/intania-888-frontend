@@ -1,7 +1,7 @@
-export const MatchColorLogo = (props: { color: string, size: string }) => {
+export const MatchColorLogo = (props: { color: string, size?: string }) => {
     return (
       <div className="flex flex-row space-x-2 items-center">
-        <Shirt color={props.color} size={props.size} /> <p>{colorMap[props.color].name}</p>
+        <Shirt color={props.color} size={props.size? props.size : ""} /> <p>{colorMap[props.color].name}</p>
       </div>
     );
   };
@@ -11,7 +11,11 @@ export const MatchColorLogo = (props: { color: string, size: string }) => {
       name: "สีชมพู",
       color: "#EC6FBF",
     },
-    purple: {
+    purple : {
+      name: "สีม่วง",
+      color: "#C450F5",
+    },
+    violet : {
       name: "สีม่วง",
       color: "#C450F5",
     },

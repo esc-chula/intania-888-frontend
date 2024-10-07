@@ -20,7 +20,7 @@ const SlipGroupResult: React.FC<SlipGroupResultProps> = ({ slipId, netProfit, sl
     return (
         <div>
             <section className="w-full flex items-center justify-between bg-neutral-200 p-4 rounded-t-lg h-7 text-sm">
-                <p className='text-black font-semibold'>สลิปหมายเลข: {slipId}</p>
+                <p className='text-black font-semibold'>สลิปหมายเลข: {slipId.slice(0,10)}</p>
                 <div className='flex items-center space-x-0.5 font-semibold'>
                     <span className={netProfitColor}>{netProfit}</span> <Coins />
                 </div>
@@ -29,12 +29,9 @@ const SlipGroupResult: React.FC<SlipGroupResultProps> = ({ slipId, netProfit, sl
                 {slipResult.map((result, index) => (
                     <div key={index} className={`w-full`}>
                         <SlipResult
-                            date={result.date}
-                            sportType={result.sportType}
-                            teamAColor={result.teamAColor}
-                            teamBColor={result.teamBColor}
-                            currentRate={result.currentRate}
-                            predictedTeam={result.predictedTeam}
+                            match={result.match}
+                            rate={result.rate}
+                            betting_on={result.betting_on}
                             className={index === slipResult.length - 1 ? 'rounded-b-lg' : ''}
                         />
                         {index !== slipResult.length - 1 && (
