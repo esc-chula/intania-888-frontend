@@ -1,45 +1,29 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
 import { SlipResultProps } from "@/components/slip/SlipResult";
 import SlipGroupResult from "@/components/slip/SlipGroupResult";
 import Link from "next/link";
+import { getMySlipHistory } from "@/api/slip/slip";
 
 export default function Home() {
-  const mockSlipResult: SlipResultProps[] = [
-    {
-      date: '2024-10-01',
-      sportType: 'Football',
-      teamAColor: 'pink', 
-      teamBColor: 'blue', 
-      currentRate: 1.75,
-      predictedTeam: 'Team A',
-    },
-    {
-      date: '2024-10-02',
-      sportType: 'Basketball',
-      teamAColor: 'pink',
-      teamBColor: 'green',
-      currentRate: 2.25,
-      predictedTeam: 'Team B',
-    },
-    {
-      date: '2024-10-03',
-      sportType: 'Tennis',
-      teamAColor: 'yellow',
-      teamBColor: 'blue',
-      currentRate: 1.95,
-      predictedTeam: 'Team A',
-    },
-    {
-      date: '2024-10-04',
-      sportType: 'Baseball',
-      teamAColor: 'pink',
-      teamBColor: 'green',
-      currentRate: 1.85,
-      predictedTeam: 'Team B',
-    }
-  ];
+  const [slipHistory, setHistory] = useState<Bill[] | undefined>(undefined);
+  
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const response = await getMySlipHistory();
+      
+      if (!response) {
+          return;
+      }
+
+      setHistory(response.data.lines);
+    };
+    fetchHistory();
+  });
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen">
@@ -59,8 +43,8 @@ export default function Home() {
             ประวัติ
           </Link>
         </div>
-        {mockSlipResult ? (
-          <SlipGroupResult slipId="123456" netProfit={100} slipResult={mockSlipResult} />
+        {slipHistory ? (
+          <SlipGroupResult slipId={slipId} netProfit={100} slipResult={[]} />
         ) : (
           <EmptyState
             texts={[
