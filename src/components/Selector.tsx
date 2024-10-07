@@ -21,7 +21,7 @@ export const Selector: React.FC<SelectorProps> = ({
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-80 h-12 bg-white text-black rounded-xl flex items-center justify-between px-4"
+        className="w-80 h-10 max-sm:text-[0.9rem] sm:h-12 bg-white text-black rounded-xl flex items-center justify-between px-4"
       >
         {filter === "" ? "--รวมกีฬาทุกประเภท--" : filter}
         <span>{isOpen ? "▲" : "▼"}</span>
@@ -33,7 +33,7 @@ export const Selector: React.FC<SelectorProps> = ({
               key={index}
               className={`${
                 filter === choice ? "bg-neutral-100" : "bg-white"
-              } h-10 text-black flex items-center px-4 hover:bg-neutral-200 cursor-pointer`}
+              } h-9 max-sm:text-[0.8rem] sm:h-10 text-black flex items-center px-4 hover:bg-neutral-200 cursor-pointer z-30 relative`}
               onClick={() => setFilter(choice)}
             >
               {filter === choice ? (

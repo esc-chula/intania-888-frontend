@@ -1,29 +1,99 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
-import { MatchMainFilter } from "@/components/MatchMainFilter";
 import { Navbar } from "@/components/Navbar";
-import { useState } from "react";
 import { Selector } from "@/components/Selector";
+import { MatchMainFilter } from "@/components/match/MatchMainFilter";
+import { DisplayMatchs } from "@/components/match/DisplayMatchs";
+import { getMatch } from "@/api/match/getmatch";
+import { allMatchInterface } from "@/components/match/MatchInterface";
+import {
+  selectorTextMap,
+  choicesList,
+} from "@/components/match/MatchMapAndList";
+import { EmptyState } from "@/components/EmptyState";
+
 export default function Home() {
+  // declare useState
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
+  const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(
+    undefined
+  );
+  const [showMatch, setShowMatch] = useState<allMatchInterface[] | undefined>(
+    undefined
+  );
+
+  // handle filter selection
   const handdleChangeMainFilter = (text: string) => {
     setMainFilter(text);
     setFilter("");
   };
-  const choicesList = [
-    "รวมกีฬาทุกประเภท",
-    "ฟุตบอลชาย ปี 1",
-    "ฟุตบอลชาย ปี 2-4",
-    "บาสเก็ตบอลชาย ปี 1",
-    "บาสเก็ตบอลชาย ปี 2-4",
-    "บาสเก็ตบอลหญิง รวมทุกชั้นปี",
-    "วอลเลย์บอลชาย รวมทุกชั้นปี",
-    "วอลเลย์บอลหญิง รวมทุกชั้นปี",
-    "แชร์บอลหญิง ปี 1",
-    "แชร์บอลหญิง ปี 2-4",
-  ];
 
+  // get date when loaded page
+  const fetchMatchData = async () => {
+    const data = (await getMatch())?.data;
+    setAllMatch(data);
+  };
+  useEffect(() => {
+    fetchMatchData();
+  }, []);
+
+  // filter data
+  useEffect(() => {
+    let show = allMatch;
+
+    if (mainFilter === "overall") {
+      setShowMatch(allMatch);
+      return;
+    }
+
+    const sport = selectorTextMap[filter];
+
+    if (mainFilter === "upcomming") {
+      show = show
+        ?.map((match) => {
+          const filterM = match.matches
+            .map((m) => {
+              const filterd_r = m.round.filter((r) => {
+                if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
+                  return (
+                    r.time_end >= new Date(Date.now()) && m.sport === sport
+                  );
+                } else {
+                  return r.time_end >= new Date(Date.now());
+                }
+              });
+              return { ...m, round: filterd_r };
+            })
+            .filter((r) => r.round.length > 0);
+          return { ...match, matches: filterM };
+        })
+        .filter((match) => match.matches.length > 0);
+    } else if (mainFilter === "result") {
+      show = show
+        ?.map((match) => {
+          const filterM = match.matches
+            .map((m) => {
+              const filterd_r = m.round.filter((r) => {
+                if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
+                  return r.time_end < new Date(Date.now()) && m.sport === sport;
+                } else {
+                  return r.time_end < new Date(Date.now());
+                }
+              });
+              return { ...m, round: filterd_r };
+            })
+            .filter((r) => r.round.length > 0);
+          return { ...match, matches: filterM };
+        })
+        .filter((match) => match.matches.length > 0);
+    }
+
+    setShowMatch(show);
+  }, [mainFilter, filter, allMatch]);
+
+  // JSX element
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen text-white">
       <div className="relative m-0 p-0 top-0 flex flex-col w-full">
@@ -46,6 +116,24 @@ export default function Home() {
           filter={filter}
           setFilter={setFilter}
         />
+        {mainFilter === "overall" ? (
+          <div>EIEI</div>
+        ) : showMatch?.length ? (
+          showMatch.map((match, index) => (
+            <DisplayMatchs
+              key={index}
+              matches={match.matches}
+              date={match.date}
+              date_D={match.date_D}
+            />
+          ))
+        ) : mainFilter === "upcoming" ? (
+          <EmptyState texts={["ไม่มีการแข่งขันที่กำลังแข่งในขณะนี้"]} />
+        ) : (
+          <EmptyState texts={["ยังไม่มีการแข่งขันที่เสร็จสิ้นในขณะนี้"]} />
+        )}
+
+        <span className="w-2 h-4" />
       </div>
     </div>
   );
