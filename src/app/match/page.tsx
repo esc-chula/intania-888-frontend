@@ -12,7 +12,7 @@ import {
   choicesList,
 } from "@/components/match/MatchMapAndList";
 import { EmptyState } from "@/components/EmptyState";
-import { LeaderBoardTable } from "@/components/LeaderBoardTable";
+import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
 
 export default function Home() {
   // declare useState
@@ -118,7 +118,7 @@ export default function Home() {
           setFilter={setFilter}
         />
         {mainFilter === "overall" ? (
-          <LeaderBoardTable
+          <LeaderBoardTableDisplay
             sport={
               filter == "รวมกีฬาทุกประเภท" || "" ? "" : selectorTextMap[filter]
             }
