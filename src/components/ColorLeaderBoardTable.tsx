@@ -40,7 +40,8 @@ export const LeaderBoardTable = (props: {
                   <td className="flex items-center justify-center w-[15%] h-full ">
                     {props.varience === "123"
                       ? index + 1
-                      : props.varience === "WDL" && props.data.length > 3
+                      : props.varience === "WDL" &&
+                        (props.data === undefined || props.data.length > 3)
                       ? index >= 2 && index <= 3
                         ? "3-4"
                         : index >= 4 && index <= 5
