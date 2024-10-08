@@ -12,6 +12,7 @@ import {
   choicesList,
 } from "@/components/match/MatchMapAndList";
 import { EmptyState } from "@/components/EmptyState";
+import { LeaderBoardTable } from "@/components/LeaderBoardTable";
 
 export default function Home() {
   // declare useState
@@ -117,7 +118,11 @@ export default function Home() {
           setFilter={setFilter}
         />
         {mainFilter === "overall" ? (
-          <div>EIEI</div>
+          <LeaderBoardTable
+            sport={
+              filter == "รวมกีฬาทุกประเภท" || "" ? "" : selectorTextMap[filter]
+            }
+          />
         ) : showMatch?.length ? (
           showMatch.map((match, index) => (
             <DisplayMatchs

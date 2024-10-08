@@ -1,81 +1,107 @@
 import { getColorLeaderboard } from "@/api/match/getColorLeaderboard";
+import { useEffect, useState } from "react";
+import { MatchColorLogo } from "./match/MatchColorLogo";
 
-export const CoinLeaderBoardTable = (props: { sport: string }) => {
-  const Data = getColorLeaderboard({
-    type_id: props.sport === "รวมกีฬาทุกประเภท" ? "" : props.sport,
-  });
+export const LeaderBoardTable = (props: { sport: string }) => {
+  const [data, setData] = useState<leaderboardDataInterface[] | undefined>(
+    undefined
+  );
+  const [lastUpdate, setLastUpdate] = useState("");
 
-  console.log(Data);
+  useEffect(() => {
+    const getData = async () => {
+      const res = await getColorLeaderboard({
+        type_id: props.sport,
+      });
+      return res?.data;
+    };
+
+    const fetchData = async () => {
+      const data = await getData();
+      setData(data);
+    };
+
+    fetchData();
+
+    const time = new Date(Date.now());
+
+    setLastUpdate(
+      `${time.getDate()}/${time.getMonth()}/${
+        time.getFullYear() + 543
+      } ${time.getHours()}:${time.getMinutes()}`
+    );
+  }, [props.sport]);
+
+  console.log(data);
 
   return (
-    <table className="rounded-lg w-[90vw] sm:w-[600px] overflow-hidden text-[0.8rem] sm:text-[1rem] h-auto">
-      <thead className="bg-[#4E0F15] font-semibold h-12 flex flex-row">
-        <tr className="w-full flex flex-row">
-          <td className="flex items-center justify-center w-[10%] h-full">
-            ลำดับ
-          </td>
-          <td className="flex items-center justify-start w-[20%] h-full ">
-            สี
-          </td>
-          <td className="flex items-center justify-start w-[20%] h-full ">
-            กรุ๊ป
-          </td>
-          <td className="flex flex-row space-x-2 items-center justify-end pr-2 sm:pr-10 w-[16%] h-full ">
-            1st 🏆
-          </td>
-          <td className="flex flex-row space-x-2 items-center justify-end pr-2 sm:pr-10 w-[16%] h-full ">
-            2nd 🥈
-          </td>
-          <td className="flex flex-row space-x-2 items-center justify-end pr-2 sm:pr-10 w-[16%] h-full ">
-            3-4th 🥉
-          </td>
-        </tr>
-      </thead>
-      <tbody>
-        {Top10.map((item, index) => {
-          return (
-            <tr
-              key={index}
-              className="text-black w-full bg-white font-semibold h-12 flex flex-row border-y-[0.5px]"
-            >
-              <td className="flex items-center justify-center w-[10%] h-full ">
-                {index + 1}
-              </td>
-              <td className="flex items-center justify-start w-[20%] h-full ">
-                <NameAndColor name={item.name} color={item.color} />
-              </td>
-              <td className="flex items-center justify-start w-[20%] h-full ">
-                {groupColor[item.color]}
-              </td>
-              <td className="flex flex-row space-x-2 items-center justify-end pr-10 sm:pr-20 w-[30%] h-full ">
-                {10}
-              </td>
-              <td className="flex flex-row space-x-2 items-center justify-end pr-10 sm:pr-20 w-[30%] h-full ">
-                {0}
-              </td>
-              <td className="flex flex-row space-x-2 items-center justify-end pr-10 sm:pr-20 w-[30%] h-full ">
-                {0}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <>
+      <p className="text-sm text-neutral-500">Update : {lastUpdate}</p>
+      <table className="rounded-lg w-[90vw] sm:w-[600px] overflow-hidden text-[0.8rem] sm:text-[1rem] h-auto">
+        <thead className="bg-[#4E0F15] font-semibold h-12 flex flex-row">
+          <tr className="w-full flex flex-row">
+            <td className="flex items-center justify-center w-[15%] h-full">
+              ลำดับ
+            </td>
+            <td className="flex items-center justify-start w-[20%] h-full ">
+              สี
+            </td>
+            <td className="flex items-center justify-start w-[20%] h-full ">
+              กรุ๊ป
+            </td>
+            <td className="flex flex-row space-x-2 items-center justify-center w-[15%] h-full max-sm:text-[0.7rem]">
+              1st 🏆
+            </td>
+            <td className="flex flex-row space-x-2 items-center justify-center w-[15%] h-full  max-sm:text-[0.7rem]">
+              2nd 🥈
+            </td>
+            <td className="flex flex-row space-x-2 items-center justify-center w-[15%] h-full max-sm:text-[0.7rem]">
+              3-4th 🥉
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          {data?.map((item, index) => {
+            return (
+              <tr
+                key={index}
+                className="text-black w-full bg-white font-semibold h-16 flex flex-row border-y-[0.5px]"
+              >
+                <td className="flex items-center justify-center w-[15%] h-full ">
+                  {index + 1}
+                </td>
+                <td className="flex items-center justify-start w-[20%] h-full ">
+                  <MatchColorLogo color={item.id} />
+                </td>
+                <td className="flex items-center justify-start w-[20%] h-full ">
+                  {groupColor[item.id]}
+                </td>
+                <td className="flex flex-row space-x-2 items-center justify-center w-[15%] h-full ">
+                  {item.won}
+                </td>
+                <td className="flex flex-row space-x-2 items-center justify-center w-[15%] h-full ">
+                  {item.drawn}
+                </td>
+                <td className="flex flex-row space-x-2 items-center justify-center w-[15%] h-full ">
+                  {item.lost}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </>
   );
 };
 
-const Top10 = [
-  { name: "เจ้าเข้ม", color: "pink" },
-  { name: "เจ้าก้อน", color: "blue" },
-  { name: "เจ้าต้าว", color: "green" },
-  { name: "เจ้าเธอ", color: "yellow" },
-  { name: "เจ้าฉัน", color: "orange" },
-  { name: "เจ้าเย่ะ", color: "violet" },
-  { name: "เจ้านีร", color: "pink" },
-  { name: "เจ้าแบงค์", color: "violet" },
-  { name: "เจ้าปัญ", color: "blue" },
-  { name: "เจ้าเจ้า", color: "yellow" },
-];
+interface leaderboardDataInterface {
+  id: string;
+  title: string;
+  won: number;
+  drawn: number;
+  lost: number;
+  total_matches: number;
+}
 
 const groupColor: { [key: string]: string } = {
   PINK: "[E,L,P]",
@@ -84,42 +110,4 @@ const groupColor: { [key: string]: string } = {
   BLUE: "[Dog,N,R]",
   VIOLET: "[A,C,F]",
   YELLOW: "[B,G,Q]",
-};
-const NameAndColor = (props: { name: string; color: string }) => {
-  if (props.color == "VIOLET")
-    return (
-      <p>
-        {props.name} <span className="text-team-violet">สีม่วง </span>
-      </p>
-    );
-  if (props.color == "BLUE")
-    return (
-      <p>
-        {props.name} <span className="text-team-blue">สีฟ้า</span>
-      </p>
-    );
-  if (props.color == "YELLOW")
-    return (
-      <p>
-        {props.name} <span className="text-team-yellow">สีเหลือง</span>
-      </p>
-    );
-  if (props.color == "GREEN")
-    return (
-      <p>
-        {props.name} <span className="text-team-green">สีเขียว</span>
-      </p>
-    );
-  if (props.color == "PINK")
-    return (
-      <p>
-        {props.name} <span className="text-team-pink">สีชมพู</span>
-      </p>
-    );
-  if (props.color == "ORANGE")
-    return (
-      <p>
-        {props.name} <span className="text-team-orange">สีส้ม</span>
-      </p>
-    );
 };
