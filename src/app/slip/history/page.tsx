@@ -29,7 +29,7 @@ export default function Home() {
         <Navbar pagenow="slip" />
       </div>
       <div className="flex items-center justify-center flex-col space-y-4">
-        <p className="text-sm max-w-[70%] text-center sm:hidden">
+        <p className="text-sm max-w-[70%] text-center sm:hidden text-white">
           ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
           แชร์กันเยอะๆ
         </p>
