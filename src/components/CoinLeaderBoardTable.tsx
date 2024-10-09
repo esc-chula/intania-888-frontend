@@ -142,7 +142,7 @@ const NameAndColor = (props: { name: string; color: string }) => {
   if (props.color == "YELLOW")
     return (
       <p>
-        {props.name} <span className="text-team-yellow">สีเหลือง</span>
+        {props.name} <span className="text-amber-500">สีเหลือง</span>
       </p>
     );
   if (props.color == "GREEN")
@@ -160,7 +160,7 @@ const NameAndColor = (props: { name: string; color: string }) => {
   if (props.color == "ORANGE")
     return (
       <p>
-        {props.name} <span className="text-team-orange">สีส้ม</span>
+        {props.name} <span className="text-orange-600">สีส้ม</span>
       </p>
     );
   if (props.color == "NONE")
