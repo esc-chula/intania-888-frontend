@@ -11,6 +11,9 @@ dependencies:
   esc-ui:
     specifier: ^0.0.6
     version: 0.0.6(@types/react-dom@18.3.0)(@types/react@18.3.11)
+  framer-motion:
+    specifier: ^11.11.7
+    version: 11.11.7(react-dom@18.3.1)(react@18.3.1)
   lucide-react:
     specifier: ^0.447.0
     version: 0.447.0(react@18.3.1)
@@ -2394,6 +2397,25 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
+    dev: false
+
+  /framer-motion@11.11.7(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-89CgILOXPeG3L7ymOTGrLmf8IiKubYLUN/QkYgQuLvehAHfqgwJbLfCnhuyRI4WTds1TXkUp67A7IJrgRY/j1w==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tslib: 2.7.0
     dev: false
 
   /fs.realpath@1.0.0:
