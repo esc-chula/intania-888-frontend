@@ -14,6 +14,7 @@ export interface rawDataInterface {
   date: string;
   types: {
     matches: {
+      id: string;
       end_time: string;
       start_time: string;
       team_a: string;
@@ -28,6 +29,7 @@ export interface rawDataInterface {
 }
 
 export type RoundItem = {
+  match_id: string;
   time_start: Date;
   time_end: Date;
   colorA: string;
@@ -35,6 +37,7 @@ export type RoundItem = {
   rateA: number;
   scoreA: number;
   rateB: number;
+  type: string;
   scoreB: number;
   status: string;
 };
