@@ -9,7 +9,7 @@ import { getMySlipHistory } from "@/api/slip/slip";
 import SlipGroupResult from "@/components/slip/SlipGroupResult";
 
 export default function Home() {
-  const [history, setHistory] = useState<getMySlipHistoryDto[]>(null);
+  const [history, setHistory] = useState<getMySlipHistoryDto[]>([]);
 
   useEffect(() => {
     const getHistory = async () => {
