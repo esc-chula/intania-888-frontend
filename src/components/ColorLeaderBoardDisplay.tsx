@@ -33,18 +33,19 @@ export const LeaderBoardTableDisplay = (props: { sport: string }) => {
     );
   }, [props.sport]);
 
-  console.log(data);
+  const teamA = ["YELLOW", "BLUE", "VIOLET"];
+  const teamB = ["PINK", "ORANGE", "GREEN"];
 
   return (
     <>
       <p className="text-sm text-neutral-500">Update : {lastUpdate}</p>
-      {data != undefined && (
+      {data != undefined && data[0].total_matches >= 3 && (
         <LeaderBoardTable
           data={data}
           varience={props.sport === "" ? "123" : "WDL"}
         />
       )}
-      {data != undefined && (
+      {data != undefined && data[0].total_matches < 3 && (
         <LeaderBoardTable
           data={undefined}
           varience={props.sport === "" ? "123" : "WDL"}
@@ -59,13 +60,19 @@ export const LeaderBoardTableDisplay = (props: { sport: string }) => {
           <div className="w-[90vw] sm:w-[600px] flex flex-col items-start justify-start space-y-4">
             <p className="font-semibold">กลุ่ม A</p>
             {data != undefined && (
-              <LeaderBoardTable data={data.slice(0, 3)} varience="WDL" />
+              <LeaderBoardTable
+                data={data.filter((item) => teamA.includes(item.id))}
+                varience="WDL"
+              />
             )}
           </div>
           <div className="w-[90vw] sm:w-[600px] flex flex-col items-start justify-start space-y-4">
             <p className="font-semibold">กลุ่ม B</p>
             {data != undefined && (
-              <LeaderBoardTable data={data.slice(3, 7)} varience="WDL" />
+              <LeaderBoardTable
+                data={data.filter((item) => teamB.includes(item.id))}
+                varience="WDL"
+              />
             )}
           </div>
         </div>

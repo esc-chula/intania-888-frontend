@@ -17,8 +17,6 @@ export const CoinLeaderBoardTable = () => {
         return itemB.remaining_coin - itemA.remaining_coin;
       });
 
-      console.log(allUser);
-
       setMyNo({
         no: allUser.findIndex((item: { id: string }) => item.id === myData.id),
         nick_name: myData.nick_name,
