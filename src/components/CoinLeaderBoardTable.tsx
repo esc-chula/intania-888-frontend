@@ -21,8 +21,8 @@ export const CoinLeaderBoardTable = () => {
 
       setMyNo({
         no: allUser.findIndex((item: { id: string }) => item.id === myData.id),
-        name: myData.nick_name,
-        group: myData.group_id,
+        nick_name: myData.nick_name,
+        group_id: myData.group_id,
         remaining_coin: myData.remaining_coin,
       });
       setTop10(allUser.slice(0, 10));
@@ -58,11 +58,11 @@ export const CoinLeaderBoardTable = () => {
               </td>
               <td className="flex items-center justify-start w-[55%] h-full ">
                 <NameAndColor
-                  name={myNo?.name || ""}
+                  name={item?.nick_name || ""}
                   color={
-                    item?.group == undefined
+                    item?.group_id == undefined
                       ? "NONE"
-                      : groupAndColorMap[item?.group]
+                      : groupAndColorMap[item?.group_id]
                   }
                 />
               </td>
@@ -80,11 +80,11 @@ export const CoinLeaderBoardTable = () => {
           </td>
           <td className="flex items-center justify-start w-[55%] h-full ">
             <NameAndColor
-              name={myNo?.name || ""}
+              name={myNo?.nick_name || ""}
               color={
-                myNo?.group == undefined
+                myNo?.group_id == undefined
                   ? "NONE"
-                  : groupAndColorMap[myNo?.group]
+                  : groupAndColorMap[myNo?.group_id]
               }
             />
           </td>
@@ -99,8 +99,8 @@ export const CoinLeaderBoardTable = () => {
 
 interface topInterface {
   no: number;
-  name: string;
-  group: string;
+  nick_name: string;
+  group_id: string;
   remaining_coin: number;
 }
 
