@@ -3,11 +3,16 @@ import { useEffect, useState } from "react";
 import { LeaderBoardTable } from "./ColorLeaderBoardTable";
 import { leaderboardDataInterface } from "./ColorLeaderBoardUtils";
 
-export const LeaderBoardTableDisplay = (props: { sport: string }) => {
+export const LeaderBoardTableDisplay = (props: {
+  sport: string;
+  dateNow: Date;
+}) => {
   const [data, setData] = useState<leaderboardDataInterface[] | undefined>(
     undefined
   );
   const [lastUpdate, setLastUpdate] = useState("");
+
+  console.log(props.dateNow);
 
   useEffect(() => {
     const getData = async () => {
@@ -24,12 +29,10 @@ export const LeaderBoardTableDisplay = (props: { sport: string }) => {
 
     fetchData();
 
-    const time = new Date(Date.now());
-
     setLastUpdate(
-      `${time.getDate()}/${time.getMonth()}/${
-        time.getFullYear() + 543
-      } ${time.getHours()}:${time.getMinutes()}`
+      `${props.dateNow.getDate()}/${props.dateNow.getMonth()}/${
+        props.dateNow.getFullYear() + 543
+      } ${props.dateNow.getHours()}:${props.dateNow.getMinutes()}`
     );
   }, [props.sport]);
 

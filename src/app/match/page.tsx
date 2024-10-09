@@ -13,6 +13,7 @@ import {
 } from "@/components/match/MatchMapAndList";
 import { EmptyState } from "@/components/EmptyState";
 import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
+import { apiClient } from "@/api/axios";
 
 export default function Home() {
   // declare useState
@@ -24,6 +25,7 @@ export default function Home() {
   const [showMatch, setShowMatch] = useState<allMatchInterface[] | undefined>(
     undefined
   );
+  const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
 
   // handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -32,11 +34,19 @@ export default function Home() {
   };
 
   // get date when loaded page
-  const fetchMatchData = async () => {
-    const data = (await getMatch())?.data;
-    setAllMatch(data);
-  };
+
   useEffect(() => {
+    const fetchMatchData = async () => {
+      const data = (await getMatch())?.data;
+      setAllMatch(data);
+
+      setDateNow(
+        new Date(
+          (await apiClient.get("/matches/current/time")).data.currentTime
+        )
+      );
+    };
+
     fetchMatchData();
   }, []);
 
@@ -58,11 +68,9 @@ export default function Home() {
             .map((m) => {
               const filterd_r = m.round.filter((r) => {
                 if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
-                  return (
-                    r.time_end >= new Date(Date.now()) && m.sport === sport
-                  );
+                  return r.time_end >= dateNow && m.sport === sport;
                 } else {
-                  return r.time_end >= new Date(Date.now());
+                  return r.time_end >= dateNow;
                 }
               });
               return { ...m, round: filterd_r };
@@ -78,9 +86,9 @@ export default function Home() {
             .map((m) => {
               const filterd_r = m.round.filter((r) => {
                 if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
-                  return r.time_end < new Date(Date.now()) && m.sport === sport;
+                  return r.time_end < dateNow && m.sport === sport;
                 } else {
-                  return r.time_end < new Date(Date.now());
+                  return r.time_end < dateNow;
                 }
               });
               return { ...m, round: filterd_r };
@@ -122,6 +130,7 @@ export default function Home() {
             sport={
               filter == "รวมกีฬาทุกประเภท" || "" ? "" : selectorTextMap[filter]
             }
+            dateNow={dateNow}
           />
         ) : showMatch?.length ? (
           showMatch.map((match, index) => (
