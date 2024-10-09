@@ -5,7 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Selector } from "@/components/Selector";
 import { MatchMainFilter } from "@/components/match/MatchMainFilter";
 import { DisplayMatchs } from "@/components/match/DisplayMatchs";
-import { getMatch } from "@/api/match/getmatch";
+import { getMatch, getMatchSub } from "@/api/match/getmatch";
 import { allMatchInterface } from "@/components/match/MatchInterface";
 import {
   selectorTextMap,
@@ -14,6 +14,7 @@ import {
 import { EmptyState } from "@/components/EmptyState";
 import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
 import { apiClient } from "@/api/axios";
+import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
 
 export default function Home() {
   // declare useState
@@ -26,6 +27,12 @@ export default function Home() {
     undefined
   );
   const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
+  const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(
+    undefined
+  );
+  const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(
+    undefined
+  );
 
   // handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -52,6 +59,22 @@ export default function Home() {
 
   // filter data
   useEffect(() => {
+    const fetchMatchSub = async ({
+      type_id,
+      group_id,
+    }: {
+      type_id: string;
+      group_id: string;
+    }) => {
+      const res = await getMatchSub({ type_id, group_id });
+      if (group_id == "A") {
+        setTeamA(res?.data);
+      } else {
+        setTeamB(res?.data);
+      }
+      return res?.data;
+    };
+
     let show = allMatch;
 
     if (mainFilter === "overall") {
@@ -97,6 +120,15 @@ export default function Home() {
           return { ...match, matches: filterM };
         })
         .filter((match) => match.matches.length > 0);
+
+      fetchMatchSub({
+        type_id: selectorTextMap[filter],
+        group_id: "A",
+      });
+      fetchMatchSub({
+        type_id: selectorTextMap[filter],
+        group_id: "B",
+      });
     }
 
     setShowMatch(show);
@@ -134,6 +166,8 @@ export default function Home() {
                 : selectorTextMap[filter]
             }
             dateNow={dateNow}
+            teamA={teamA}
+            teamB={teamB}
           />
         ) : showMatch?.length ? (
           showMatch.map((match, index) => (

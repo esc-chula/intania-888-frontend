@@ -6,6 +6,8 @@ import { leaderboardDataInterface } from "./ColorLeaderBoardUtils";
 export const LeaderBoardTableDisplay = (props: {
   sport: string;
   dateNow: Date;
+  teamA: leaderboardDataInterface[] | undefined;
+  teamB: leaderboardDataInterface[] | undefined;
 }) => {
   const [data, setData] = useState<leaderboardDataInterface[] | undefined>(
     undefined
@@ -34,9 +36,6 @@ export const LeaderBoardTableDisplay = (props: {
     );
   }, [props.sport, props.dateNow]);
 
-  const teamA = ["YELLOW", "BLUE", "VIOLET"];
-  const teamB = ["PINK", "ORANGE", "GREEN"];
-
   return (
     <>
       <p className="text-sm text-neutral-500">Update : {lastUpdate}</p>
@@ -53,19 +52,13 @@ export const LeaderBoardTableDisplay = (props: {
           <div className="w-[90vw] sm:w-[600px] flex flex-col items-start justify-start space-y-4">
             <p className="font-semibold">กลุ่ม A</p>
             {data != undefined && (
-              <LeaderBoardTable
-                data={data.filter((item) => teamA.includes(item.id))}
-                varience="WDL"
-              />
+              <LeaderBoardTable data={props.teamA} varience="WDL" />
             )}
           </div>
           <div className="w-[90vw] sm:w-[600px] flex flex-col items-start justify-start space-y-4">
             <p className="font-semibold">กลุ่ม B</p>
             {data != undefined && (
-              <LeaderBoardTable
-                data={data.filter((item) => teamB.includes(item.id))}
-                varience="WDL"
-              />
+              <LeaderBoardTable data={props.teamA} varience="WDL" />
             )}
           </div>
         </div>
