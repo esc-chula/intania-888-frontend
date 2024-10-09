@@ -7,32 +7,31 @@ import Link from "next/link";
 import { useSlipStore } from "@/store/slip";
 import { createMySlip } from "@/api/slip/slip";
 import { Coins } from "lucide-react";
-import { useState, useEffect } from "react"; 
-import toast from 'react-hot-toast'; 
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);
   const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
-  const [betAmount, setBetAmount] = useState(""); 
+  const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    updateSlipRates(); 
-  
+    updateSlipRates();
   }, [updateSlipRates]);
 
   const handleConfirmBet = async () => {
-    const betAmountNum = parseFloat(betAmount); 
+    const betAmountNum = parseFloat(betAmount);
 
     if (slipItems.length === 0 || isNaN(betAmountNum) || betAmountNum <= 0) {
-      toast.error("กรุณาเลือกทีมและจำนวนเหรียญก่อนยืนยัน"); 
+      toast.error("กรุณาเลือกทีมและจำนวนเหรียญก่อนยืนยัน");
       return;
     }
 
     setIsLoading(true);
 
     const slipData = {
-      total: betAmountNum, 
+      total: betAmountNum,
       lines: slipItems.map((item) => ({
         match_id: item.match_id,
         rate: item.rate,
@@ -41,15 +40,15 @@ export default function Home() {
     };
 
     try {
-      const response = await createMySlip(slipData); 
+      const response = await createMySlip(slipData);
       if (response?.success) {
         toast.success("การเดิมพันสำเร็จ!");
         setBetAmount(""); // Reset the input to empty after successful submission
       } else {
-        toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน"); 
+        toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน");
       }
     } catch (error) {
-      toast.error("เกิดข้อผิดพลาดในการทำการเดิมพันหรือเงินไม่พอ"); 
+      toast.error("เกิดข้อผิดพลาดในการทำการเดิมพันหรือเงินไม่พอ");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -63,27 +62,46 @@ export default function Home() {
         <Navbar pagenow="slip" />
       </div>
       <div className="flex items-center justify-center flex-col space-y-4">
-        <p className="text-white text-center font-semibold text-xs">
-          ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา แชร์กันเยอะๆ
+        <p className="text-white text-center font-semibold max-sm:text-xs text-lg max-sm:block hidden">
+          ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
+          แชร์กันเยอะๆ
         </p>
         <div className="flex items-center justify-center space-x-2.5">
-          <Link href="/slip" className="text-sm text-white font-semibold rounded w-28 h-9 bg-neutral-700 flex items-center justify-center">
+          <Link
+            href="/slip"
+            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-700 flex items-center justify-center"
+          >
             สลิปปัจจุบัน
           </Link>
-          <Link href="/slip/history" className="text-sm text-white font-semibold rounded w-28 h-9 bg-neutral-800 flex items-center justify-center">
+          <Link
+            href="/slip/history"
+            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-800 flex items-center justify-center"
+          >
             ประวัติ
           </Link>
         </div>
         <div className="flex flex-col">
-          <p className="text-white font-semibold text-xs">
+          <p className="text-white font-semibold max-sm:text-xs text-lg">
             โปรดอ่านเงื่อนไขก่อนทายผล :
           </p>
-          <ul className="text-white text-xs space-y-1">
-            <li>1. เรทมีการเปลี่ยนแปลงตลอดเวลา โดยจะยึดตามตอนที่ผู้ใช้ทำการทาย</li>
-            <li>2. หากเลือกทายผลเพียง 1 คู่ จะเป็นการทายผล <span className="font-bold">แบบเดี่ยว</span> โดยอัตโนมัติ</li>
-            <li>3. หากเลือกทายผลมากกว่า 1 คู่ จะเป็นการทายผล <span className="font-bold">แบบชุด</span> โดยอัตโนมัติ</li>
-            <li className="pl-4">3.1 การทายผลแบบชุดจะได้เรทที่สูงกว่าการทายแบบเดี่ยว</li>
-            <li className="pl-4">3.2 การทายผลแบบชุดหากทายผิดแม้แต่ 1 คู่ จะถือว่าทายผิดทั้งหมด</li>
+          <ul className="text-white max-sm:text-xs text-lg space-y-1">
+            <li>
+              1. เรทมีการเปลี่ยนแปลงตลอดเวลา โดยจะยึดตามตอนที่ผู้ใช้ทำการทาย
+            </li>
+            <li>
+              2. หากเลือกทายผลเพียง 1 คู่ จะเป็นการทายผล{" "}
+              <span className="font-bold">แบบเดี่ยว</span> โดยอัตโนมัติ
+            </li>
+            <li>
+              3. หากเลือกทายผลมากกว่า 1 คู่ จะเป็นการทายผล{" "}
+              <span className="font-bold">แบบชุด</span> โดยอัตโนมัติ
+            </li>
+            <li className="pl-4">
+              3.1 การทายผลแบบชุดจะได้เรทที่สูงกว่าการทายแบบเดี่ยว
+            </li>
+            <li className="pl-4">
+              3.2 การทายผลแบบชุดหากทายผิดแม้แต่ 1 คู่ จะถือว่าทายผิดทั้งหมด
+            </li>
           </ul>
         </div>
       </div>
@@ -108,7 +126,12 @@ export default function Home() {
         </section>
         <section className="flex items-center flex-col w-full">
           <section className="w-full bg-neutral-300 font-semibold text-sm h-10 flex items-center pl-3">
-            <p className="text-black">รูปแบบการทาย: <span className="text-indigo-700">{slipItems.length > 1 ? 'แบบชุด' : 'แบบเดี่ยว'}</span></p>
+            <p className="text-black">
+              รูปแบบการทาย:{" "}
+              <span className="text-indigo-700">
+                {slipItems.length > 1 ? "แบบชุด" : "แบบเดี่ยว"}
+              </span>
+            </p>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
             <p className="text-black">จำนวนเหรียญที่ใช้เดินพัน</p>
