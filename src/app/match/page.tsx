@@ -125,10 +125,13 @@ export default function Home() {
           filter={filter}
           setFilter={setFilter}
         />
+
         {mainFilter === "overall" ? (
           <LeaderBoardTableDisplay
             sport={
-              filter == "รวมกีฬาทุกประเภท" || "" ? "" : selectorTextMap[filter]
+              filter == "รวมกีฬาทุกประเภท" || filter == ""
+                ? ""
+                : selectorTextMap[filter]
             }
             dateNow={dateNow}
           />

@@ -12,8 +12,6 @@ export const LeaderBoardTableDisplay = (props: {
   );
   const [lastUpdate, setLastUpdate] = useState("");
 
-  console.log(props.dateNow);
-
   useEffect(() => {
     const getData = async () => {
       const res = await getColorLeaderboard({
@@ -34,7 +32,7 @@ export const LeaderBoardTableDisplay = (props: {
         props.dateNow.getFullYear() + 543
       } ${props.dateNow.getHours()}:${props.dateNow.getMinutes()}`
     );
-  }, [props.sport]);
+  }, [props.sport, props.dateNow]);
 
   const teamA = ["YELLOW", "BLUE", "VIOLET"];
   const teamB = ["PINK", "ORANGE", "GREEN"];
@@ -42,18 +40,10 @@ export const LeaderBoardTableDisplay = (props: {
   return (
     <>
       <p className="text-sm text-neutral-500">Update : {lastUpdate}</p>
-      {data != undefined && data[0].total_matches >= 3 && (
-        <LeaderBoardTable
-          data={data}
-          varience={props.sport === "" ? "123" : "WDL"}
-        />
-      )}
-      {data != undefined && data[0].total_matches < 3 && (
-        <LeaderBoardTable
-          data={undefined}
-          varience={props.sport === "" ? "123" : "WDL"}
-        />
-      )}
+      <LeaderBoardTable
+        data={undefined}
+        varience={props.sport === "" ? "123" : "WDL"}
+      />
 
       {props.sport != "" && (
         <div className="w-full flex flex-col space-y-8 items-center justify-center py-4">
