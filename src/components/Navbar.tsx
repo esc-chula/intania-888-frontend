@@ -1,7 +1,7 @@
 "use client";
 
 import { apiClient } from "@/api/axios";
-import { getUserCoins } from "@/api/coin/getmatch";
+import { getUserCoins } from "@/api/coin/getCoin";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useEffect, useState } from "react";
 export const Navbar = (props: { pagenow: string }) => {

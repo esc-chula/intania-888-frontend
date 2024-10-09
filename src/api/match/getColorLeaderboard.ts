@@ -14,7 +14,6 @@ const getColorLeaderboard = async (props: {type_id : string}) => {
         
         if (response.status == 200) {
             const data = response.data;
-            console.log(data);
             
             return { success: true, data :  data }
         } else {

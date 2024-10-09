@@ -17,7 +17,7 @@ export const getUserCoins = async (userId: string) => {
 
 export const getAllUser = async () => {
     try {
-        const response: AxiosResponse = await apiClient.patch(`/users`)
+        const response: AxiosResponse = await apiClient.get(`/users`)
 
         if (response.status == 200) {
             return { success: true, data: response.data }

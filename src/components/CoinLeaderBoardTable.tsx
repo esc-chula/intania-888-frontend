@@ -1,7 +1,36 @@
-import { randomInt } from "crypto";
+"use client";
+
+import { apiClient } from "@/api/axios";
+import { getAllUser } from "@/api/coin/getCoin";
 import { Coins } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const CoinLeaderBoardTable = () => {
+  const [Top10, setTop10] = useState<topInterface[] | undefined>(undefined);
+  const [myNo, setMyNo] = useState<topInterface | undefined>(undefined);
+  useEffect(() => {
+    const fetchData = async () => {
+      const myData = (await apiClient.get("/auth/me")).data.profile;
+      let allUser = (await getAllUser())?.data;
+
+      allUser = allUser.sort((itemA: topInterface, itemB: topInterface) => {
+        return itemB.remaining_coin - itemA.remaining_coin;
+      });
+
+      console.log(allUser);
+
+      setMyNo({
+        no: allUser.findIndex((item: { id: string }) => item.id === myData.id),
+        name: myData.nick_name,
+        group: myData.group_id,
+        remaining_coin: myData.remaining_coin,
+      });
+      setTop10(allUser.slice(0, 10));
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <table className="rounded-lg w-[90vw] sm:w-[600px] overflow-hidden text-[0.8rem] sm:text-[1rem] h-auto">
       <thead className="bg-[#4E0F15] font-semibold h-12 flex flex-row">
@@ -18,7 +47,7 @@ export const CoinLeaderBoardTable = () => {
         </tr>
       </thead>
       <tbody>
-        {Top10.map((item, index) => {
+        {Top10?.map((item, index) => {
           return (
             <tr
               key={index}
@@ -28,12 +57,17 @@ export const CoinLeaderBoardTable = () => {
                 {index + 1}
               </td>
               <td className="flex items-center justify-start w-[55%] h-full ">
-                <NameAndColor name={item.name} color={item.color} />
+                <NameAndColor
+                  name={myNo?.name || ""}
+                  color={
+                    item?.group == undefined
+                      ? "NONE"
+                      : groupAndColorMap[item?.group]
+                  }
+                />
               </td>
               <td className="flex flex-row space-x-2 items-center justify-end pr-10 sm:pr-20 w-[30%] h-full ">
-                <p>
-                  {index * 15000 + randomInt(1000)}.{randomInt(100)}
-                </p>
+                <p>{item.remaining_coin.toFixed(2)}</p>
               </td>
             </tr>
           );
@@ -42,13 +76,20 @@ export const CoinLeaderBoardTable = () => {
       <tfoot className="font-semibold bg-neutral-200 text-black h-12 flex flex-row">
         <tr className="w-full flex flex-row">
           <td className="flex items-center justify-center w-[15%] h-full ">
-            157
+            {(myNo?.no || 0) + 1}
           </td>
           <td className="flex items-center justify-start w-[55%] h-full ">
-            <NameAndColor name="เจ้าหมู" color="pink" />
+            <NameAndColor
+              name={myNo?.name || ""}
+              color={
+                myNo?.group == undefined
+                  ? "NONE"
+                  : groupAndColorMap[myNo?.group]
+              }
+            />
           </td>
           <td className="flex flex-row space-x-2 items-center justify-end pr-10 sm:pr-20 w-[30%] h-full ">
-            15000.00
+            {myNo?.remaining_coin.toFixed(2)}
           </td>
         </tr>
       </tfoot>
@@ -56,54 +97,76 @@ export const CoinLeaderBoardTable = () => {
   );
 };
 
-const Top10 = [
-  { name: "เจ้าเข้ม", color: "pink" },
-  { name: "เจ้าก้อน", color: "blue" },
-  { name: "เจ้าต้าว", color: "green" },
-  { name: "เจ้าเธอ", color: "yellow" },
-  { name: "เจ้าฉัน", color: "orange" },
-  { name: "เจ้าเย่ะ", color: "violet" },
-  { name: "เจ้านีร", color: "pink" },
-  { name: "เจ้าแบงค์", color: "violet" },
-  { name: "เจ้าปัญ", color: "blue" },
-  { name: "เจ้าเจ้า", color: "yellow" },
-];
+interface topInterface {
+  no: number;
+  name: string;
+  group: string;
+  remaining_coin: number;
+}
+
+const groupAndColorMap: { [key: string]: string } = {
+  A: "VIOLET",
+  B: "YELLOW",
+  C: "VIOLET",
+  Dog: "BLUE",
+  E: "PINK",
+  F: "VIOLET",
+  G: "YELLOW",
+  H: "GREEN",
+  I: "VIOLET",
+  J: "ORANGE",
+  K: "ORANGE",
+  L: "PINK",
+  M: "ORANGE",
+  N: "BLUE",
+  P: "PINK",
+  Q: "YELLOW",
+  R: "BLUE",
+  S: "GREEN",
+  T: "GREEN",
+};
 
 const NameAndColor = (props: { name: string; color: string }) => {
-  if (props.color == "violet")
+  if (props.color == "VIOLET")
     return (
       <p>
         {props.name} <span className="text-team-violet">สีม่วง </span>
       </p>
     );
-  if (props.color == "blue")
+  if (props.color == "BLUE")
     return (
       <p>
         {props.name} <span className="text-team-blue">สีฟ้า</span>
       </p>
     );
-  if (props.color == "yellow")
+  if (props.color == "YELLOW")
     return (
       <p>
         {props.name} <span className="text-team-yellow">สีเหลือง</span>
       </p>
     );
-  if (props.color == "green")
+  if (props.color == "GREEN")
     return (
       <p>
         {props.name} <span className="text-team-green">สีเขียว</span>
       </p>
     );
-  if (props.color == "pink")
+  if (props.color == "PINK")
     return (
       <p>
         {props.name} <span className="text-team-pink">สีชมพู</span>
       </p>
     );
-  if (props.color == "orange")
+  if (props.color == "ORANGE")
     return (
       <p>
         {props.name} <span className="text-team-orange">สีส้ม</span>
+      </p>
+    );
+  if (props.color == "NONE")
+    return (
+      <p>
+        {props.name} <span className="text-gray-700">สี...</span>
       </p>
     );
 };
