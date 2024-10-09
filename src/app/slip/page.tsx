@@ -1,30 +1,60 @@
+"use client";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
 import { Intania888Logo } from "../../../public/logos/Intania888-logo";
 import SlipElement from "@/components/slip/SlipElement";
 import Link from "next/link";
-
+import { useSlipStore } from "@/store/slip";
+import { createMySlip } from "@/api/slip/slip";
 import { Coins } from "lucide-react";
+import { useState, useEffect } from "react"; 
+import toast from 'react-hot-toast'; 
 
 export default function Home() {
-  const coins = 500.00;
+  const slipItems = useSlipStore((state) => state.slipItems);
+  const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
+  const [betAmount, setBetAmount] = useState(""); 
+  const [isLoading, setIsLoading] = useState(false);
 
-  const slipElements = [
-    {
-      date: "วันจันทร์ที่ 28 ตุลาคม 2567",
-      sportType: "ฟุตบอลชาย ปี 1",
-      teamAColor: "PINK",
-      teamBColor: "YELLOW",
-      currentRate: 2.00,
-    },
-    {
-      date: "วันจันทร์ที่ 28 ตุลาคม 2567",
-      sportType: "ฟุตบอลชาย ปี 1",
-      teamAColor: "PINK",
-      teamBColor: "YELLOW",
-      currentRate: 2.00,
-    },
-  ];
+  useEffect(() => {
+    updateSlipRates(); 
+  
+  }, [updateSlipRates]);
+
+  const handleConfirmBet = async () => {
+    const betAmountNum = parseFloat(betAmount); 
+
+    if (slipItems.length === 0 || isNaN(betAmountNum) || betAmountNum <= 0) {
+      toast.error("กรุณาเลือกทีมและจำนวนเหรียญก่อนยืนยัน"); 
+      return;
+    }
+
+    setIsLoading(true);
+
+    const slipData = {
+      total: betAmountNum, 
+      lines: slipItems.map((item) => ({
+        match_id: item.match_id,
+        rate: item.rate,
+        betting_on: item.betting_on,
+      })),
+    };
+
+    try {
+      const response = await createMySlip(slipData); 
+      if (response?.success) {
+        toast.success("การเดิมพันสำเร็จ!");
+        setBetAmount(""); // Reset the input to empty after successful submission
+      } else {
+        toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน"); 
+      }
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาดในการทำการเดิมพันหรือเงินไม่พอ"); 
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen">
@@ -64,37 +94,50 @@ export default function Home() {
           </div>
         </section>
         <section className="w-full flex items-center justify-center flex-col">
-          {slipElements.map((element, idx) => (
+          {slipItems.map((element, idx) => (
             <SlipElement
               key={idx}
+              matchId={element.match_id}
               date={element.date}
-              sportType={element.sportType}
-              teamAColor={element.teamAColor}
-              teamBColor={element.teamBColor}
-              currentRate={element.currentRate}
+              sportType={element.sport_type}
+              teamAColor={element.team_a_color}
+              teamBColor={element.team_b_color}
+              currentRate={element.rate}
             />
           ))}
         </section>
         <section className="flex items-center flex-col w-full">
           <section className="w-full bg-neutral-300 font-semibold text-sm h-10 flex items-center pl-3">
-            <p className="text-black">รูปแบบการทาย: <span className="text-indigo-700">แบบเดี่ยว</span></p>
+            <p className="text-black">รูปแบบการทาย: <span className="text-indigo-700">{slipItems.length > 1 ? 'แบบชุด' : 'แบบเดี่ยว'}</span></p>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
             <p className="text-black">จำนวนเหรียญที่ใช้เดินพัน</p>
             <div className="flex items-center space-x-1">
-              <input type="text" className="text-black text-right h-7 p-2 border border-gray-300 rounded-lg w-24"></input>
+              <input
+                type="number"
+                className="text-black text-right h-7 p-2 border border-gray-300 rounded-lg w-24"
+                value={betAmount}
+                onChange={(e) => setBetAmount(e.target.value)} // Handle input as string
+              />
               <Coins color="black" />
             </div>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
             <p className="text-black">เหรียญที่พึ่งพาได้</p>
             <div className="flex items-center space-x-1">
-              <p className="text-black font-semibold">{coins}</p>
+              <p className="text-black font-semibold">500</p>
               <Coins color="black" />
             </div>
           </section>
+
           <section className="w-full h-10 flex items-center justify-center p-4 rounded-b-lg bg-green-800">
-            <button className="text-white font-semibold">ยืนยันการทาย</button>
+            <button
+              className="text-white font-semibold"
+              onClick={handleConfirmBet}
+              disabled={isLoading}
+            >
+              {isLoading ? "กำลังยืนยัน..." : "ยืนยันการทาย"}
+            </button>
           </section>
         </section>
       </main>

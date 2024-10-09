@@ -5,10 +5,14 @@ import { getMySlipHistoryDto } from "./slip.dto";
 
 const createMySlip = async (slip: createMySlipDto) => {
     try {
-        const response: AxiosResponse = await apiClient.post(`/bills`, { slip })
-
-        if (response.status == 200) {
-            return { success: true }
+        const response: AxiosResponse = await apiClient.post(`/bills`, {
+            total: slip.total,
+            lines: slip.lines,
+        })
+        if (response.status == 201) {
+            return {
+                success: true,
+            }
         } else {
             return { success: false }
         }
