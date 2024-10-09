@@ -28,7 +28,7 @@ export const Header = () => {
         </a>
         <a
           target="_blank"
-          href="https://www.instagram.com/intania.games/"
+          href="https://line.me/ti/g2/1Iwp7nqg7rOrOde8vIRIjPHM69AZVAqQBbkZwg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
           className="bg-[#00C300] items-center justify-start w-44 sm:w-64 px-2 sm:px-4 font-semibold rounded-lg flex flex-row space-x-2 sm:space-x-5 py-1"
         >
           <Image
