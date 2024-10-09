@@ -1,5 +1,5 @@
 "use client";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { getMySlipHistoryDto } from "@/api/slip/slip.dto";
 import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
@@ -17,7 +17,7 @@ export default function Home() {
       if (response?.success) {
         setHistory(response.data);
       }
-    }
+    };
 
     getHistory();
   }, [history]);
@@ -29,24 +29,33 @@ export default function Home() {
         <Navbar pagenow="slip" />
       </div>
       <div className="flex items-center justify-center flex-col space-y-4">
-      <p className="text-white text-center font-semibold text-xs">
-          ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา แชร์กันเยอะๆ
+        <p className="text-sm max-w-[70%] text-center sm:hidden text-white">
+          ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
+          แชร์กันเยอะๆ
         </p>
         <div className="flex items-center justify-center space-x-2.5">
-          <Link href="/slip" className="text-sm text-white font-semibold rounded w-28 h-9 bg-neutral-800 flex items-center justify-center">
+          <Link
+            href="/slip"
+            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-800 flex items-center justify-center"
+          >
             สลิปปัจจุบัน
           </Link>
-          <Link href="/slip/history" className="text-sm text-white font-semibold rounded w-28 h-9 bg-neutral-700 flex items-center justify-center">
+          <Link
+            href="/slip/history"
+            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-700 flex items-center justify-center"
+          >
             ประวัติ
           </Link>
         </div>
         {history ? (
           history?.map((bill, index) => (
-            <div key={index}><SlipGroupResult
-              slipId={bill.id}
-              netProfit={bill.total}
-              slipResult={bill.lines}
-            /></div>
+            <div key={index}>
+              <SlipGroupResult
+                slipId={bill.id}
+                netProfit={bill.total}
+                slipResult={bill.lines}
+              />
+            </div>
           ))
         ) : (
           <EmptyState
