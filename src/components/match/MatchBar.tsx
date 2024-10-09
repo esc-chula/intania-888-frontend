@@ -11,6 +11,7 @@ export const Matchbar = (props: {
     scoreA = 50;
     scoreB = 50;
   }
+
   return (
     <div className="flex flex-col space-y-0  text-[0.55rem] sm:text-[0.8rem] sm:px-4">
       <div className="flex flex-row justify-between items-center">

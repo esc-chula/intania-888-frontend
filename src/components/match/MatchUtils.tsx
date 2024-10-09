@@ -37,8 +37,10 @@ export const cleanData = (props: {
         const endTime = new Date(item.end_time);
         endTime.setHours(endTime.getHours() - 7);
         round.push({
+          match_id: item.id,
           time_start: strTime,
           time_end: endTime,
+          type: item.type,
           colorA: item.team_a,
           colorB: item.team_b,
           rateA: item.team_a_rate === null ? 0 : Number(item.team_a_rate),
@@ -78,7 +80,8 @@ export const formatTime = (date: Date) => {
   const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 };
-function formatThaiDate(dateString: string): string {
+
+export function formatThaiDate(dateString: string): string {
   const daysOfWeek = [
     "อาทิตย์",
     "จันทร์",
