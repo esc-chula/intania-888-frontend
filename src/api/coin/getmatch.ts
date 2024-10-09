@@ -1,22 +1,31 @@
 import { AxiosResponse } from "axios";
 import { apiClient } from "../axios";
-import { cleanData } from "@/components/match/MatchUtils";
 
-
-const getMatch = async () => {
+export const getUserCoins = async (userId: string) => {
     try {
-        const response: AxiosResponse = await apiClient.get("/matches")
+        const response: AxiosResponse = await apiClient.get(`/users/${userId}`)
         
         if (response.status == 200) {
-            const cleanedData = cleanData({ rawData: response.data });
-            return { success: true, data :  cleanedData }
+            return { success: true , data : response.data.remaining_coin}
         } else {
             return { success: false }
         }
-        
     } catch (error) {
         console.error(error)
     }
 }
 
-export { getMatch }
+export const getAllUser = async () => {
+    try {
+        const response: AxiosResponse = await apiClient.patch(`/users`)
+
+        if (response.status == 200) {
+            return { success: true, data: response.data }
+        } else {
+            return { success: false }
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+

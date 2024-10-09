@@ -1,5 +1,23 @@
+"use client";
+
+import { apiClient } from "@/api/axios";
+import { getUserCoins } from "@/api/coin/getmatch";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
+import { useEffect, useState } from "react";
 export const Navbar = (props: { pagenow: string }) => {
+  const [coinPoint, setCoinPoint] = useState<number | string>("XXX");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const myId = (await apiClient.get("/auth/me")).data;
+
+      const res = await getUserCoins(myId.profile.id);
+      setCoinPoint(res?.data);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="w-full h-[55px] bg-neutral-900 flex flex-row items-center m-0 text-white select-none cursor-pointer overflow-hidden max-sm:text-[0.8rem]">
       <a
@@ -50,7 +68,7 @@ export const Navbar = (props: { pagenow: string }) => {
         className="w-1/4 h-full items-center justify-center group relative"
       >
         <div className="flex flex-row space-x-2 h-full items-center justify-center">
-          <p>100,000</p>
+          <p>{coinPoint}</p>
           <Coins color="yellow" />
         </div>
         {props.pagenow == "coins" ? (
