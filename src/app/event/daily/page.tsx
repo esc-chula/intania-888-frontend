@@ -50,7 +50,7 @@ export default function Home() {
           <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
             <p className="text-sm sm:text-lg">📌 ล้อกอินประจำวัน</p>
 
-            <EventButton Sstate={1} />
+            <EventButton Sstate={1} type={"daily"} />
           </div>
         </div>
 
@@ -66,12 +66,12 @@ export default function Home() {
           </div>
           <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
             <p className="text-sm sm:text-lg">📌 Instagram @intania.games</p>
-            <EventButton Sstate={0} />
+            <EventButton Sstate={0} type={"follow"} />
           </div>
 
           <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
             <p className="text-sm sm:text-lg">📌 Line Openchat Intania Games</p>
-            <EventButton Sstate={0} />
+            <EventButton Sstate={0} type={"follow"} />
           </div>
         </div>
       </div>

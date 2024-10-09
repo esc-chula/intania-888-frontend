@@ -19,7 +19,7 @@ const getMatch = async () => {
     }
 }
 
-export const getMatchSub = async ({type_id, group_id}:{type_id:string, group_id:string}) :leaderboardDataInterface[]=> {
+export const getMatchSub = async ({type_id, group_id}:{type_id:string, group_id:string}) => {
     try {
         const response: AxiosResponse = await apiClient.get("/colors/group-stage", {
             params : {

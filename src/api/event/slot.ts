@@ -15,3 +15,18 @@ const getSlot = async (amount: number) => {
         console.error(error)
     }
 }
+
+export const loginDaily = async () => {
+    try {
+        const response: AxiosResponse = await apiClient.get("/events/redeem/daily");
+        
+        if (response.status == 200) {
+            return { success: true}
+        } else {
+            return { success: false }
+        }
+        
+    } catch (error) {
+        console.error(error)
+    }
+}
