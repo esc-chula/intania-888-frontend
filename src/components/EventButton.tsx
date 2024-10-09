@@ -5,9 +5,11 @@ import toast from "react-hot-toast";
 export const EventButton = ({
   Sstate,
   type,
+  link,
 }: {
   Sstate: number;
   type: string;
+  link: string;
 }) => {
   const [state, setState] = useState(Sstate);
   const handleAddState = () => {
@@ -24,14 +26,17 @@ export const EventButton = ({
   };
   if (state === 0) {
     return (
-      <div
+      <a
+        target="_blank"
+        href={link}
         onClick={() => {
+          localStorage.setItem(type, JSON.stringify(true));
           handleAddState();
         }}
         className="flex items-center justify-center cursor-pointer text-sm sm:text-lg w-20 h-9 sm:h-12 sm:w-28 bg-[#4E0F15] text-white rounded-lg"
       >
         ติดตาม
-      </div>
+      </a>
     );
   } else if (state === 1) {
     if (type === "daily") {
@@ -51,6 +56,7 @@ export const EventButton = ({
         <div
           onClick={() => {
             handleAddState();
+            toast.success("รับเหรียญสำเร็จ");
           }}
           className="flex items-center justify-center cursor-pointer text-sm sm:text-lg w-20 h-9 sm:h-12 sm:w-28 bg-gradient-to-t from-base-gold hover:from-[#bc9636] to-white rounded-lg"
         >
