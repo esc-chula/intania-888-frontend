@@ -28,10 +28,8 @@ const UpdateWinner = () => {
   const handleUpdateWinner = async () => {
     try {
       if (winner === "draw") {
-        // Call the API for marking the match as a draw
         await apiClient.patch(`/matches/${matchId}/draw`);
       } else {
-        // Call the API for updating the winner
         await apiClient.patch(`/matches/${matchId}/winner/${winner}`);
       }
       alert("Match result updated successfully!");
@@ -54,7 +52,7 @@ const UpdateWinner = () => {
           <option value="">Select Result</option>
           <option value={teamAName}>{teamAName}</option>
           <option value={teamBName}>{teamBName}</option>
-          <option value="draw">Draw</option> {/* Add Draw option */}
+          <option value="draw">Draw</option> 
         </select>
         <button
           className="px-4 py-2 bg-green-500 text-white"

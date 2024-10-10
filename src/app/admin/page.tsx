@@ -37,7 +37,6 @@ const AdminBackoffice = () => {
     const fetchMatches = async () => {
       try {
         const res = await apiClient.get("/matches");
-        console.log(res);
         setMatchesData(res.data);
       } catch (error) {
         console.error("Error fetching matches:", error);

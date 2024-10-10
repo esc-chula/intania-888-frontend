@@ -20,7 +20,7 @@ export default function Home() {
     };
 
     getHistory();
-  }, [history]);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen">
