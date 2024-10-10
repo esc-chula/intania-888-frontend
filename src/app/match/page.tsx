@@ -132,7 +132,7 @@ export default function Home() {
     }
 
     setShowMatch(show);
-  }, [mainFilter, filter, allMatch]);
+  }, [mainFilter, filter, allMatch, dateNow]);
 
   // JSX element
   return (

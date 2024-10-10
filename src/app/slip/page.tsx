@@ -10,7 +10,6 @@ import { Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useCoinStore } from "@/store/coin";
-import { apiClient } from "@/api/axios";
 
 export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);

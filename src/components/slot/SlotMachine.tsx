@@ -14,8 +14,12 @@ const SlotMachine = () => {
     const reelLength = 100;
     const symbols = ['🍉', '🍋', '🍇', '🍒', '⭐', '🔔'];
 
+    const [reels, setReels] = useState<string[][]>([[], [], []]); 
+    const [spinning, setSpinning] = useState([false, false, false]);
+    const [betAmount, setBetAmount] = useState(50);
+
     const generateReelSymbols = () => {
-        let reel = [];
+        const reel = [];
         for (let i = 0; i < reelLength; i++) {
             const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
             reel.push(randomSymbol);
@@ -23,12 +27,10 @@ const SlotMachine = () => {
         return reel;
     };
 
-    const [reels, setReels] = useState<string[][]>([[], [], []]); 
-    const [spinning, setSpinning] = useState([false, false, false]);
-    const [betAmount, setBetAmount] = useState(50);
-
     useEffect(() => {
-        setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
+        if (generateReelSymbols) {
+            setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
+        }
     }, []);
 
     const spin = async () => {

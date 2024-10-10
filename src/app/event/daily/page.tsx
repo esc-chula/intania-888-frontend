@@ -67,7 +67,7 @@ export default function Home() {
           <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
             <p className="text-sm sm:text-lg">📌 Instagram @intania.games</p>
             <EventButton
-              Sstate={localStorage.getItem("followIG") === "true" ? 2 : 0}
+              Sstate={typeof window !== 'undefined' && window?.localStorage.getItem("followIG") === "true" ? 2 : 0}
               type={"followIG"}
               link={"https://www.instagram.com/intania.games/"}
               amount={500}
@@ -77,7 +77,7 @@ export default function Home() {
           <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
             <p className="text-sm sm:text-lg">📌 Line Openchat Intania Games</p>
             <EventButton
-              Sstate={localStorage.getItem("followLine") === "true" ? 2 : 0}
+              Sstate={typeof window !== 'undefined' && window?.localStorage.getItem("followLine") === "true" ? 2 : 0}
               type={"followLine"}
               link={
                 "https://line.me/ti/g2/1Iwp7nqg7rOrOde8vIRIjPHM69AZVAqQBbkZwg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"

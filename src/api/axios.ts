@@ -1,7 +1,6 @@
 "use client";
 import axios from 'axios';
 import { getAccessToken, refreshToken } from '@/utils/token';
-import { useRouter } from 'next/navigation';
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,

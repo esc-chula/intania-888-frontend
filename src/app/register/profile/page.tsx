@@ -60,7 +60,7 @@ const RegisterProfile = () => {
       <section className="flex flex-col items-center justify-center space-y-1.5 font-semibold">
         <Link
           className="flex justify-center items-center bg-gradient-to-t from-[#4E0F15] to-[#68141C] w-64 h-11 rounded-md"
-          href="/match"
+          href="/"
           onClick={onClickUpdateProfile}
         >
           เริ่มต้นใช้งาน

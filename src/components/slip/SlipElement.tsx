@@ -36,8 +36,10 @@ const SlipElement: React.FC<SlipElementProps> = ({
   };
 
   useEffect(() => {
-    handleUpdateBettingOn();
-  }, [selectedTeam]);
+    if (handleUpdateBettingOn) {
+        handleUpdateBettingOn();
+    }
+  }, []);
 
   return (
     <div className="p-1.5 max-sm:text-xs text-lg bg-white w-full">
