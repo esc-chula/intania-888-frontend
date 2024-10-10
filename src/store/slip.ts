@@ -60,7 +60,6 @@ export const useSlipStore = create(
                 if (slipIndex !== -1) {
                     const updatedSlips = [...state.slipItems];
                     updatedSlips[slipIndex] = { ...updatedSlips[slipIndex], ...updatedSlip };
-                    console.log(updatedSlips[slipIndex]);
                     getMatchById(updatedSlips[slipIndex].match_id).then((match) => {
                         if (updatedSlips[slipIndex].betting_on == updatedSlips[slipIndex].team_a_color) {
                             updatedSlips[slipIndex].rate = match?.data.team_a_rate || 1;

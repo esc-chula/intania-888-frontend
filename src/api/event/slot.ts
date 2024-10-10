@@ -12,7 +12,6 @@ export interface GetSlotResponse {
 export const getSlot = async (amount: number) => {
     try {
         const response: AxiosResponse = await apiClient.post(`/events/spin/slot?spendAmount=${amount}`)
-        console.log(response);
         if (response.status == 200) {
             return { success: true, data: response.data }
         } else {
