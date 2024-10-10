@@ -8,11 +8,13 @@ import {
 // Data Cleanning --------------
 export const cleanData = (props: {
   rawData: rawDataInterface[];
+  dateNow: Date;
 }): allMatchInterface[] => {
   const data: allMatchInterface[] = [];
   const temp = props.rawData.sort((a: rawDataInterface, b: rawDataInterface) =>
     Number(new Date(a.date).getDate() - new Date(b.date).getDate())
   );
+
   temp.map((itemsDate) => {
     const date = formatThaiDate(itemsDate.date);
     const date_D = new Date(itemsDate.date);
@@ -50,9 +52,9 @@ export const cleanData = (props: {
           status:
             item.team_a === null || item.team_b === null
               ? "TBA"
-              : new Date(Date.now()) > endTime
+              : props.dateNow > endTime
               ? "done"
-              : new Date(Date.now()) > strTime
+              : props.dateNow > strTime
               ? "playing"
               : "bet",
         });

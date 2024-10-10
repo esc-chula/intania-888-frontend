@@ -1,6 +1,9 @@
-import { EmptyState } from "@/components/EmptyState";
+"use client";
+
+import { EventButton } from "@/components/EventButton";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
+import { Coins } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -11,16 +14,75 @@ export default function Home() {
         <Navbar pagenow="event" />
       </div>
       <div className="flex items-center justify-center flex-col space-y-4">
-        <p className="text-white text-center font-semibold text-xs">
-          ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา แชร์กันเยอะๆ
+        <p className="text-sm max-w-[70%] text-center sm:hidden text-white">
+          ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
+          แชร์กันเยอะๆ
         </p>
         <div className="flex items-center justify-center space-x-2.5">
-          <Link href="/event" className="text-sm text-white font-semibold rounded w-28 h-9 bg-neutral-800 flex items-center justify-center">
+          <Link
+            href="/event"
+            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-800 flex items-center justify-center"
+          >
             มินิเกม
           </Link>
-          <Link href="/event/daily" className="text-sm text-white font-semibold rounded w-28 h-9 bg-neutral-700 flex items-center justify-center">
+          <Link
+            href="/event/daily"
+            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-700 flex items-center justify-center"
+          >
             อีเวนต์
           </Link>
+        </div>
+      </div>
+      <div className="w-[95%] sm:w-[700px] flex flex-col space-y-4">
+        <div className="w-full h-suto rounded-lg overflow-hidden text-white">
+          <div className="flex items-center justify-center font-semibold flex-col bg-[#4E0F15] py-4  space-y-2">
+            <p className="text-xl underline">อีเวนต์ประจำวัน</p>
+            <div className="flex flex-row space-x-1 sm:space-x-2 relative">
+              <p className="text-xs sm:text-sm">
+                ล้อกอินประจำวัน รับเลย! วันละ 300
+              </p>
+              <Coins className="relative -top-1" width={20} color="Yellow" />
+              <p className="text-xs sm:text-sm">
+                อย่าลืมเข้ามาล้อกอินทุกวันนะ!
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
+            <p className="text-sm sm:text-lg">📌 ล้อกอินประจำวัน</p>
+
+            <EventButton Sstate={1} type={"daily"} link={""} />
+          </div>
+        </div>
+
+        <div className="w-full h-suto rounded-lg overflow-hidden text-white">
+          <div className="flex items-center justify-center font-semibold flex-col bg-[#4E0F15] py-4   space-y-2">
+            <p className="text-xl underline">อีเวนต์ประจำสัปดาห์</p>
+            <div className="flex flex-row space-x-1 sm:space-x-2 relative">
+              <p className="text-[0.7rem] sm:text-sm">
+                ติดตาม Social Media ของ Intania Games รับเลย! ช่องทางละ 500
+              </p>
+              <Coins className="relative -top-1" width={20} color="Yellow" />
+            </div>
+          </div>
+          <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
+            <p className="text-sm sm:text-lg">📌 Instagram @intania.games</p>
+            <EventButton
+              Sstate={localStorage.getItem("followIG") === "true" ? 2 : 0}
+              type={"followIG"}
+              link={"https://www.instagram.com/intania.games/"}
+            />
+          </div>
+
+          <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
+            <p className="text-sm sm:text-lg">📌 Line Openchat Intania Games</p>
+            <EventButton
+              Sstate={localStorage.getItem("followLine") === "true" ? 2 : 0}
+              type={"followLine"}
+              link={
+                "https://line.me/ti/g2/1Iwp7nqg7rOrOde8vIRIjPHM69AZVAqQBbkZwg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+              }
+            />
+          </div>
         </div>
       </div>
     </div>

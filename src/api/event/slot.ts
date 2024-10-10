@@ -9,7 +9,7 @@ export interface GetSlotResponse {
     };
 }
 
-const getSlot = async (amount: number) => {
+export const getSlot = async (amount: number) => {
     try {
         const response: AxiosResponse = await apiClient.post(`/events/spin/slot?spendAmount=${amount}`)
         console.log(response);
@@ -24,4 +24,17 @@ const getSlot = async (amount: number) => {
     }
 }
 
-export { getSlot };
+export const loginDaily = async () => {
+    try {
+        const response: AxiosResponse = await apiClient.get("/events/redeem/daily");
+        
+        if (response.status == 200) {
+            return { success: true}
+        } else {
+            return { success: false }
+        }
+        
+    } catch (error) {
+        console.error(error)
+    }
+}

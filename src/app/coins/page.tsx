@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header";
-import { LeaderBoardTable } from "@/components/LeaderBoardTable";
+import { CoinLeaderBoardTable } from "@/components/CoinLeaderBoardTable";
 import { Navbar } from "@/components/Navbar";
 
 export default function Home() {
@@ -14,7 +14,7 @@ export default function Home() {
         แชร์กันเยอะๆ
       </p>
       <h1 className="text-2xl font-semibold my-2">ลิสต์รายชื่อมหาเศรษฐี</h1>
-      <LeaderBoardTable />
+      <CoinLeaderBoardTable />
     </div>
   );
 }
