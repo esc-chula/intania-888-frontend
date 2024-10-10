@@ -9,7 +9,7 @@ on:
       - "v*"
 
 env:
-  IMAGE_NAME: ghcr.io/esc-chula/intania-888-fronend
+  IMAGE_NAME: ghcr.io/esc-chula/intania-888-frontend
 
 jobs:
   build:
