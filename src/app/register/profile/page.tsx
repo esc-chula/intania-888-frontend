@@ -6,12 +6,14 @@ import { Selector } from "@/components/Selector";
 import { groupList } from "@/constant/groupList";
 import { handleUpdateProfile } from "@/api/user/profile";
 import useAuth from "@/hooks/useAuth";
+import { useRouter } from "next/router";
 
 const RegisterProfile = () => {
   const [nickName, setNickName] = useState("");
   const [group, setGroup] = useState("--เลือกกรุ๊ป--");
 
   const { user } = useAuth();
+  const router = useRouter();
 
   const onClickUpdateProfile = async () => {
     if (!user) {
@@ -28,6 +30,9 @@ const RegisterProfile = () => {
       console.error("update profile not successful");
       return;
     }
+    
+    router.push("/match");
+    localStorage.setItem("isProfileComplete", "true");
   };
   return (
     <div className="flex flex-col items-center justify-center space-y-5 text-white h-screen">

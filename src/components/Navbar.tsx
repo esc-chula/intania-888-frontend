@@ -4,15 +4,22 @@ import { apiClient } from "@/api/axios";
 import { getUserCoins } from "@/api/coin/getCoin";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 export const Navbar = (props: { pagenow: string }) => {
+  const router = useRouter();
   const [coinPoint, setCoinPoint] = useState<number | string>("XXX");
 
   useEffect(() => {
     const fetchData = async () => {
-      const myId = (await apiClient.get("/auth/me")).data;
-
-      const res = await getUserCoins(myId.profile.id);
-      setCoinPoint(res?.data);
+      try {
+        const myId = (await apiClient.get("/auth/me")).data;
+        const res = await getUserCoins(myId.profile.id);
+        setCoinPoint(res?.data);
+      } catch (error) {
+        console.error(error);
+        router.push("/register")
+      }
     };
 
     fetchData();

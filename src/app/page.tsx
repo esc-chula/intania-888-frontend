@@ -23,7 +23,14 @@ export default function Home() {
           const credential = await handleCallback(code);
 
           localStorage.setItem("credentials", JSON.stringify(credential));
-          router.replace("/register/profile");
+          
+          const isProfileComplete = localStorage.getItem("isProfileComplete");
+
+          if (isProfileComplete === "true") {
+            router.replace("/match");
+          } else {
+            router.replace("/register/profile"); 
+          }
         } catch (error) {
           console.error("Error processing login callback:", error);
         }
@@ -31,7 +38,7 @@ export default function Home() {
 
       handleOAuthCallback();
     }
-  });
+  }, [code, error, router]);
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen">
