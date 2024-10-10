@@ -1,5 +1,4 @@
 "use client";
-
 import { apiClient } from "@/api/axios";
 import { getUserCoins } from "@/api/coin/getCoin";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
