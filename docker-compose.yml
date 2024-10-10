@@ -5,8 +5,8 @@ services:
     build:
       context: .
       args:
-        - API_BASE_URL=https://api.888.chula.engineering/api/v1
+        - NEXT_PUBLIC_API_BASE_URL=https://api.888.chula.engineering/api/v1
     environment:
-      API_BASE_URL: https://api.888.chula.engineering/api/v1
+      NEXT_PUBLIC_API_BASE_URL: https://api.888.chula.engineering/api/v1
     ports:
       - 80:3000
