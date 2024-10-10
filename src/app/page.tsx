@@ -16,10 +16,9 @@ import { EmptyState } from "@/components/EmptyState";
 import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
 import { apiClient } from "@/api/axios";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
-import { useRouter, useSearchParams } from "next/navigation";
-import { handleCallback } from "@/api/auth/google";
-
+import OAuthCallbackHandler from "@/components/auth/OAuthCallBackHandler";
 export default function Home() {
+
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
   const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(undefined);
@@ -27,38 +26,6 @@ export default function Home() {
   const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
   const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(undefined);
   const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(undefined);
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const code = searchParams.get("code");
-  const error = searchParams.get("error");
-
-  // Handle OAuth callback
-  useEffect(() => {
-    if (error) {
-      console.error("OAuth error:", error);
-      return;
-    }
-
-    if (code) {
-      const handleOAuthCallback = async () => {
-        try {
-          const credential = await handleCallback(code);
-          localStorage.setItem("credentials", JSON.stringify(credential));
-          const isProfileComplete = localStorage.getItem("isProfileComplete");
-
-          if (isProfileComplete === "true") {
-            router.replace("/");
-          } else {
-            router.replace("/register/profile");
-          }
-        } catch (error) {
-          console.error("Error processing login callback:", error);
-        }
-      };
-      handleOAuthCallback();
-    }
-  }, [code, error, router]);
 
   // Handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -144,6 +111,7 @@ export default function Home() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
+      <OAuthCallbackHandler />
       <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen text-white">
         <div className="relative m-0 p-0 top-0 flex flex-col w-full">
           <Header />
