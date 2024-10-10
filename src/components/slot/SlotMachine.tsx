@@ -7,7 +7,6 @@ import { Coins } from 'lucide-react';
 import { getSlot } from '@/api/event/slot';
 import { GetSlotResponse } from '@/api/event/slot';
 import toast from 'react-hot-toast';
-import { apiClient } from '@/api/axios';
 import { useCoinStore } from '@/store/coin';
 
 const SlotMachine = () => {
@@ -27,13 +26,8 @@ const SlotMachine = () => {
     const [reels, setReels] = useState<string[][]>([[], [], []]); 
     const [spinning, setSpinning] = useState([false, false, false]);
     const [betAmount, setBetAmount] = useState(50);
-    const [id, setId] = useState('');
+
     useEffect(() => {
-        const fetchId = async () => {
-            const myId = (await apiClient.get("/auth/me")).data.profile.id;
-            setId(myId);
-        }
-        fetchId();
         setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
     }, []);
 
@@ -81,7 +75,7 @@ const SlotMachine = () => {
                 } else {
                     toast.success(`ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${apiReward} เหรียญ`);
                 }
-                refreshCoin(id);
+                refreshCoin();
             }, 1000); 
         });
     };

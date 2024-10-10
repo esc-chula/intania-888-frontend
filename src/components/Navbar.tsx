@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
-import { apiClient } from "@/api/axios";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
@@ -13,8 +12,7 @@ export const Navbar = (props: { pagenow: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const myId = (await apiClient.get("/auth/me")).data;
-        await refreshCoin(myId.profile.id); 
+        refreshCoin(); 
       } catch (error) {
         console.error(error);
         router.push("/register");

@@ -1,6 +1,7 @@
 import { loginDaily } from "@/api/event/slot";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useCoinStore } from "@/store/coin";
 
 export const EventButton = ({
   Sstate,
