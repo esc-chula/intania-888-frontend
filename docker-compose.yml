@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  frontend:
+    container_name: intania-888-frontend
+    build:
+      context: .
+      args:
+        - API_BASE_URL=https://api.888.chula.engineering/api/v1
+    environment:
+      API_BASE_URL: https://api.888.chula.engineering/api/v1
+    ports:
+      - 80:3000
