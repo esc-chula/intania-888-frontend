@@ -3,16 +3,16 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
+import { apiClient } from "@/api/axios";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
   const coinPoint = useCoinStore((state) => state.coinPoint);
   const refreshCoin = useCoinStore((state) => state.refreshCoin); 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        refreshCoin(); 
+        await refreshCoin(); 
       } catch (error) {
         console.error(error);
         router.push("/register");
@@ -20,7 +20,7 @@ export const Navbar = (props: { pagenow: string }) => {
     };
 
     fetchData();
-  }, [refreshCoin, router]);
+  }, [refreshCoin, router, coinPoint]);
 
   return (
     <div className="w-full h-[55px] bg-neutral-900 flex flex-row items-center m-0 text-white select-none cursor-pointer overflow-hidden max-sm:text-[0.8rem]">

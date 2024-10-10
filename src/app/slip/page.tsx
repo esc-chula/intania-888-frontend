@@ -47,7 +47,7 @@ export default function Home() {
       const response = await createMySlip(slipData);
       if (response?.success) {
         toast.success("การเดิมพันสำเร็จ!");
-        refreshCoin();
+        await refreshCoin();
         setBetAmount(""); // Reset the input to empty after successful submission
       } else {
         toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน");

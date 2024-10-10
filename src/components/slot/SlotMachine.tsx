@@ -69,13 +69,13 @@ const SlotMachine = () => {
         stopSpin(0, 1000, resultSymbols[0]);
         stopSpin(1, 2000, resultSymbols[1]); 
         stopSpin(2, 3000, resultSymbols[2], () => {
-            setTimeout(() => {
+            setTimeout(async () => {
                 if (apiReward === 0) {
                     toast.error('เสียใจด้วย คุณไม่ได้รับเหรียญรางวัลในรอบนี้');
                 } else {
                     toast.success(`ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${apiReward} เหรียญ`);
                 }
-                refreshCoin();
+                await refreshCoin();
             }, 1000); 
         });
     };

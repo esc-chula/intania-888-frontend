@@ -1,17 +1,22 @@
+"use client";
 import { loginDaily } from "@/api/event/slot";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { addUserCoins } from "@/api/coin/addCoin";
 import { useCoinStore } from "@/store/coin";
 
 export const EventButton = ({
   Sstate,
   type,
   link,
+  amount,
 }: {
   Sstate: number;
   type: string;
   link: string;
+  amount?: number;
 }) => {
+  const refreshCoin = useCoinStore((state) => state.refreshCoin);
   const [state, setState] = useState(Sstate);
   const handleAddState = () => {
     const newV = state + 1 > 2 ? 2 : state + 1;
@@ -55,8 +60,14 @@ export const EventButton = ({
     } else {
       return (
         <div
-          onClick={() => {
+          onClick={async () => {
             handleAddState();
+            if (amount) {
+              const response = await addUserCoins(amount);
+              if (response?.success) {
+                await refreshCoin();
+              }
+            }
             toast.success("รับเหรียญสำเร็จ");
           }}
           className="flex items-center justify-center cursor-pointer text-sm sm:text-lg w-20 h-9 sm:h-12 sm:w-28 bg-gradient-to-t from-base-gold hover:from-[#bc9636] to-white rounded-lg"

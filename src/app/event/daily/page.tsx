@@ -70,6 +70,7 @@ export default function Home() {
               Sstate={localStorage.getItem("followIG") === "true" ? 2 : 0}
               type={"followIG"}
               link={"https://www.instagram.com/intania.games/"}
+              amount={500}
             />
           </div>
 
@@ -81,6 +82,7 @@ export default function Home() {
               link={
                 "https://line.me/ti/g2/1Iwp7nqg7rOrOde8vIRIjPHM69AZVAqQBbkZwg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
               }
+              amount={500}
             />
           </div>
         </div>
