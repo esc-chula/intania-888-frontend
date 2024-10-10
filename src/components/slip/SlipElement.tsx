@@ -69,7 +69,7 @@ const SlipElement: React.FC<SlipElementProps> = ({
             setFilter={setSelectedTeam}
           />
           <p className="text-indigo-700 font-semibold">
-            เรทปัจจุบัน: {currentRate}
+            เรทปัจจุบัน: {currentRate.toFixed(2)}
           </p>
         </div>
       </div>
