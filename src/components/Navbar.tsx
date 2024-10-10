@@ -1,28 +1,28 @@
 "use client";
-import { apiClient } from "@/api/axios";
-import { getUserCoins } from "@/api/coin/getCoin";
-import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
+import { useCoinStore } from "@/store/coin";
+import { apiClient } from "@/api/axios";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
-  const [coinPoint, setCoinPoint] = useState<number | string>("XXX");
+  const coinPoint = useCoinStore((state) => state.coinPoint);
+  const refreshCoin = useCoinStore((state) => state.refreshCoin); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const myId = (await apiClient.get("/auth/me")).data;
-        const res = await getUserCoins(myId.profile.id);
-        setCoinPoint(res?.data);
+        await refreshCoin(myId.profile.id); 
       } catch (error) {
         console.error(error);
-        router.push("/register")
+        router.push("/register");
       }
     };
 
     fetchData();
-  }, []);
+  }, [refreshCoin, router]);
 
   return (
     <div className="w-full h-[55px] bg-neutral-900 flex flex-row items-center m-0 text-white select-none cursor-pointer overflow-hidden max-sm:text-[0.8rem]">
@@ -74,7 +74,7 @@ export const Navbar = (props: { pagenow: string }) => {
         className="w-1/4 h-full items-center justify-center group relative"
       >
         <div className="flex flex-row space-x-2 h-full items-center justify-center">
-          <p>{coinPoint}</p>
+          <p>{coinPoint}</p> {/* Display the global coin point */}
           <Coins color="yellow" />
         </div>
         {props.pagenow == "coins" ? (

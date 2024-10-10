@@ -9,6 +9,8 @@ import { createMySlip } from "@/api/slip/slip";
 import { Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useCoinStore } from "@/store/coin";
+import { apiClient } from "@/api/axios";
 
 export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);
@@ -17,6 +19,7 @@ export default function Home() {
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const refreshCoin = useCoinStore((state) => state.refreshCoin);
   useEffect(() => {
     updateSlipRates();
   }, [updateSlipRates]);
@@ -44,6 +47,8 @@ export default function Home() {
       const response = await createMySlip(slipData);
       if (response?.success) {
         toast.success("การเดิมพันสำเร็จ!");
+        const myId = (await apiClient.get("/auth/me")).data;
+        refreshCoin(myId.profile.id);
         setBetAmount(""); // Reset the input to empty after successful submission
       } else {
         toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน");

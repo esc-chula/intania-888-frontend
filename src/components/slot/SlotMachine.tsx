@@ -7,8 +7,11 @@ import { Coins } from 'lucide-react';
 import { getSlot } from '@/api/event/slot';
 import { GetSlotResponse } from '@/api/event/slot';
 import toast from 'react-hot-toast';
+import { apiClient } from '@/api/axios';
+import { useCoinStore } from '@/store/coin';
 
 const SlotMachine = () => {
+    const refreshCoin = useCoinStore((state) => state.refreshCoin);
     const reelLength = 100;
     const symbols = ['🍉', '🍋', '🍇', '🍒', '⭐', '🔔'];
 
@@ -26,14 +29,19 @@ const SlotMachine = () => {
     const [betAmount, setBetAmount] = useState(50);
     const [reward, setReward] = useState(0);
     const [spinSpeed, setSpinSpeed] = useState([3, 3, 3]);
-
+    const [id, setId] = useState('');
     useEffect(() => {
+        const fetchId = async () => {
+            const myId = (await apiClient.get("/auth/me")).data.profile.id;
+            setId(myId);
+        }
+        fetchId();
         setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
     }, []);
 
     const spin = async () => {
         if (spinning.some((spin) => spin)) return; 
-
+        refreshCoin(id);
         setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
 
         // Start slow spin for all reels
@@ -81,6 +89,7 @@ const SlotMachine = () => {
                 if (apiReward === 0) {
                     toast.error('เสียใจด้วย คุณไม่ได้รับเหรียญรางวัลในรอบนี้');
                 } else {
+                    refreshCoin(id);
                     toast.success(`ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${apiReward} เหรียญ`);
                 }
             }, 1000); 
@@ -148,7 +157,7 @@ const SlotMachine = () => {
                     className={`rounded-md w-20 h-8 font-extrabold text-base flex items-center justify-center ${betAmount === 50 ? 'text-black' : 'text-gray-600'}`}
                     style={{ background: betAmount === 50 ? 'linear-gradient(180deg, #FFFFFF 0%, #A2790D 80%)' : '#FFFFFF' }}>
                     50
-                    <Coins color={betAmount === 50 ? 'black' : 'gray'} />
+                    <Coins color={betAmount === 50 ? 'yellow' : 'gray'} />
                 </button>
 
                 <button
@@ -156,7 +165,7 @@ const SlotMachine = () => {
                     className={`rounded-md w-20 h-8 font-extrabold text-base flex items-center justify-center ${betAmount === 100 ? 'text-black' : 'text-gray-600'}`}
                     style={{ background: betAmount === 100 ? 'linear-gradient(180deg, #FFFFFF 0%, #A2790D 80%)' : '#FFFFFF' }}>
                     100
-                    <Coins color={betAmount === 100 ? 'black' : 'gray'} />
+                    <Coins color={betAmount === 100 ? 'yellow' : 'gray'} />
                 </button>
 
                 <button
@@ -164,7 +173,7 @@ const SlotMachine = () => {
                     className={`rounded-md w-20 h-8 font-extrabold text-base flex items-center justify-center ${betAmount === 500 ? 'text-black' : 'text-gray-600'}`}
                     style={{ background: betAmount === 500 ? 'linear-gradient(180deg, #FFFFFF 0%, #A2790D 80%)' : '#FFFFFF' }}>
                     500
-                    <Coins color={betAmount === 500 ? 'black' : 'gray'} />
+                    <Coins color={betAmount === 500 ? 'yellow' : 'gray'} />
                 </button>
             </div>
 
