@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Lever from './Lever';
 import Reel from './Reel';
 import Image from 'next/image';
@@ -8,33 +8,37 @@ import { getSlot } from '@/api/event/slot';
 import { GetSlotResponse } from '@/api/event/slot';
 import toast from 'react-hot-toast';
 
-const symbols = ['🍉', '🍋', '🍇', '🍒', '⭐', '🔔'];
-
 const SlotMachine = () => {
     const reelLength = 100;
+    const symbols = ['🍉', '🍋', '🍇', '🍒', '⭐', '🔔'];
 
     const generateReelSymbols = () => {
         let reel = [];
-        for (let i = 0; i < reelLength; i++) { 
+        for (let i = 0; i < reelLength; i++) {
             const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
             reel.push(randomSymbol);
         }
         return reel;
     };
 
-    const [reels, setReels] = useState([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
+    const [reels, setReels] = useState<string[][]>([[], [], []]); 
     const [spinning, setSpinning] = useState([false, false, false]);
     const [betAmount, setBetAmount] = useState(50);
     const [reward, setReward] = useState(0);
-    const [spinSpeed, setSpinSpeed] = useState([3, 3, 3]); 
+    const [spinSpeed, setSpinSpeed] = useState([3, 3, 3]);
+
+    useEffect(() => {
+        setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
+    }, []);
 
     const spin = async () => {
         if (spinning.some((spin) => spin)) return; 
 
         setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
 
+        // Start slow spin for all reels
         setSpinning([true, true, true]);
-        setSpinSpeed([10, 10, 10]); // Set initial slow speed
+        setSpinSpeed([10, 10, 10]); 
 
         // Fetch result from API
         const result = await fetchResultFromAPI();
@@ -43,14 +47,15 @@ const SlotMachine = () => {
             setReward(result.reward);
 
             setTimeout(() => {
-                setSpinSpeed([100, 100, 100]); // Increase speed after 1 second
+                setSpinSpeed([100, 100, 100]); 
             }, 1000);
 
-            stopReelsOnResult(result.slots);
+            stopReelsOnResult(result.slots, result.reward);
         }
     };
 
-    const fetchResultFromAPI = async (): Promise<GetSlotResponse | undefined> => {
+
+    const fetchResultFromAPI = async (): Promise<{ reward: number; slots: string[] } | undefined> => {
         try {
             const result = await new Promise<GetSlotResponse | undefined>((resolve) => {
                 setTimeout(async () => {
@@ -59,22 +64,26 @@ const SlotMachine = () => {
                 }, 3000); 
             });
 
-            return result?.data ? result.data : undefined;
+            if (result?.success) {
+                return { reward: result.data?.reward || 0, slots: result.data?.slots || [] };
+            }
         } catch (error) {
             console.error(error);
             return undefined;
         }
     };
 
-    const stopReelsOnResult = (resultSymbols: string[]) => {
-        stopSpin(0, 1000, resultSymbols[0]); 
-        stopSpin(1, 2000, resultSymbols[1]);
-        stopSpin(2, 3000, resultSymbols[2], () => { 
-            if (reward === 0) {
-                toast.error('เสียใจด้วย คุณไม่ได้รับเหรียญรางวัลในรอบนี้');
-            } else {
-                toast.success(`ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${reward} เหรียญ`);
-            }
+    const stopReelsOnResult = (resultSymbols: string[], apiReward: number) => {
+        stopSpin(0, 1000, resultSymbols[0]);
+        stopSpin(1, 2000, resultSymbols[1]); 
+        stopSpin(2, 3000, resultSymbols[2], () => {
+            setTimeout(() => {
+                if (apiReward === 0) {
+                    toast.error('เสียใจด้วย คุณไม่ได้รับเหรียญรางวัลในรอบนี้');
+                } else {
+                    toast.success(`ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${apiReward} เหรียญ`);
+                }
+            }, 1000); 
         });
     };
 
@@ -88,13 +97,13 @@ const SlotMachine = () => {
 
             setSpinSpeed((prev) => {
                 const newSpeed = [...prev];
-                newSpeed[reelIndex] = 1; // Reset speed when it stops
+                newSpeed[reelIndex] = 1; 
                 return newSpeed;
             });
 
             setReels((prev) => {
                 const newReels = [...prev];
-                newReels[reelIndex] = [resultSymbol]; // Set reel to the result symbol
+                newReels[reelIndex] = [resultSymbol]; 
                 return newReels;
             });
 
@@ -116,11 +125,10 @@ const SlotMachine = () => {
                     style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #A2790D 80%)' }}>
                     <div className="flex space-x-4 bg-white rounded-lg border-8 p-5" style={{ borderColor: '#68141C' }}>
                         {reels.map((reelSymbols, index) => (
-                            <Reel 
-                                key={index} 
-                                reelSymbols={reelSymbols} 
-                                spinning={spinning[index]} 
-                                spinSpeed={spinSpeed[index]} 
+                            <Reel
+                                key={index}
+                                reelSymbols={reelSymbols}
+                                spinning={spinning[index]}
                             />
                         ))}
                     </div>

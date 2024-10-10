@@ -1,4 +1,4 @@
-import { EmptyState } from "@/components/EmptyState";
+"use client";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
 import Link from "next/link";
