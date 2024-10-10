@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getAccessToken, refreshToken } from '@/utils/token';
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL + '/api/v1',
   timeout: 10000,
 });
 
