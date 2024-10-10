@@ -22,7 +22,7 @@ const SlipGroupResult: React.FC<SlipGroupResultProps> = ({ slipId, netProfit, sl
             <section className="w-full flex items-center justify-between bg-neutral-200 p-4 rounded-t-lg h-7 text-sm">
                 <p className='text-black font-semibold'>สลิปหมายเลข: {slipId.slice(0,10)}</p>
                 <div className='flex items-center space-x-0.5 font-semibold'>
-                    <span className={netProfitColor}>{netProfit}</span> <Coins />
+                    <span className={netProfitColor}>{netProfit}</span> <Coins color="yellow"/>
                 </div>
             </section>
             <section className='flex flex-col items-center w-full'>

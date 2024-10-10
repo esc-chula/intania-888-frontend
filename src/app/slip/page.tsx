@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 
 export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);
+  const totalRate = useSlipStore((state) => state.totalRate);
   const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -125,12 +126,15 @@ export default function Home() {
           ))}
         </section>
         <section className="flex items-center flex-col w-full">
-          <section className="w-full bg-neutral-300 font-semibold text-sm h-10 flex items-center pl-3">
+          <section className="w-full bg-neutral-300 font-semibold text-sm h-10 flex items-center justify-between pl-3 pr-3">
             <p className="text-black">
               รูปแบบการทาย:{" "}
               <span className="text-indigo-700">
                 {slipItems.length > 1 ? "แบบชุด" : "แบบเดี่ยว"}
               </span>
+            </p>
+            <p className="text-black">
+              {slipItems.length > 1 ? `เรทปัจจุบันรวม : ${totalRate.toFixed(2)}` : ""}
             </p>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
@@ -142,14 +146,14 @@ export default function Home() {
                 value={betAmount}
                 onChange={(e) => setBetAmount(e.target.value)} // Handle input as string
               />
-              <Coins color="black" />
+              <Coins color="yellow" />
             </div>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
             <p className="text-black">เหรียญที่พึ่งพาได้</p>
             <div className="flex items-center space-x-1">
               <p className="text-black font-semibold">500</p>
-              <Coins color="black" />
+              <Coins color="yellow" />
             </div>
           </section>
 

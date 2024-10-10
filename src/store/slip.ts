@@ -15,30 +15,42 @@ interface Slip {
 
 interface SlipStore {
     slipItems: Slip[];
+    totalRate: number;
     addSlipItem: (slip: Slip) => void;
     removeSlipItem: (match_id: string) => void;
     updateSlipItem: (match_id: string, updatedSlip: Partial<Slip>) => void;
     updateSlipRates: () => void;
+    calculateTotalRate: (slips: Slip[]) => number;
 }
 
 export const useSlipStore = create(
     persist<SlipStore>(
         (set, get) => ({
             slipItems: [],
+            totalRate: 1,  // Initialize totalRate as 1 because it's a multiplication accumulator
+
+            // Helper function to calculate totalRate
+            calculateTotalRate: (slips: Slip[]) => {
+                return slips.reduce((acc, slip) => acc * slip.rate, 1);
+            },
+
             addSlipItem: (slip) =>
                 set((state) => {
                     const exists = state.slipItems.some((item) => item.match_id === slip.match_id);
                     
                     if (!exists) {
                         toast.success('เพิ่มลงในสลิปเรียบร้อยแล้ว!'); 
+                        const updatedSlips = [...state.slipItems, slip];
                         return {
-                            slipItems: [...state.slipItems, slip],
+                            slipItems: updatedSlips,
+                            totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
                         };
                     } else {
                         toast.error('มีสลิปนี้อยู่แล้วในระบบ!');
                         return state;
                     }
                 }),
+
             removeSlipItem: (match_id) =>
                 set((state) => {
                     const updatedSlips = state.slipItems.filter((item) => item.match_id !== match_id);
@@ -51,8 +63,10 @@ export const useSlipStore = create(
 
                     return {
                         slipItems: updatedSlips,
+                        totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
                     };
                 }),
+
             updateSlipItem: (match_id, updatedSlip) => {
                 const state = get();
                 const slipIndex = state.slipItems.findIndex((item) => item.match_id === match_id);
@@ -62,15 +76,19 @@ export const useSlipStore = create(
                     updatedSlips[slipIndex] = { ...updatedSlips[slipIndex], ...updatedSlip };
                     getMatchById(updatedSlips[slipIndex].match_id).then((match) => {
                         if (updatedSlips[slipIndex].betting_on == updatedSlips[slipIndex].team_a_color) {
-                            updatedSlips[slipIndex].rate = match?.data.team_a_rate || 1;
+                            updatedSlips[slipIndex].rate = match?.data.team_a_rate || 2;
                         }
                         if (updatedSlips[slipIndex].betting_on == updatedSlips[slipIndex].team_b_color) {
-                            updatedSlips[slipIndex].rate = match?.data.team_b_rate || 1;
+                            updatedSlips[slipIndex].rate = match?.data.team_b_rate || 2;
                         }
-                        set({ slipItems: updatedSlips });
+                        set({ 
+                            slipItems: updatedSlips,
+                            totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
+                        });
                     });
                 }
             },
+
             updateSlipRates: async () => {
                 const state = get(); 
 
@@ -80,7 +98,7 @@ export const useSlipStore = create(
 
                         if (matchData?.success) {
                             if (slip.rate == 0) {
-                                return { ...slip, rate: 1};
+                                return { ...slip, rate: 2 };
                             }
                             
                             const updatedRate = matchData.data.rate || slip.rate; 
@@ -91,7 +109,10 @@ export const useSlipStore = create(
                     })
                 );
 
-                set({ slipItems: updatedSlips });
+                set({
+                    slipItems: updatedSlips,
+                    totalRate: get().calculateTotalRate(updatedSlips),
+                });
             },
         }),
         {

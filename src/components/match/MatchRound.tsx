@@ -11,7 +11,7 @@ export const Round = ({ round }: { round: RoundItem }) => {
   const handleAddToSlip = () => {
     addSlipItem({
       match_id: round.match_id,
-      rate: round.rateA,
+      rate: round.rateA == 0 ? 2 : round.rateA,
       betting_on: round.colorA, 
       date: round.time_start,
       sport_type: round.type,
