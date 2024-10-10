@@ -27,8 +27,6 @@ const SlotMachine = () => {
     const [reels, setReels] = useState<string[][]>([[], [], []]); 
     const [spinning, setSpinning] = useState([false, false, false]);
     const [betAmount, setBetAmount] = useState(50);
-    const [reward, setReward] = useState(0);
-    const [spinSpeed, setSpinSpeed] = useState([3, 3, 3]);
     const [id, setId] = useState('');
     useEffect(() => {
         const fetchId = async () => {
@@ -41,23 +39,15 @@ const SlotMachine = () => {
 
     const spin = async () => {
         if (spinning.some((spin) => spin)) return; 
-        refreshCoin(id);
         setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
 
         // Start slow spin for all reels
         setSpinning([true, true, true]);
-        setSpinSpeed([10, 10, 10]); 
 
         // Fetch result from API
         const result = await fetchResultFromAPI();
 
         if (result) {
-            setReward(result.reward);
-
-            setTimeout(() => {
-                setSpinSpeed([100, 100, 100]); 
-            }, 1000);
-
             stopReelsOnResult(result.slots, result.reward);
         }
     };
@@ -89,9 +79,9 @@ const SlotMachine = () => {
                 if (apiReward === 0) {
                     toast.error('เสียใจด้วย คุณไม่ได้รับเหรียญรางวัลในรอบนี้');
                 } else {
-                    refreshCoin(id);
                     toast.success(`ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${apiReward} เหรียญ`);
                 }
+                refreshCoin(id);
             }, 1000); 
         });
     };
@@ -102,12 +92,6 @@ const SlotMachine = () => {
                 const newSpinning = [...prev];
                 newSpinning[reelIndex] = false;
                 return newSpinning;
-            });
-
-            setSpinSpeed((prev) => {
-                const newSpeed = [...prev];
-                newSpeed[reelIndex] = 1; 
-                return newSpeed;
             });
 
             setReels((prev) => {
