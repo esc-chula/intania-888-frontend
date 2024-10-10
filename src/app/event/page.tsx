@@ -1,6 +1,8 @@
+"use client";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
 import Link from "next/link";
+import SlotMachine  from '@/components/slot/SlotMachine';
 
 export default function Home() {
   return (
@@ -29,6 +31,7 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      <SlotMachine />
     </div>
   );
 }
