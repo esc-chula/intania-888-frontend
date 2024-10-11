@@ -12,7 +12,7 @@ export const Navbar = (props: { pagenow: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await refreshCoin(); 
+        await refreshCoin(); 
         const me = await apiClient.get("/auth/me");
         if (me.data.profile?.id && (!me.data.profile?.nick_name || !me.data.profile?.group_id)) {
             router.push("/register/profile")
