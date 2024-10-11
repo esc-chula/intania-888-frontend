@@ -12,7 +12,7 @@ export const Navbar = (props: { pagenow: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await refreshCoin(); 
+        
         const me = await apiClient.get("/auth/me");
         if (me.data.profile?.id && (!me.data.profile?.nick_name || !me.data.profile?.group_id)) {
             router.push("/register/profile")
@@ -20,6 +20,8 @@ export const Navbar = (props: { pagenow: string }) => {
         if (me.status == 401) {
           router.push("/register");
         }
+
+        await refreshCoin(); 
       } catch (error) {
         console.error("Error refreshing coins:", error);
       }
