@@ -18,6 +18,7 @@ import { apiClient } from "@/api/axios";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
 import OAuthCallbackHandler from "@/components/auth/OAuthCallBackHandler";
 import { getAccessToken } from "@/utils/token";
+
 export default function Home() {
 
   const [mainFilter, setMainFilter] = useState("upcomming");
@@ -27,7 +28,7 @@ export default function Home() {
   const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
   const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(undefined);
   const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(undefined);
-  const ready = getAccessToken();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -38,13 +39,27 @@ export default function Home() {
   // Get date when page loads
   useEffect(() => {
     const fetchMatchData = async () => {
+      const token = getAccessToken(); 
+      if (!token) return;  
       const data = (await getMatch())?.data;
       setAllMatch(data);
       setDateNow(new Date(new Date((await apiClient.get("/matches/current/time")).data.currentTime).getTime() + (7 * 60 * 60 * 1000)));
     };
 
-    fetchMatchData();
-  }, [ready]);
+    if (isAuthenticated) {
+      fetchMatchData(); 
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const token = getAccessToken();
+
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false); 
+    }
+  }, []);
 
   // Filter data
   useEffect(() => {
