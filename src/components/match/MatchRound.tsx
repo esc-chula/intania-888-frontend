@@ -34,8 +34,8 @@ export const Round = ({ round }: { round: RoundItem }) => {
           <Matchbar
             colorA={round.colorA}
             colorB={round.colorB}
-            scoreA={round.scoreA}
-            scoreB={round.scoreB}
+            scoreA={round.rateA}
+            scoreB={round.rateB}
           />
         )}
         {round.status === "playing" && (

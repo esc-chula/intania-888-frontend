@@ -5,11 +5,16 @@ export const Matchbar = (props: {
   scoreA: number;
   scoreB: number;
 }) => {
-  let scoreA = props.scoreA;
-  let scoreB = props.scoreB;
-  if (props.scoreA === 0 && props.scoreB === 0) {
+  let { scoreA, scoreB } = props;
+
+  const totalScore = scoreA + scoreB;
+
+  if (totalScore === 0) {
     scoreA = 50;
     scoreB = 50;
+  } else {
+    scoreA = (scoreA / totalScore) * 100;
+    scoreB = (scoreB / totalScore) * 100;
   }
 
   return (
