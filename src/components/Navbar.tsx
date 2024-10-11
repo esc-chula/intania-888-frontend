@@ -14,7 +14,7 @@ export const Navbar = (props: { pagenow: string }) => {
       try {
         const response = await refreshCoin(); 
         const me = await apiClient.get("/auth/me");
-        if (me.data.profile?.id && (!me.data.profile?.nickname || !me.data.profile?.group_id)) {
+        if (me.data.profile?.id && (!me.data.profile?.nick_name || !me.data.profile?.group_id)) {
             router.push("/register/profile")
         }
         if (!response.success) {
