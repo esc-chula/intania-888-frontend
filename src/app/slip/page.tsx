@@ -17,7 +17,6 @@ export default function Home() {
   const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const coinPoint = useCoinStore((state) => state.coinPoint);
   const refreshCoin = useCoinStore((state) => state.refreshCoin);
   useEffect(() => {
     updateSlipRates();
@@ -153,9 +152,9 @@ export default function Home() {
             </div>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
-            <p className="text-black">เหรียญที่พึ่งได้</p>
+            <p className="text-black">เหรียญที่พึงได้</p>
             <div className="flex items-center space-x-1">
-              <p className="text-black font-semibold">{coinPoint}</p>
+              <p className="text-black font-semibold">{(totalRate * parseFloat(betAmount)).toFixed(2)}</p>
               <Coins color="yellow" />
             </div>
           </section>

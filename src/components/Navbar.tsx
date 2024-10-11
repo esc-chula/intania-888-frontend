@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
+import { apiClient } from "@/api/axios";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
@@ -12,6 +13,10 @@ export const Navbar = (props: { pagenow: string }) => {
     const fetchData = async () => {
       try {
         const response = await refreshCoin(); 
+        const me = await apiClient.get("/auth/me");
+        if (me.data.profile?.id && (!me.data.profile?.nickname || !me.data.profile?.group_id)) {
+            router.push("/register/profile")
+        }
         if (!response.success) {
           router.push("/register");
         }

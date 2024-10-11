@@ -29,7 +29,6 @@ const RegisterProfile = () => {
       return;
     }
     
-    localStorage.setItem("isProfileComplete", "true");
   };
   return (
     <div className="flex flex-col items-center justify-center space-y-5 text-white h-screen">

@@ -21,13 +21,8 @@ const OAuthCallbackHandler = () => {
         try {
           const credential = await handleCallback(code);
           localStorage.setItem("credentials", JSON.stringify(credential));
-          const isProfileComplete = localStorage.getItem("isProfileComplete");
 
-          if (isProfileComplete === "true") {
-            router.replace("/");
-          } else {
-            router.replace("/register/profile");
-          }
+          router.replace("/")
         } catch (error) {
           console.error("Error processing login callback:", error);
         }
