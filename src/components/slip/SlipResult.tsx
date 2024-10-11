@@ -24,7 +24,7 @@ const SlipResult: React.FC<SlipResultProps> = ({
   return (
     <div className={`${className} p-3 max-sm:text-xs text-lg bg-white w-full`}>
       <div className="font-semibold text-neutral-700">
-        {formatThaiDate(match.start_time)} : {sportTextMap[match.type]}
+        {formatThaiDate(new Date(new Date(match.start_time).getTime() - (1 * 60 * 60 * 1000)).toISOString())}: {sportTextMap[match.type]}
       </div>
       <div className="flex items-center space-x-2">
         <div className="flex justify-center items-center space-x-1.5 text-black font-semibold">
