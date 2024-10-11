@@ -37,7 +37,8 @@ const AdminBackoffice = () => {
     const fetchMatches = async () => {
       try {
         const res = await apiClient.get("/matches");
-        setMatchesData(res.data);
+        const sortedData = res.data.sort((a: MatchDay, b: MatchDay) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        setMatchesData(sortedData);
       } catch (error) {
         console.error("Error fetching matches:", error);
       }
