@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const ConditionPage = () => {
   return (
-    <div className='flex flex-col items-center justify-center space-y-5 text-white h-screen'>
+    <div className='flex flex-col items-center justify-center space-y-5 text-white h-screen bg-gradient-to-b from-carmine-900 to-black'>
       <div className='w-72 h-16'>
         <Intania888Logo />
       </div>
@@ -14,7 +14,7 @@ const ConditionPage = () => {
           <li>เว็บไซต์นี้เป็นส่วนหนึ่งของกิจกรรม Intania Games 2024 ซึ่งเป็นงานแข่งขันกีฬาสีของคณะวิศวกรรมศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย</li>
           <li>กิจกรรมสามารถเข้าร่วมได้เพียงนิสิตคณะวิศวกรรมศาสตร์ จุฬาลงกรณ์มหาวิทยาลัยเท่านั้น</li>
           <li>
-            sภายในเกมนั้นเป็นเหรียญที่จำลองขึ้นเพื่อใช้ในการเก็บคะแนนในกิจกรรม ซึ่งไม่มีการใช้จ่ายเงินจริงแต่เพื่ออย่างใด
+            ภายในเกมนั้นเป็นเหรียญที่จำลองขึ้นเพื่อใช้ในการเก็บคะแนนในกิจกรรม ซึ่งไม่มีการใช้จ่ายเงินจริงแต่เพียงอย่างใด
           </li>
           <li>
             กิจกรรมนี้ไม่ได้มีความประสงค์ในการสนับสนุนการพนัน แต่มีขึ้นเพื่อส่งเสริมการเข้าร่วมกิจกรรมเพื่อกระชับความสัมพันธ์
