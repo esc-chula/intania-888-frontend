@@ -1,6 +1,6 @@
 "use client";
 import axios from 'axios';
-import { getAccessToken, refreshToken } from '@/utils/token';
+import { getAccessToken } from '@/utils/token';
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -23,9 +23,6 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-      if (error.response?.status === 401) {
-          refreshToken()
-      }
       return Promise.reject(error);
   }
 );
