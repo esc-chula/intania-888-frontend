@@ -13,8 +13,11 @@ export const Matchbar = (props: {
     scoreA = 50;
     scoreB = 50;
   } else {
-    scoreA = (scoreA / totalScore) * 100;
-    scoreB = (scoreB / totalScore) * 100;
+    const percentA = (scoreA / totalScore) * 100;
+    const percentB = (scoreB / totalScore) * 100;
+
+    scoreA = Math.round(percentA);
+    scoreB = 100 - scoreA; 
   }
 
   return (
