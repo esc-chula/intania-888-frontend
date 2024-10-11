@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
 import { apiClient } from "@/api/axios";
+import { getAccessToken } from "@/utils/token";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
@@ -12,18 +13,24 @@ export const Navbar = (props: { pagenow: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
+        const token = getAccessToken();
+        if (!token) {
+          router.push("/register"); 
+          return;
+        }
+
         const me = await apiClient.get("/auth/me");
         if (me.data.profile?.id && (!me.data.profile?.nick_name || !me.data.profile?.group_id)) {
             router.push("/register/profile")
         }
-        if (me.status == 401) {
-          router.push("/register");
-        }
 
         await refreshCoin(); 
-      } catch (error) {
-        console.error("Error refreshing coins:", error);
+      } catch (error: any) {
+        if (error.response?.data?.error === "missing authorization header") {
+          router.push("/register");
+        } else {
+          console.error("Error fetching user or refreshing coins:", error);
+        }
       }
     };
 
