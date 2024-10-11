@@ -17,6 +17,7 @@ import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
 import { apiClient } from "@/api/axios";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
 import OAuthCallbackHandler from "@/components/auth/OAuthCallBackHandler";
+import { getAccessToken } from "@/utils/token";
 export default function Home() {
 
   const [mainFilter, setMainFilter] = useState("upcomming");
@@ -26,6 +27,7 @@ export default function Home() {
   const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
   const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(undefined);
   const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(undefined);
+  const ready = getAccessToken();
 
   // Handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -42,7 +44,7 @@ export default function Home() {
     };
 
     fetchMatchData();
-  }, []);
+  }, [ready]);
 
   // Filter data
   useEffect(() => {
