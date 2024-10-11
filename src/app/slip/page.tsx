@@ -17,7 +17,7 @@ export default function Home() {
   const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const coinPoint = useCoinStore((state) => state.coinPoint);
   const refreshCoin = useCoinStore((state) => state.refreshCoin);
   useEffect(() => {
     updateSlipRates();
@@ -141,7 +141,7 @@ export default function Home() {
             </p>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
-            <p className="text-black">จำนวนเหรียญที่ใช้เดินพัน</p>
+            <p className="text-black">จำนวนเหรียญที่ใช้เดิมพัน</p>
             <div className="flex items-center space-x-1">
               <input
                 type="number"
@@ -153,9 +153,9 @@ export default function Home() {
             </div>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
-            <p className="text-black">เหรียญที่พึ่งพาได้</p>
+            <p className="text-black">เหรียญที่พึ่งได้</p>
             <div className="flex items-center space-x-1">
-              <p className="text-black font-semibold">500</p>
+              <p className="text-black font-semibold">{coinPoint}</p>
               <Coins color="yellow" />
             </div>
           </section>
