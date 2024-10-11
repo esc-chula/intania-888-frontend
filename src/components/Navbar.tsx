@@ -17,12 +17,11 @@ export const Navbar = (props: { pagenow: string }) => {
         if (me.data.profile?.id && (!me.data.profile?.nick_name || !me.data.profile?.group_id)) {
             router.push("/register/profile")
         }
-        if (!response.success) {
+        if (me.status == 401) {
           router.push("/register");
         }
       } catch (error) {
         console.error("Error refreshing coins:", error);
-        router.push("/register");
       }
     };
 
