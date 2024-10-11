@@ -28,7 +28,6 @@ export default function Home() {
   const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
   const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(undefined);
   const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(undefined);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -41,25 +40,27 @@ export default function Home() {
     const fetchMatchData = async () => {
       const token = getAccessToken(); 
       if (!token) return;  
-      const data = (await getMatch())?.data;
-      setAllMatch(data);
-      setDateNow(new Date(new Date((await apiClient.get("/matches/current/time")).data.currentTime).getTime() + (7 * 60 * 60 * 1000)));
+      try {
+        const data = (await getMatch())?.data;
+        setAllMatch(data);
+        setDateNow(new Date(new Date((await apiClient.get("/matches/current/time")).data.currentTime).getTime() + (7 * 60 * 60 * 1000)));
+      } catch (error) {
+        console.error("Failed to fetch matches. Retrying...", error);
+      }
     };
 
-    if (isAuthenticated) {
-      fetchMatchData(); 
-    }
-  }, [isAuthenticated]);
+  
+    const intervalId = setInterval(async () => {
+      if (!allMatch) {
+        await fetchMatchData();
+      } else {
+        clearInterval(intervalId); 
+      }
+    }, 1000); 
 
-  useEffect(() => {
-    const token = getAccessToken();
+    return () => clearInterval(intervalId);
+  }, [allMatch]);
 
-    if (token) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false); 
-    }
-  }, []);
 
   // Filter data
   useEffect(() => {
