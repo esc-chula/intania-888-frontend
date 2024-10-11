@@ -154,7 +154,7 @@ export default function Home() {
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
             <p className="text-black">เหรียญที่พึงได้</p>
             <div className="flex items-center space-x-1">
-              <p className="text-black font-semibold">{(totalRate * parseFloat(betAmount)).toFixed(2)}</p>
+              <p className="text-black font-semibold">{isNaN(totalRate * parseFloat(betAmount)) ? "0.00" : (totalRate * parseFloat(betAmount)).toFixed(2)}</p>
               <Coins color="yellow" />
             </div>
           </section>
