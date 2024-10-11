@@ -49,7 +49,7 @@ export default function Home() {
 
       setDateNow(
         new Date(
-          (await apiClient.get("/matches/current/time")).data.currentTime
+          (await apiClient.get("/matches/current/time")).data.currentTime + (7 * 60 * 60 * 1000)
         )
       );
     };

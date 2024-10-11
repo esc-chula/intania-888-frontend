@@ -38,7 +38,7 @@ export default function Home() {
     const fetchMatchData = async () => {
       const data = (await getMatch())?.data;
       setAllMatch(data);
-      setDateNow(new Date((await apiClient.get("/matches/current/time")).data.currentTime));
+      setDateNow(new Date((await apiClient.get("/matches/current/time")).data.currentTime + (7 * 60 * 60 * 1000)));
     };
 
     fetchMatchData();
