@@ -5,6 +5,7 @@ import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
 import { apiClient } from "@/api/axios";
 import { getAccessToken } from "@/utils/token";
+import { AxiosError } from "axios";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
@@ -25,8 +26,8 @@ export const Navbar = (props: { pagenow: string }) => {
         }
 
         await refreshCoin(); 
-      } catch (error: any) {
-        if (error.response?.data?.error === "missing authorization header") {
+      } catch (error) {
+        if (error instanceof AxiosError && error.response?.data?.error === "missing authorization header") {
           router.push("/register");
         } else {
           console.error("Error fetching user or refreshing coins:", error);
