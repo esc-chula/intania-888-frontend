@@ -19,30 +19,33 @@ interface SlipStore {
     addSlipItem: (slip: Slip) => void;
     removeSlipItem: (match_id: string) => void;
     updateSlipItem: (match_id: string, updatedSlip: Partial<Slip>) => void;
-    updateSlipRates: () => void;
+    refreshSlipRates: () => Promise<void>;
     calculateTotalRate: (slips: Slip[]) => number;
 }
 
 export const useSlipStore = create(
     persist<SlipStore>(
         (set, get) => ({
-            slipItems: [],
-            totalRate: 1,  // Initialize totalRate as 1 because it's a multiplication accumulator
+            totalRate: 1, 
 
-            // Helper function to calculate totalRate
             calculateTotalRate: (slips: Slip[]) => {
                 return slips.reduce((acc, slip) => acc * slip.rate, 1);
+            },
+
+            get slipItems() {
+                get().refreshSlipRates();
+                return get().slipItems; 
             },
 
             addSlipItem: (slip) =>
                 set((state) => {
                     const exists = state.slipItems.some((item) => item.match_id === slip.match_id);
-                    
+
                     if (!exists) {
                         toast.success('เพิ่มลงในสลิปเรียบร้อยแล้ว!'); 
                         const updatedSlips = [...state.slipItems, slip];
                         return {
-                            slipItems: updatedSlips,
+                            _slipItems: updatedSlips,
                             totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
                         };
                     } else {
@@ -54,7 +57,7 @@ export const useSlipStore = create(
             removeSlipItem: (match_id) =>
                 set((state) => {
                     const updatedSlips = state.slipItems.filter((item) => item.match_id !== match_id);
-                    
+
                     if (updatedSlips.length < state.slipItems.length) {
                         toast.success('สลิปถูกลบเรียบร้อยแล้ว!');
                     } else {
@@ -62,7 +65,7 @@ export const useSlipStore = create(
                     }
 
                     return {
-                        slipItems: updatedSlips,
+                        _slipItems: updatedSlips,
                         totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
                     };
                 }),
@@ -70,7 +73,7 @@ export const useSlipStore = create(
             updateSlipItem: (match_id, updatedSlip) => {
                 const state = get();
                 const slipIndex = state.slipItems.findIndex((item) => item.match_id === match_id);
-                
+
                 if (slipIndex !== -1) {
                     const updatedSlips = [...state.slipItems];
                     updatedSlips[slipIndex] = { ...updatedSlips[slipIndex], ...updatedSlip };
@@ -89,7 +92,8 @@ export const useSlipStore = create(
                 }
             },
 
-            updateSlipRates: async () => {
+            // Refresh the rates of all slip items
+            refreshSlipRates: async () => {
                 const state = get(); 
 
                 const updatedSlips = await Promise.all(
@@ -97,11 +101,7 @@ export const useSlipStore = create(
                         const matchData = await getMatchById(slip.match_id);
 
                         if (matchData?.success) {
-                            if (slip.rate == 0) {
-                                return { ...slip, rate: 2 };
-                            }
-                            
-                            const updatedRate = matchData.data.rate || slip.rate; 
+                            const updatedRate = matchData.data.rate || slip.rate;
                             return { ...slip, rate: updatedRate };
                         }
 
