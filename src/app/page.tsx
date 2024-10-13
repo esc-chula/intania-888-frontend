@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { Suspense, useEffect, useState } from "react";
 import { Header } from "@/components/Header";
@@ -20,14 +20,21 @@ import OAuthCallbackHandler from "@/components/auth/OAuthCallBackHandler";
 import { getAccessToken } from "@/utils/token";
 
 export default function Home() {
-
   const [mainFilter, setMainFilter] = useState("upcomming");
   const [filter, setFilter] = useState("");
-  const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(undefined);
-  const [showMatch, setShowMatch] = useState<allMatchInterface[] | undefined>(undefined);
+  const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(
+    undefined
+  );
+  const [showMatch, setShowMatch] = useState<allMatchInterface[] | undefined>(
+    undefined
+  );
   const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
-  const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(undefined);
-  const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(undefined);
+  const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(
+    undefined
+  );
+  const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(
+    undefined
+  );
 
   // Handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -38,33 +45,44 @@ export default function Home() {
   // Get date when page loads
   useEffect(() => {
     const fetchMatchData = async () => {
-      const token = getAccessToken(); 
-      if (!token) return;  
+      const token = getAccessToken();
+      if (!token) return;
       try {
         const data = (await getMatch())?.data;
         setAllMatch(data);
-        setDateNow(new Date(new Date((await apiClient.get("/matches/current/time")).data.currentTime).getTime() + (7 * 60 * 60 * 1000)));
+        setDateNow(
+          new Date(
+            new Date(
+              (await apiClient.get("/matches/current/time")).data.currentTime
+            ).getTime() +
+              7 * 60 * 60 * 1000
+          )
+        );
       } catch (error) {
         console.error("Failed to fetch matches. Retrying...", error);
       }
     };
 
-  
     const intervalId = setInterval(async () => {
       if (!allMatch) {
         await fetchMatchData();
       } else {
-        clearInterval(intervalId); 
+        clearInterval(intervalId);
       }
-    }, 1000); 
+    }, 1000);
 
     return () => clearInterval(intervalId);
   }, [allMatch]);
 
-
   // Filter data
   useEffect(() => {
-    const fetchMatchSub = async ({ type_id, group_id }: { type_id: string; group_id: string }) => {
+    const fetchMatchSub = async ({
+      type_id,
+      group_id,
+    }: {
+      type_id: string;
+      group_id: string;
+    }) => {
       const res = await getMatchSub({ type_id, group_id });
       if (group_id === "A") {
         setTeamA(res?.data);
@@ -119,9 +137,12 @@ export default function Home() {
           return { ...match, matches: filteredMatches };
         })
         .filter((match) => match.matches.length > 0);
+    }
 
-      fetchMatchSub({ type_id: selectorTextMap[filter], group_id: "A" });
-      fetchMatchSub({ type_id: selectorTextMap[filter], group_id: "B" });
+    if (mainFilter != "upcomming") {
+      const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
+      fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
+      fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
     }
 
     setShowMatch(show);
@@ -138,21 +159,39 @@ export default function Home() {
 
         <div className="w-[95%] sm:w-[700px] items-center flex flex-col space-y-4">
           <p className="text-center max-w-[70vw] sm:hidden text-sm">
-            ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา แชร์กันเยอะๆ
+            ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
+            แชร์กันเยอะๆ
           </p>
-          <MatchMainFilter mainFilter={mainFilter} handdleChangeMainFilter={handdleChangeMainFilter} />
-          <Selector choicesList={choicesList} mainFilter={mainFilter} filter={filter} setFilter={setFilter} />
+          <MatchMainFilter
+            mainFilter={mainFilter}
+            handdleChangeMainFilter={handdleChangeMainFilter}
+          />
+          <Selector
+            choicesList={choicesList}
+            mainFilter={mainFilter}
+            filter={filter}
+            setFilter={setFilter}
+          />
 
           {mainFilter === "overall" ? (
             <LeaderBoardTableDisplay
-              sport={filter === "รวมกีฬาทุกประเภท" || filter === "" ? "" : selectorTextMap[filter]}
+              sport={
+                filter === "รวมกีฬาทุกประเภท" || filter === ""
+                  ? ""
+                  : selectorTextMap[filter]
+              }
               dateNow={dateNow}
               teamA={teamA}
               teamB={teamB}
             />
           ) : showMatch?.length ? (
             showMatch.map((match, index) => (
-              <DisplayMatchs key={index} matches={match.matches} date={match.date} date_D={match.date_D} />
+              <DisplayMatchs
+                key={index}
+                matches={match.matches}
+                date={match.date}
+                date_D={match.date_D}
+              />
             ))
           ) : mainFilter === "upcoming" ? (
             <EmptyState texts={["ไม่มีการแข่งขันที่กำลังแข่งในขณะนี้"]} />
