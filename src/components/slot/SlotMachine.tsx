@@ -11,6 +11,7 @@ import { useCoinStore } from '@/store/coin';
 
 const SlotMachine = () => {
     const refreshCoin = useCoinStore((state) => state.refreshCoin);
+    const currentCoin = useCoinStore((state) => state.coinPoint);
     const reelLength = 100;
     const symbols = ['🍉', '🍋', '🍇', '🍒', '⭐', '🔔'];
 
@@ -34,6 +35,9 @@ const SlotMachine = () => {
     }, []);
 
     const spin = async () => {
+        if (currentCoin < betAmount) {
+            toast.error("เงินของคุณไม่เพียงพอ")
+        }
         if (spinning.some((spin) => spin)) return; 
         setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
 
