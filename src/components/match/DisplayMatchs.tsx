@@ -14,7 +14,7 @@ export const DisplayMatchs = (props: allMatchInterface) => {
         return (
           <div key={index}>
             <Banner
-              location={getLocationForSport(match.sport)}
+              location={getLocationForSport(match.sport, props.date)}
               sport={match.sport}
               league={match.league}
             />
