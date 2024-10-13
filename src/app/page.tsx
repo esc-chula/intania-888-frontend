@@ -96,7 +96,6 @@ export default function Home() {
 
     if (mainFilter === "overall") {
       setShowMatch(allMatch);
-      return;
     }
 
     const sport = selectorTextMap[filter];
@@ -142,7 +141,7 @@ export default function Home() {
     const type_id_temp = filter === "" ? "ALL" : selectorTextMap[filter];
     fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
     fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
-    
+
     setShowMatch(show);
   }, [mainFilter, filter, allMatch, dateNow]);
 
