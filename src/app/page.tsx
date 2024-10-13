@@ -74,15 +74,8 @@ export default function Home() {
     return () => clearInterval(intervalId);
   }, [allMatch]);
 
-  // Filter data
   useEffect(() => {
-    const fetchMatchSub = async ({
-      type_id,
-      group_id,
-    }: {
-      type_id: string;
-      group_id: string;
-    }) => {
+    const fetchMatchSub = async ({ type_id, group_id }: {type_id: string, group_id: string}) => {
       const res = await getMatchSub({ type_id, group_id });
       if (group_id === "A") {
         setTeamA(res?.data);
@@ -93,56 +86,58 @@ export default function Home() {
     };
   
     let show = allMatch;
-
+  
     if (mainFilter === "overall") {
       setShowMatch(allMatch);
-    }
-
-    const sport = selectorTextMap[filter];
-
-    if (mainFilter === "upcomming") {
-      show = show
-        ?.map((match) => {
-          const filteredMatches = match.matches
-            .map((m) => {
-              const filteredRounds = m.round.filter((r) => {
-                if (filter !== "รวมกีฬาทุกประเภท" && filter !== "") {
-                  return r.time_end >= dateNow && m.sport === sport;
-                } else {
-                  return r.time_end >= dateNow;
-                }
-              });
-              return { ...m, round: filteredRounds };
-            })
-            .filter((r) => r.round.length > 0);
-          return { ...match, matches: filteredMatches };
-        })
-        .filter((match) => match.matches.length > 0);
-    } else if (mainFilter === "result") {
-      show = show
-        ?.map((match) => {
-          const filteredMatches = match.matches
-            .map((m) => {
-              const filteredRounds = m.round.filter((r) => {
-                if (filter !== "รวมกีฬาทุกประเภท" && filter !== "") {
-                  return r.time_end < dateNow && m.sport === sport;
-                } else {
-                  return r.time_end < dateNow;
-                }
-              });
-              return { ...m, round: filteredRounds };
-            })
-            .filter((r) => r.round.length > 0);
-          return { ...match, matches: filteredMatches };
-        })
-        .filter((match) => match.matches.length > 0);
-    }
-
-    const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
+      // Ensure fetchMatchSub is called to populate teamA and teamB
+    } else {
+      const sport = selectorTextMap[filter];
+  
+      if (mainFilter === "upcoming") {
+        show = show
+          ?.map((match) => {
+            const filteredMatches = match.matches
+              .map((m) => {
+                const filteredRounds = m.round.filter((r) => {
+                  if (filter !== "รวมกีฬาทุกประเภท" && filter !== "") {
+                    return r.time_end >= dateNow && m.sport === sport;
+                  } else {
+                    return r.time_end >= dateNow;
+                  }
+                });
+                return { ...m, round: filteredRounds };
+              })
+              .filter((r) => r.round.length > 0);
+            return { ...match, matches: filteredMatches };
+          })
+          .filter((match) => match.matches.length > 0);
+      } else if (mainFilter === "result") {
+        show = show
+          ?.map((match) => {
+            const filteredMatches = match.matches
+              .map((m) => {
+                const filteredRounds = m.round.filter((r) => {
+                  if (filter !== "รวมกีฬาทุกประเภท" && filter !== "") {
+                    return r.time_end < dateNow && m.sport === sport;
+                  } else {
+                    return r.time_end < dateNow;
+                  }
+                });
+                return { ...m, round: filteredRounds };
+              })
+              .filter((r) => r.round.length > 0);
+            return { ...match, matches: filteredMatches };
+          })
+          .filter((match) => match.matches.length > 0);
+      }
+  
+      // Fetch match sub-data when mainFilter is 'upcoming' or 'result'
+      const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
       fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
       fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
-
-    setShowMatch(show);
+  
+      setShowMatch(show);
+    }
   }, [mainFilter, filter, allMatch, dateNow]);
 
   return (
