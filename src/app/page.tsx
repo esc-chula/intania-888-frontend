@@ -139,11 +139,9 @@ export default function Home() {
         .filter((match) => match.matches.length > 0);
     }
 
-    if (mainFilter != "upcomming") {
-      const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
-      fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
-      fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
-    }
+    const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
+    fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
+    fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
 
     setShowMatch(show);
   }, [mainFilter, filter, allMatch, dateNow]);
