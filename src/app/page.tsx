@@ -89,7 +89,6 @@ export default function Home() {
   
     if (mainFilter === "overall") {
       setShowMatch(allMatch);
-      // Ensure fetchMatchSub is called to populate teamA and teamB
     } else {
       const sport = selectorTextMap[filter];
   
@@ -131,13 +130,15 @@ export default function Home() {
           .filter((match) => match.matches.length > 0);
       }
   
-      // Fetch match sub-data when mainFilter is 'upcoming' or 'result'
-      const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
-      fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
-      fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
-  
       setShowMatch(show);
     }
+  
+    // Corrected assignment of type_id_temp
+    const type_id_temp = filter === "" ? "ALL" : selectorTextMap[filter];
+  
+    // Ensure fetchMatchSub is called to populate teamA and teamB
+    fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
+    fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
   }, [mainFilter, filter, allMatch, dateNow]);
 
   return (
