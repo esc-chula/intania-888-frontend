@@ -26,9 +26,9 @@ export function parseThaiDate(thaiDateString: string): Date {
 
 
 const DATE_RANGES = {
-  groupStage: { start: new Date("2067-10-10"), end: new Date("2067-10-30") },
-  semiFinal: { start: new Date("2067-10-31"), end: new Date("2067-11-05") },
-  final: { start: new Date("2067-11-05"), end: new Date("2067-11-08") },
+  groupStage: { start: new Date("2024-10-10"), end: new Date("2024-10-30") },
+  semiFinal: { start: new Date("2024-10-31"), end: new Date("2024-11-05") },
+  final: { start: new Date("2024-11-05"), end: new Date("2024-11-08") },
 } as const;
 
 const LOCATION_MAP: Record<Round, Record<Sport, string>> = {
