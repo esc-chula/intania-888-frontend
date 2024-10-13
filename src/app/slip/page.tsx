@@ -14,7 +14,7 @@ import { useCoinStore } from "@/store/coin";
 export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);
   const totalRate = useSlipStore((state) => state.totalRate);
-  const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
+  const updateSlipRates = useSlipStore((state) => state.refreshSlipRates);
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const refreshCoin = useCoinStore((state) => state.refreshCoin);

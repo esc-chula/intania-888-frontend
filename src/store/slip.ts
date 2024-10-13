@@ -14,7 +14,8 @@ interface Slip {
 }
 
 interface SlipStore {
-    slipItems: Slip[];
+    _slipItems: Slip[];  
+    slipItems: Slip[];  
     totalRate: number;
     addSlipItem: (slip: Slip) => void;
     removeSlipItem: (match_id: string) => void;
@@ -26,27 +27,27 @@ interface SlipStore {
 export const useSlipStore = create(
     persist<SlipStore>(
         (set, get) => ({
+            _slipItems: [],  
             totalRate: 1, 
-
             calculateTotalRate: (slips: Slip[]) => {
                 return slips.reduce((acc, slip) => acc * slip.rate, 1);
             },
 
             get slipItems() {
                 get().refreshSlipRates();
-                return get().slipItems; 
+                return get()._slipItems; 
             },
 
             addSlipItem: (slip) =>
                 set((state) => {
-                    const exists = state.slipItems.some((item) => item.match_id === slip.match_id);
+                    const exists = state._slipItems.some((item) => item.match_id === slip.match_id);
 
                     if (!exists) {
                         toast.success('เพิ่มลงในสลิปเรียบร้อยแล้ว!'); 
-                        const updatedSlips = [...state.slipItems, slip];
+                        const updatedSlips = [...state._slipItems, slip];
                         return {
                             _slipItems: updatedSlips,
-                            totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
+                            totalRate: get().calculateTotalRate(updatedSlips),
                         };
                     } else {
                         toast.error('มีสลิปนี้อยู่แล้วในระบบ!');
@@ -56,9 +57,9 @@ export const useSlipStore = create(
 
             removeSlipItem: (match_id) =>
                 set((state) => {
-                    const updatedSlips = state.slipItems.filter((item) => item.match_id !== match_id);
+                    const updatedSlips = state._slipItems.filter((item) => item.match_id !== match_id);
 
-                    if (updatedSlips.length < state.slipItems.length) {
+                    if (updatedSlips.length < state._slipItems.length) {
                         toast.success('สลิปถูกลบเรียบร้อยแล้ว!');
                     } else {
                         toast.error('ไม่พบสลิปนี้ในระบบ!');
@@ -66,16 +67,16 @@ export const useSlipStore = create(
 
                     return {
                         _slipItems: updatedSlips,
-                        totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
+                        totalRate: get().calculateTotalRate(updatedSlips), 
                     };
                 }),
 
             updateSlipItem: (match_id, updatedSlip) => {
                 const state = get();
-                const slipIndex = state.slipItems.findIndex((item) => item.match_id === match_id);
+                const slipIndex = state._slipItems.findIndex((item) => item.match_id === match_id);
 
                 if (slipIndex !== -1) {
-                    const updatedSlips = [...state.slipItems];
+                    const updatedSlips = [...state._slipItems];
                     updatedSlips[slipIndex] = { ...updatedSlips[slipIndex], ...updatedSlip };
                     getMatchById(updatedSlips[slipIndex].match_id).then((match) => {
                         if (updatedSlips[slipIndex].betting_on == updatedSlips[slipIndex].team_a_color) {
@@ -85,8 +86,8 @@ export const useSlipStore = create(
                             updatedSlips[slipIndex].rate = match?.data.team_b_rate || 2;
                         }
                         set({ 
-                            slipItems: updatedSlips,
-                            totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
+                            _slipItems: updatedSlips,
+                            totalRate: get().calculateTotalRate(updatedSlips), 
                         });
                     });
                 }
@@ -97,7 +98,7 @@ export const useSlipStore = create(
                 const state = get(); 
 
                 const updatedSlips = await Promise.all(
-                    state.slipItems.map(async (slip) => {
+                    state._slipItems.map(async (slip) => {
                         const matchData = await getMatchById(slip.match_id);
 
                         if (matchData?.success) {
@@ -110,7 +111,7 @@ export const useSlipStore = create(
                 );
 
                 set({
-                    slipItems: updatedSlips,
+                    _slipItems: updatedSlips,
                     totalRate: get().calculateTotalRate(updatedSlips),
                 });
             },
