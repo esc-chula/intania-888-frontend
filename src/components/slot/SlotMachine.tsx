@@ -37,6 +37,7 @@ const SlotMachine = () => {
     const spin = async () => {
         if (currentCoin < betAmount) {
             toast.error("เงินของคุณไม่เพียงพอ")
+            return;
         }
         if (spinning.some((spin) => spin)) return; 
         setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
