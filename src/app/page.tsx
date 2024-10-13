@@ -82,7 +82,7 @@ export default function Home() {
       type_id: string;
     }) => {
       const resA = await getMatchSub({ type_id, group_id : "A" });
-      const resB = await getMatchSub({ type_id, group_id : "A" });
+      const resB = await getMatchSub({ type_id, group_id : "B" });
       setTeamA(resA?.data)
       setTeamB(resB?.data);
     };
