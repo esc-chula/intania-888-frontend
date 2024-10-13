@@ -75,6 +75,17 @@ export default function Home() {
       return res?.data;
     };
 
+    if (mainFilter != "upcomming") {
+      fetchMatchSub({
+        type_id: selectorTextMap[filter],
+        group_id: "A",
+      });
+      fetchMatchSub({
+        type_id: selectorTextMap[filter],
+        group_id: "B",
+      });
+    }
+    
     let show = allMatch;
 
     if (mainFilter === "overall") {
@@ -120,15 +131,6 @@ export default function Home() {
           return { ...match, matches: filterM };
         })
         .filter((match) => match.matches.length > 0);
-
-      fetchMatchSub({
-        type_id: selectorTextMap[filter],
-        group_id: "A",
-      });
-      fetchMatchSub({
-        type_id: selectorTextMap[filter],
-        group_id: "B",
-      });
     }
 
     setShowMatch(show);
