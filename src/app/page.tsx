@@ -78,18 +78,13 @@ export default function Home() {
   useEffect(() => {
     const fetchMatchSub = async ({
       type_id,
-      group_id,
     }: {
       type_id: string;
-      group_id: string;
     }) => {
-      const res = await getMatchSub({ type_id, group_id });
-      if (group_id === "A") {
-        setTeamA(res?.data);
-      } else {
-        setTeamB(res?.data);
-      }
-      return res?.data;
+      const resA = await getMatchSub({ type_id, group_id : "A" });
+      const resB = await getMatchSub({ type_id, group_id : "A" });
+      setTeamA(resA?.data)
+      setTeamB(resB?.data);
     };
 
     let show = allMatch;
@@ -139,8 +134,7 @@ export default function Home() {
     }
 
     const type_id_temp = filter === "" ? "ALL" : selectorTextMap[filter];
-    fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
-    fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
+    fetchMatchSub({ type_id: type_id_temp });
 
     setShowMatch(show);
   }, [mainFilter, filter, allMatch, dateNow]);
