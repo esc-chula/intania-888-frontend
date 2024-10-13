@@ -41,7 +41,7 @@ export const LeaderBoardTableDisplay = (props: {
       <p className="text-sm text-neutral-500">Update : {lastUpdate}</p>
       <LeaderBoardTable
         data={data}
-        varience={props.sport === "" ? "123" : "WDL"}
+        varience={"WDL"}
       />
 
       {props.sport != "" && (
