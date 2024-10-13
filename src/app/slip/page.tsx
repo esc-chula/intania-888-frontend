@@ -12,16 +12,14 @@ import toast from "react-hot-toast";
 import { useCoinStore } from "@/store/coin";
 
 export default function Home() {
-  const getSlipItems = useSlipStore((state) => state.getSlipItems);
+  const slipItems = useSlipStore((state) => state.slipItems);
   const totalRate = useSlipStore((state) => state.totalRate);
   const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
-  const slipItems = getSlipItems();
-  const [isHydrated, setIsHydrated] = useState(false);
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const refreshCoin = useCoinStore((state) => state.refreshCoin);
   useEffect(() => {
-    setIsHydrated(true);
     updateSlipRates();
   }, [updateSlipRates]);
 
@@ -61,9 +59,6 @@ export default function Home() {
     }
   };
 
-  if (!isHydrated) {
-    return null;
-  }
 
   return (
     <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen">

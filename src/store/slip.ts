@@ -19,7 +19,6 @@ interface SlipStore {
     totalRate: number;
     addSlipItem: (slip: Slip) => void;
     removeSlipItem: (match_id: string) => void;
-    getSlipItems: () => Slip[]
     updateSlipItem: (match_id: string, updatedSlip: Partial<Slip>) => void;
     updateSlipRates: () => void;
     calculateTotalRate: (slips: Slip[]) => number;
@@ -30,15 +29,9 @@ export const useSlipStore = create(
         (set, get) => ({
             slipItems: [],
             totalRate: 1,  // Initialize totalRate as 1 because it's a multiplication accumulator
-
             // Helper function to calculate totalRate
             calculateTotalRate: (slips: Slip[]) => {
                 return slips.reduce((acc, slip) => acc * slip.rate, 1);
-            },
-            getSlipItems: () => {
-                const state = get();
-                state.updateSlipRates(); 
-                return state.slipItems; 
             },
             addSlipItem: (slip) =>
                 set((state) => {
