@@ -40,7 +40,7 @@ export const LeaderBoardTableDisplay = (props: {
     <>
       <p className="text-sm text-neutral-500">Update : {lastUpdate}</p>
       <LeaderBoardTable
-        data={undefined}
+        data={data}
         varience={props.sport === "" ? "123" : "WDL"}
       />
 
@@ -58,7 +58,7 @@ export const LeaderBoardTableDisplay = (props: {
           <div className="w-[90vw] sm:w-[600px] flex flex-col items-start justify-start space-y-4">
             <p className="font-semibold">กลุ่ม B</p>
             {data != undefined && (
-              <LeaderBoardTable data={props.teamA} varience="WDL" />
+              <LeaderBoardTable data={props.teamB} varience="WDL" />
             )}
           </div>
         </div>
