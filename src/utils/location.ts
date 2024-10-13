@@ -58,9 +58,7 @@ type Round = "groupStage" | "semiFinal" | "final";
 const getRoundForDate = (date: Date): Round | null => {
 
   for (const [round, { start, end }] of Object.entries(DATE_RANGES)) {
-    const startAdjusted = convertToTimeZone(start, 7);
-    const endAdjusted = convertToTimeZone(end, 7);
-    if (date >= startAdjusted && date <= endAdjusted) {
+    if (date >= start && date <= end) {
       return round as Round;
     }
   }
