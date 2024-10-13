@@ -9,6 +9,10 @@ RUN pnpm install
 
 COPY . .
 
+ARG NEXT_PUBLIC_API_BASE_URL
+
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+
 RUN pnpm build
 
 FROM node:21-alpine3.18 AS production
