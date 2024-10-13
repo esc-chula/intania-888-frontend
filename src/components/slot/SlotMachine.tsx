@@ -106,7 +106,7 @@ const SlotMachine = () => {
         <div className="flex flex-col items-center justify-center space-y-4">
             <div className='flex items-center flex-col space-y-2 py-4'>
                 <Image src={'/logos/slotMessage.svg'} alt="slotMessage" width={200} height={50} />
-                <p className='text-white font-semibold text-xs'>หมุนสล็อตให้ได้ถุงเงินเพื่อรับเหรียญรางวัล ขอให้โชคดี!</p>
+                <p className='text-white font-semibold text-xs'>หมุนสล็อตเพื่อลุ้นรับเหรียญรางวัล ขอให้โชคดี!</p>
             </div>
 
             <div className='flex items-center justify-center space-x-6'>
