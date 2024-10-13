@@ -1,8 +1,3 @@
-const convertToTimeZone = (date: Date, offset: number): Date => {
-  const utcDate = date.getTime() + date.getTimezoneOffset() * 60000;
-  return new Date(utcDate + 3600000 * offset);
-};
-
 const thaiMonths = [
   "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", 
   "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
