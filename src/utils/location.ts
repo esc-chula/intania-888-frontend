@@ -21,7 +21,7 @@ export function parseThaiDate(thaiDateString: string): Date {
 
 
 const DATE_RANGES = {
-  groupStage: { start: new Date("2024-10-10"), end: new Date("2024-10-30") },
+  groupStage: { start: new Date("2024-10-10"), end: new Date("2024-10-30T23:59:59") },
   semiFinal: { start: new Date("2024-10-31"), end: new Date("2024-11-05") },
   final: { start: new Date("2024-11-05"), end: new Date("2024-11-08") },
 } as const;
