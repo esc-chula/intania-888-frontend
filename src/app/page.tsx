@@ -91,7 +91,9 @@ export default function Home() {
       }
       return res?.data;
     };
-
+    const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
+      fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
+      fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
     let show = allMatch;
 
     if (mainFilter === "overall") {
@@ -137,12 +139,6 @@ export default function Home() {
           return { ...match, matches: filteredMatches };
         })
         .filter((match) => match.matches.length > 0);
-    }
-
-    if (mainFilter == "result" || mainFilter == "overall") {
-      const type_id_temp = filter === "" ? selectorTextMap[filter] : "ALL";
-      fetchMatchSub({ type_id: type_id_temp, group_id: "A" });
-      fetchMatchSub({ type_id: type_id_temp, group_id: "B" });
     }
 
     setShowMatch(show);
