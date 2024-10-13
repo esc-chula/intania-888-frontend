@@ -38,16 +38,7 @@ export const LeaderBoardTable = (props: {
                   className="text-black w-full bg-white font-semibold h-16 flex flex-row border-y-[0.5px]"
                 >
                   <td className="flex items-center justify-center w-[15%] h-full ">
-                    {props.varience === "123"
-                      ? index + 1
-                      : props.varience === "WDL" &&
-                        (props.data === undefined || props.data.length > 3)
-                      ? index >= 2 && index <= 3
-                        ? "3-4"
-                        : index >= 4 && index <= 5
-                        ? "5-6"
-                        : index + 1
-                      : index + 1}
+                    {index + 1}
                   </td>
                   <td className="flex items-center justify-start w-[20%] h-full ">
                     <MatchColorLogo color={item.id} />
