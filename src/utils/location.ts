@@ -1,7 +1,28 @@
 const convertToTimeZone = (date: Date, offset: number): Date => {
   const utcDate = date.getTime() + date.getTimezoneOffset() * 60000;
-  return new Date(utcDate + 3600000 * offset); // Adjusting for the timezone offset
+  return new Date(utcDate + 3600000 * offset);
 };
+
+const thaiMonths = [
+  "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", 
+  "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+];
+
+export function parseThaiDate(thaiDateString: string): Date {
+  const dateRegex = /วัน\w+ที่ (\d{1,2}) (\w+) (\d{4})/; 
+  const match = thaiDateString.match(dateRegex);
+
+  if (!match) return new Date();
+
+  const day = parseInt(match[1], 10);
+  const monthIndex = thaiMonths.indexOf(match[2]);
+  const buddhistYear = parseInt(match[3], 10);
+  const year = buddhistYear - 543; 
+
+  if (monthIndex === -1) return new Date(); 
+
+  return new Date(year, monthIndex, day); 
+}
 
 
 const DATE_RANGES = {
@@ -47,7 +68,7 @@ const getRoundForDate = (date: Date, timezoneOffset: number): Round | null => {
   return null;
 };
 
-const getLocationForSport = (sport: string, date: string): string => {
+const getLocationForSport = (sport: string, date: Date): string => {
   const dateObj = new Date(date);
   const timezoneOffset = 7;
 
