@@ -1,7 +1,7 @@
 import { getColorLeaderboard } from "@/api/match/getColorLeaderboard";
 import { useEffect, useState } from "react";
 import { LeaderBoardTable } from "./ColorLeaderBoardTable";
-import { leaderboardDataInterface } from "./ColorLeaderBoardUtils";
+import { leaderboardDataInterface, sortLeaderboardDataByWon } from "./ColorLeaderBoardUtils";
 
 export const LeaderBoardTableDisplay = (props: {
   sport: string;
@@ -24,7 +24,7 @@ export const LeaderBoardTableDisplay = (props: {
 
     const fetchData = async () => {
       const data = await getData();
-      setData(data);
+      setData(sortLeaderboardDataByWon(data));
     };
 
     fetchData();
@@ -52,13 +52,13 @@ export const LeaderBoardTableDisplay = (props: {
           <div className="w-[90vw] sm:w-[600px] flex flex-col items-start justify-start space-y-4">
             <p className="font-semibold">กลุ่ม A</p>
             {data != undefined && (
-              <LeaderBoardTable data={props.teamA} varience="WDL" />
+              <LeaderBoardTable data={sortLeaderboardDataByWon(props.teamA || [])} varience="WDL" />
             )}
           </div>
           <div className="w-[90vw] sm:w-[600px] flex flex-col items-start justify-start space-y-4">
             <p className="font-semibold">กลุ่ม B</p>
             {data != undefined && (
-              <LeaderBoardTable data={props.teamB} varience="WDL" />
+              <LeaderBoardTable data={sortLeaderboardDataByWon(props.teamB || [])} varience="WDL" />
             )}
           </div>
         </div>
