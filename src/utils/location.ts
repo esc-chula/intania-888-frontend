@@ -55,13 +55,12 @@ const LOCATION_MAP: Record<Round, Record<Sport, string>> = {
 type Sport = "BASKETBALL" | "FOOTBALL" | "VOLLEYBALL" | "CHAIRBALL";
 type Round = "groupStage" | "semiFinal" | "final";
 
-const getRoundForDate = (date: Date, timezoneOffset: number): Round | null => {
-  const adjustedDate = convertToTimeZone(date, timezoneOffset);
+const getRoundForDate = (date: Date): Round | null => {
 
   for (const [round, { start, end }] of Object.entries(DATE_RANGES)) {
-    const startAdjusted = convertToTimeZone(start, timezoneOffset);
-    const endAdjusted = convertToTimeZone(end, timezoneOffset);
-    if (adjustedDate >= startAdjusted && adjustedDate <= endAdjusted) {
+    const startAdjusted = convertToTimeZone(start, 7);
+    const endAdjusted = convertToTimeZone(end, 7);
+    if (date >= startAdjusted && date <= endAdjusted) {
       return round as Round;
     }
   }
@@ -70,9 +69,8 @@ const getRoundForDate = (date: Date, timezoneOffset: number): Round | null => {
 
 const getLocationForSport = (sport: string, date: Date): string => {
   const dateObj = new Date(date);
-  const timezoneOffset = 7;
 
-  const round = getRoundForDate(dateObj, timezoneOffset);
+  const round = getRoundForDate(dateObj);
   if (!round) {
     return "Unknown date or sport";
   }
