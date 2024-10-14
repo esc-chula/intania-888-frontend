@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
 import { apiClient } from "@/api/axios";
-import { getAccessToken } from "@/utils/token";
 import { AxiosError } from "axios";
 
 export const Navbar = (props: { pagenow: string }) => {
