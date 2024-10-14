@@ -14,12 +14,6 @@ export const Navbar = (props: { pagenow: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = getAccessToken();
-        if (!token) {
-          router.push("/register"); 
-          return;
-        }
-
         const me = await apiClient.get("/auth/me");
         if (me.data.profile?.id && (!me.data.profile?.nick_name || !me.data.profile?.group_id)) {
             router.push("/register/profile")
@@ -28,7 +22,7 @@ export const Navbar = (props: { pagenow: string }) => {
         await refreshCoin(); 
       } catch (error) {
         if (error instanceof AxiosError && error.response?.data?.error === "missing authorization header") {
-          router.push("/register");
+            router.push("/register");
         } else {
           console.error("Error fetching user or refreshing coins:", error);
         }
