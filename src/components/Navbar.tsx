@@ -5,7 +5,6 @@ import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
 import { apiClient } from "@/api/axios";
 import { AxiosError } from "axios";
-import { refreshToken } from "@/utils/token";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
