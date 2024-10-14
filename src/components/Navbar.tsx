@@ -5,6 +5,7 @@ import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
 import { apiClient } from "@/api/axios";
 import { AxiosError } from "axios";
+import { refreshToken } from "@/utils/token";
 
 export const Navbar = (props: { pagenow: string }) => {
   const router = useRouter();
@@ -22,6 +23,8 @@ export const Navbar = (props: { pagenow: string }) => {
       } catch (error) {
         if (error instanceof AxiosError && error.response?.data?.error === "missing authorization header") {
             router.push("/register");
+        } else if (error instanceof AxiosError && error.response?.data?.error === "invalid or expired token") {
+            refreshToken();
         } else {
           console.error("Error fetching user or refreshing coins:", error);
         }
