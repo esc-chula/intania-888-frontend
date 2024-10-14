@@ -22,6 +22,7 @@ const RegisterProfile = () => {
     const success = await handleUpdateProfile(profile.id, {
       nickName,
       groupId: group,
+      remainingCoin: user.profile.remainingCoin,
     });
 
     if (!success) {
