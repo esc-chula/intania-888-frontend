@@ -24,7 +24,7 @@ export const Navbar = (props: { pagenow: string }) => {
         if (error instanceof AxiosError && error.response?.data?.error === "missing authorization header") {
             router.push("/register");
         } else if (error instanceof AxiosError && error.response?.data?.error === "invalid or expired token") {
-            refreshToken();
+          router.push("/register");
         } else {
           console.error("Error fetching user or refreshing coins:", error);
         }
