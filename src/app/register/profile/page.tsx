@@ -6,14 +6,12 @@ import { Selector } from "@/components/Selector";
 import { groupList } from "@/constant/groupList";
 import { handleUpdateProfile } from "@/api/user/profile";
 import useAuth from "@/hooks/useAuth";
-import { useCoinStore } from "@/store/coin";
 
 const RegisterProfile = () => {
   const [nickName, setNickName] = useState("");
   const [group, setGroup] = useState("--เลือกกรุ๊ป--");
 
   const { user } = useAuth();
-  const coin = useCoinStore((state) => state.coinPoint);
 
   const onClickUpdateProfile = async () => {
     if (!user) {
@@ -23,7 +21,7 @@ const RegisterProfile = () => {
     const success = await handleUpdateProfile(profile.id, {
       nickName,
       groupId: group,
-      remainingCoin: coin
+      remainingCoin: 888.88
     });
 
     if (!success) {
