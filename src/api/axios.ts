@@ -23,7 +23,6 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-      localStorage.removeItem("credentials");
       return Promise.reject(error);
   }
 );
