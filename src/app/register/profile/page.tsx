@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Intania888Logo } from "../../../../public/logos/Intania888-logo";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Selector } from "@/components/Selector";
 import { groupList } from "@/constant/groupList";
 import { handleUpdateProfile } from "@/api/user/profile";
@@ -10,13 +10,15 @@ import useAuth from "@/hooks/useAuth";
 const RegisterProfile = () => {
   const [nickName, setNickName] = useState("");
   const [group, setGroup] = useState("--เลือกกรุ๊ป--");
-
+  const router = useRouter();
   const { user } = useAuth();
 
   const onClickUpdateProfile = async () => {
+
     if (!user) {
       return;
     }
+    
     const profile = user.profile;
     const success = await handleUpdateProfile(profile.id, {
       nickName,
@@ -29,6 +31,7 @@ const RegisterProfile = () => {
       return;
     }
     
+    router.push('/')
   };
   return (
     <div className="flex flex-col items-center justify-center space-y-5 text-white h-screen">
@@ -57,13 +60,12 @@ const RegisterProfile = () => {
         </div>
       </div>
       <section className="flex flex-col items-center justify-center space-y-1.5 font-semibold">
-        <Link
+        <div
           className="flex justify-center items-center bg-gradient-to-t from-[#4E0F15] to-[#68141C] w-64 h-11 rounded-md"
-          href="/"
           onClick={onClickUpdateProfile}
         >
           เริ่มต้นใช้งาน
-        </Link>
+        </div>
       </section>
     </div>
   );
