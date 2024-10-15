@@ -96,12 +96,13 @@ export const useSlipStore = create(
                         const matchData = await getMatchById(slip.match_id);
 
                         if (matchData?.success) {
-                            if (slip.rate == 0) {
-                                return { ...slip, rate: 2 };
-                            }
-                            
-                            const updatedRate = matchData.data.rate || slip.rate; 
-                            return { ...slip, rate: updatedRate };
+                            const newRate = slip.betting_on === slip.team_a_color 
+                                ? matchData.data.team_a_rate 
+                                : slip.betting_on === slip.team_b_color 
+                                ? matchData.data.team_b_rate 
+                                : slip.rate;
+
+                            return { ...slip, rate: newRate || 2 };
                         }
 
                         return slip; 

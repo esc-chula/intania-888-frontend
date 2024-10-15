@@ -15,6 +15,7 @@ export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);
   const totalRate = useSlipStore((state) => state.totalRate);
   const updateSlipRates = useSlipStore((state) => state.updateSlipRates);
+
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +33,7 @@ export default function Home() {
     }
 
     setIsLoading(true);
-
+    updateSlipRates();
     const slipData = {
       total: betAmountNum,
       lines: slipItems.map((item) => ({
