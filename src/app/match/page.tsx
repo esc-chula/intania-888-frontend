@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
 import { apiClient } from "@/api/axios";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
+import { Footer } from "@/components/Footer";
 
 export default function Home() {
   // declare useState
@@ -49,7 +50,10 @@ export default function Home() {
 
       setDateNow(
         new Date(
-          new Date((await apiClient.get("/matches/current/time")).data.currentTime).getTime() + (7 * 60 * 60 * 1000)
+          new Date(
+            (await apiClient.get("/matches/current/time")).data.currentTime
+          ).getTime() +
+            7 * 60 * 60 * 1000
         )
       );
     };
@@ -85,7 +89,7 @@ export default function Home() {
         group_id: "B",
       });
     }
-    
+
     let show = allMatch;
 
     if (mainFilter === "overall") {
@@ -188,6 +192,7 @@ export default function Home() {
 
         <span className="w-2 h-4" />
       </div>
+      <Footer />
     </div>
   );
 }

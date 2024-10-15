@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import { colorScheme } from './src/styles/tailwind/color.js';
+import { colorScheme } from "./src/styles/tailwind/color.js";
 
 const config: Config = {
   content: [
@@ -10,6 +10,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: colorScheme,
+      animation: {
+        blink: "blink 1.5s linear infinite",
+      },
+      keyframes: {
+        blink: {
+          "0%, 100%": { filter: "brightness(120%)" },
+          "50%": { filter: "brightness(90%)" },
+        },
+      },
     },
   },
   plugins: [],

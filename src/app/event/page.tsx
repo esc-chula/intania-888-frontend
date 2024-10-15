@@ -2,11 +2,12 @@
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
 import Link from "next/link";
-import SlotMachine  from '@/components/slot/SlotMachine';
+import SlotMachine from "@/components/slot/SlotMachine";
+import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen">
+    <div className="flex flex-col items-center justify-start space-y-4 min-h-screen w-screen pb-32">
       <div className="relative m-0 p-0 top-0 flex flex-col w-full">
         <Header />
         <Navbar pagenow="event" />
@@ -32,6 +33,7 @@ export default function Home() {
         </div>
       </div>
       <SlotMachine />
+      <Footer />
     </div>
   );
 }

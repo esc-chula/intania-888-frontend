@@ -10,6 +10,7 @@ import { Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useCoinStore } from "@/store/coin";
+import { Footer } from "@/components/Footer";
 
 export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);
@@ -60,9 +61,8 @@ export default function Home() {
     }
   };
 
-
   return (
-    <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen">
+    <div className="flex flex-col items-center justify-start space-y-4 min-h-screen w-screen pb-32">
       <div className="relative m-0 p-0 top-0 flex flex-col w-full">
         <Header />
         <Navbar pagenow="slip" />
@@ -139,7 +139,9 @@ export default function Home() {
               </span>
             </p>
             <p className="text-black">
-              {slipItems.length > 1 ? `เรทปัจจุบันรวม : ${totalRate.toFixed(2)}` : ""}
+              {slipItems.length > 1
+                ? `เรทปัจจุบันรวม : ${totalRate.toFixed(2)}`
+                : ""}
             </p>
           </section>
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
@@ -157,7 +159,11 @@ export default function Home() {
           <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
             <p className="text-black">เหรียญที่พึงได้</p>
             <div className="flex items-center space-x-1">
-              <p className="text-black font-semibold">{isNaN(totalRate * parseFloat(betAmount)) ? "0.00" : (totalRate * parseFloat(betAmount)).toFixed(2)}</p>
+              <p className="text-black font-semibold">
+                {isNaN(totalRate * parseFloat(betAmount))
+                  ? "0.00"
+                  : (totalRate * parseFloat(betAmount)).toFixed(2)}
+              </p>
               <Coins color="yellow" />
             </div>
           </section>
@@ -173,6 +179,7 @@ export default function Home() {
           </section>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

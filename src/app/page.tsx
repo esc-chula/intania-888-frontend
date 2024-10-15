@@ -18,6 +18,7 @@ import { apiClient } from "@/api/axios";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
 import OAuthCallbackHandler from "@/components/auth/OAuthCallBackHandler";
 import { getAccessToken } from "@/utils/token";
+import { Footer } from "@/components/Footer";
 
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcomming");
@@ -76,14 +77,10 @@ export default function Home() {
 
   // Filter data
   useEffect(() => {
-    const fetchMatchSub = async ({
-      type_id,
-    }: {
-      type_id: string;
-    }) => {
-      const resA = await getMatchSub({ type_id, group_id : "A" });
-      const resB = await getMatchSub({ type_id, group_id : "B" });
-      setTeamA(resA?.data)
+    const fetchMatchSub = async ({ type_id }: { type_id: string }) => {
+      const resA = await getMatchSub({ type_id, group_id: "A" });
+      const resB = await getMatchSub({ type_id, group_id: "B" });
+      setTeamA(resA?.data);
       setTeamB(resB?.data);
     };
 
@@ -142,7 +139,7 @@ export default function Home() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <OAuthCallbackHandler />
-      <div className="flex flex-col items-center justify-start space-y-4 h-screen w-screen text-white">
+      <div className="flex flex-col items-center justify-start space-y-4 min-h-screen w-screen pb-32 text-white">
         <div className="relative m-0 p-0 top-0 flex flex-col w-full">
           <Header />
           <Navbar pagenow="match" />
@@ -193,6 +190,7 @@ export default function Home() {
           <span className="w-2 h-4" />
         </div>
       </div>
+      <Footer />
     </Suspense>
   );
 }
