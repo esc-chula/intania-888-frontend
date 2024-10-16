@@ -37,8 +37,8 @@ export const cleanData = (props: {
         const endTime = new Date(item.end_time);
         endTime.setHours(endTime.getHours() - 7);
         round.push({
-          time_start: formatTime(strTime),
-          time_end: formatTime(endTime),
+          time_start: strTime,
+          time_end: endTime,
           colorA: item.team_a,
           colorB: item.team_b,
           rateA: item.team_a_rate === null ? 0 : Number(item.team_a_rate),
@@ -48,9 +48,9 @@ export const cleanData = (props: {
           status:
             item.team_a === null || item.team_b === null
               ? "TBA"
-              : Date.now() > endTime.getTime()
+              : new Date(Date.now()) > endTime
               ? "done"
-              : Date.now() > strTime.getTime()
+              : new Date(Date.now()) > strTime
               ? "playing"
               : "bet",
         });
@@ -73,7 +73,7 @@ export const cleanData = (props: {
 };
 
 // Time Formatting --------------
-const formatTime = (date: Date) => {
+export const formatTime = (date: Date) => {
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;

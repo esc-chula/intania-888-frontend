@@ -48,24 +48,51 @@ export default function Home() {
       return;
     }
 
+    const sport = selectorTextMap[filter];
+
     if (mainFilter === "upcomming") {
-      show = allMatch?.filter((item) => item.date_D >= new Date(Date.now()));
-    } else if (mainFilter === "result") {
-      show = allMatch?.filter((item) => item.date_D < new Date(Date.now()));
-    }
-
-    if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
-      const sport = selectorTextMap[filter];
-
       show = show
         ?.map((match) => {
-          const filterM = match.matches.filter((m) => m.sport === sport);
+          const filterM = match.matches
+            .map((m) => {
+              const filterd_r = m.round.filter(
+                (r) => r.time_end >= new Date(Date.now())
+              );
+              return { ...m, round: filterd_r };
+            })
+            .filter((r) => r.round.length > 0);
+          return { ...match, matches: filterM };
+        })
+        .filter((match) => match.matches.length > 0);
+    } else if (mainFilter === "result") {
+      show = show
+        ?.map((match) => {
+          const filterM = match.matches
+            .map((m) => {
+              const filterd_r = m.round.filter(
+                (r) => r.time_end < new Date(Date.now())
+              );
+              return { ...m, round: filterd_r };
+            })
+            .filter((r) => r.round.length > 0);
           return { ...match, matches: filterM };
         })
         .filter((match) => match.matches.length > 0);
     }
 
+    // if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
+    //   const sport = selectorTextMap[filter];
+
+    //   show = show
+    //     ?.map((match) => {
+    //       const filterM = match.matches.filter((m) => m.sport === sport);
+    //       return { ...match, matches: filterM };
+    //     })
+    //     .filter((match) => match.matches.length > 0);
+    // }
+
     setShowMatch(show);
+    console.log("----");
     console.log(show);
   }, [mainFilter, filter, allMatch]);
 

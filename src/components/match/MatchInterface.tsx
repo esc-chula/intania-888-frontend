@@ -28,8 +28,8 @@ export interface rawDataInterface {
 }
 
 export type RoundItem = {
-  time_start: string;
-  time_end: string;
+  time_start: Date;
+  time_end: Date;
   colorA: string;
   colorB: string;
   rateA: number;

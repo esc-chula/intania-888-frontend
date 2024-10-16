@@ -1,12 +1,13 @@
 import { Matchbar } from "./MatchBar";
 import { MatchColorLogo } from "./MatchColorLogo";
 import { RoundItem } from "./MatchInterface";
+import { formatTime } from "./MatchUtils";
 
 export const Round = ({ round }: { round: RoundItem }) => {
   return (
     <div className="bg-neutral-100 flex flex-row h-16 font-semibold text-black sm:text-[1rem] text-[0.7rem]">
       <div className="w-[20%] flex items-center justify-center text-indigo-700">
-        {round.time_start}
+        {formatTime(round.time_start)}
       </div>
       <div className="w-[60%] flex items-center justify-center space-x-2">
         <MatchColorLogo color={round.colorA} />
