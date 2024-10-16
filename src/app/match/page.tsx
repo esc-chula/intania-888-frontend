@@ -55,9 +55,15 @@ export default function Home() {
         ?.map((match) => {
           const filterM = match.matches
             .map((m) => {
-              const filterd_r = m.round.filter(
-                (r) => r.time_end >= new Date(Date.now())
-              );
+              const filterd_r = m.round.filter((r) => {
+                if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
+                  return (
+                    r.time_end >= new Date(Date.now()) && m.sport === sport
+                  );
+                } else {
+                  return r.time_end >= new Date(Date.now());
+                }
+              });
               return { ...m, round: filterd_r };
             })
             .filter((r) => r.round.length > 0);
@@ -69,9 +75,13 @@ export default function Home() {
         ?.map((match) => {
           const filterM = match.matches
             .map((m) => {
-              const filterd_r = m.round.filter(
-                (r) => r.time_end < new Date(Date.now())
-              );
+              const filterd_r = m.round.filter((r) => {
+                if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
+                  return r.time_end < new Date(Date.now()) && m.sport === sport;
+                } else {
+                  return r.time_end < new Date(Date.now());
+                }
+              });
               return { ...m, round: filterd_r };
             })
             .filter((r) => r.round.length > 0);
@@ -80,20 +90,7 @@ export default function Home() {
         .filter((match) => match.matches.length > 0);
     }
 
-    // if (filter != "รวมกีฬาทุกประเภท" && filter != "") {
-    //   const sport = selectorTextMap[filter];
-
-    //   show = show
-    //     ?.map((match) => {
-    //       const filterM = match.matches.filter((m) => m.sport === sport);
-    //       return { ...match, matches: filterM };
-    //     })
-    //     .filter((match) => match.matches.length > 0);
-    // }
-
     setShowMatch(show);
-    console.log("----");
-    console.log(show);
   }, [mainFilter, filter, allMatch]);
 
   // JSX element
