@@ -36,6 +36,7 @@ export default function Home() {
   const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(
     undefined
   );
+  const [fetchError, setFetchError] = useState<string>("");
 
   // Handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -47,9 +48,19 @@ export default function Home() {
   useEffect(() => {
     const fetchMatchData = async () => {
       const token = getAccessToken();
-      if (!token) return;
+      if (!token) {
+        setFetchError("No authentication token found");
+        return;
+      }
+
       try {
-        const data = (await getMatch())?.data;
+        const result = await getMatch();
+        const data = result?.data;
+        if (!data) {
+          setFetchError("API returned no data");
+          return;
+        }
+
         setAllMatch(data);
         setDateNow(
           new Date(
@@ -59,37 +70,25 @@ export default function Home() {
               7 * 60 * 60 * 1000
           )
         );
-      } catch (error) {
-        console.error("Failed to fetch matches. Retrying...", error);
+        setFetchError("");
+      } catch (error: any) {
+        setFetchError(`Error: ${error?.message || String(error)}`);
       }
     };
 
-    const intervalId = setInterval(async () => {
-      if (!allMatch) {
-        await fetchMatchData();
-      } else {
-        clearInterval(intervalId);
-      }
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [allMatch]);
+    fetchMatchData();
+  }, []);
 
   // Filter data
   useEffect(() => {
-    const fetchMatchSub = async ({ type_id }: { type_id: string }) => {
-      const resA = await getMatchSub({ type_id, group_id: "A" });
-      const resB = await getMatchSub({ type_id, group_id: "B" });
-      setTeamA(resA?.data);
-      setTeamB(resB?.data);
-    };
-
-    let show = allMatch;
+    if (!allMatch) return;
 
     if (mainFilter === "overall") {
       setShowMatch(allMatch);
+      return;
     }
 
+    let show = allMatch;
     const sport = selectorTextMap[filter];
 
     if (mainFilter === "upcomming") {
@@ -130,11 +129,23 @@ export default function Home() {
         .filter((match) => match.matches.length > 0);
     }
 
-    const type_id_temp = filter === "" ? "ALL" : selectorTextMap[filter];
-    fetchMatchSub({ type_id: type_id_temp });
-
     setShowMatch(show);
   }, [mainFilter, filter, allMatch, dateNow]);
+
+  // Fetch team data for overall view
+  useEffect(() => {
+    if (mainFilter !== "overall") return;
+
+    const fetchMatchSub = async ({ type_id }: { type_id: string }) => {
+      const resA = await getMatchSub({ type_id, group_id: "A" });
+      const resB = await getMatchSub({ type_id, group_id: "B" });
+      setTeamA(resA?.data);
+      setTeamB(resB?.data);
+    };
+
+    const type_id_temp = filter === "" ? "ALL" : selectorTextMap[filter];
+    fetchMatchSub({ type_id: type_id_temp });
+  }, [mainFilter, filter]);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -172,7 +183,13 @@ export default function Home() {
               teamA={teamA}
               teamB={teamB}
             />
-          ) : showMatch?.length ? (
+          ) : mainFilter === "upcomming" ? (
+            <EmptyState texts={["ไม่มีการแข่งขันที่กำลังแข่งในขณะนี้"]} />
+          ) : (
+            <EmptyState texts={["ยังไม่มีการแข่งขันที่เสร็จสิ้นในขณะนี้"]} />
+          )}
+
+          {showMatch?.length ? (
             showMatch.map((match, index) => (
               <DisplayMatchs
                 key={index}
@@ -181,11 +198,7 @@ export default function Home() {
                 date_D={match.date_D}
               />
             ))
-          ) : mainFilter === "upcoming" ? (
-            <EmptyState texts={["ไม่มีการแข่งขันที่กำลังแข่งในขณะนี้"]} />
-          ) : (
-            <EmptyState texts={["ยังไม่มีการแข่งขันที่เสร็จสิ้นในขณะนี้"]} />
-          )}
+          ) : null}
 
           <span className="w-2 h-4" />
         </div>

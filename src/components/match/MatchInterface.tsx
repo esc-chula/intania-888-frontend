@@ -19,10 +19,10 @@ export interface rawDataInterface {
       start_time: string;
       team_a: string;
       team_b: string;
-      team_a_score: string;
-      team_b_score: string;
-      team_a_rate: string;
-      team_b_rate: string;
+      team_a_score: number | null;
+      team_b_score: number | null;
+      team_a_rate: number;
+      team_b_rate: number;
       type: string;
     }[];
   }[];
