@@ -32,6 +32,7 @@ const SlotMachine = () => {
         if (generateReelSymbols) {
             setReels([generateReelSymbols(), generateReelSymbols(), generateReelSymbols()]);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const spin = async () => {

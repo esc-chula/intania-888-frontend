@@ -88,9 +88,12 @@ export default function CreateMatchPage() {
       });
       alert("Match created successfully!");
       router.push("/admin/matches");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating match:", error);
-      alert(error.response?.data?.message || "Failed to create match");
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : "Failed to create match";
+      alert(errorMessage || "Failed to create match");
     } finally {
       setLoading(false);
     }

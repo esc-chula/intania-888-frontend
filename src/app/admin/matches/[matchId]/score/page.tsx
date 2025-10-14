@@ -27,8 +27,8 @@ export default function UpdateScore() {
 
         // Fetch color names
         const colorsRes = await apiClient.get("/colors/leaderboards");
-        const teamA = colorsRes.data.find((c: any) => c.id === res.data.team_a);
-        const teamB = colorsRes.data.find((c: any) => c.id === res.data.team_b);
+        const teamA = colorsRes.data.find((c: { id: string }) => c.id === res.data.team_a);
+        const teamB = colorsRes.data.find((c: { id: string }) => c.id === res.data.team_b);
         setTeamAName(teamA?.title || res.data.team_a);
         setTeamBName(teamB?.title || res.data.team_b);
       } catch (error) {
@@ -69,9 +69,12 @@ export default function UpdateScore() {
         },
       });
       setTimeout(() => router.push("/admin/matches"), 1000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating score:", error);
-      toast.error(error.response?.data?.message || "Failed to update score", {
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : "Failed to update score";
+      toast.error(errorMessage || "Failed to update score", {
         duration: 4000,
         position: "top-center",
         style: {
@@ -91,7 +94,7 @@ export default function UpdateScore() {
     } else if (teamBScore > teamAScore) {
       return <span className="text-green-400">{teamBName} wins!</span>;
     } else {
-      return <span className="text-yellow-400">It's a draw!</span>;
+      return <span className="text-yellow-400">It&apos;s a draw!</span>;
     }
   };
 

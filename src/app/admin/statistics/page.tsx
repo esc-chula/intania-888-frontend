@@ -34,13 +34,13 @@ export default function StatisticsPage() {
       // Calculate stats from bills if available
       const bills = billsRes.data;
       const totalBets = bills.length;
-      const totalVolume = bills.reduce((sum: number, bill: any) => sum + bill.total, 0);
+      const totalVolume = bills.reduce((sum: number, bill: { total: number }) => sum + bill.total, 0);
       const averageBetSize = totalBets > 0 ? totalVolume / totalBets : 0;
 
       // Calculate most popular team from bill lines
       const teamCounts: Record<string, number> = {};
-      bills.forEach((bill: any) => {
-        bill.lines?.forEach((line: any) => {
+      bills.forEach((bill: { lines?: { betting_on: string }[] }) => {
+        bill.lines?.forEach((line: { betting_on: string }) => {
           const team = line.betting_on;
           teamCounts[team] = (teamCounts[team] || 0) + 1;
         });
@@ -49,8 +49,8 @@ export default function StatisticsPage() {
 
       // Calculate most popular sport from bill lines
       const sportCounts: Record<string, number> = {};
-      bills.forEach((bill: any) => {
-        bill.lines?.forEach((line: any) => {
+      bills.forEach((bill: { lines?: { match?: { type: string } }[] }) => {
+        bill.lines?.forEach((line: { match?: { type: string } }) => {
           const sportType = line.match?.type;
           if (sportType) {
             sportCounts[sportType] = (sportCounts[sportType] || 0) + 1;

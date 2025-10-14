@@ -80,9 +80,12 @@ export default function UsersPage() {
 
       setEditingUser(null);
       alert("User updated successfully!");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating user:", error);
-      alert(error.response?.data?.message || "Failed to update user");
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : "Failed to update user";
+      alert(errorMessage || "Failed to update user");
     } finally {
       setUpdating(false);
     }

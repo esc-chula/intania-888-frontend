@@ -38,10 +38,10 @@ export default function AdminDashboard() {
       let liveMatches = 0;
       const now = new Date();
 
-      matchesRes.data.forEach((day: any) => {
-        day.types.forEach((sportType: any) => {
+      matchesRes.data.forEach((day: { types: { matches: { start_time: string; end_time: string; winner: string; is_draw: boolean }[] }[] }) => {
+        day.types.forEach((sportType: { matches: { start_time: string; end_time: string; winner: string; is_draw: boolean }[] }) => {
           totalMatches += sportType.matches.length;
-          sportType.matches.forEach((match: any) => {
+          sportType.matches.forEach((match: { start_time: string; end_time: string; winner: string; is_draw: boolean }) => {
             const start = new Date(match.start_time);
             const end = new Date(match.end_time);
             if (now >= start && now <= end && !match.winner && !match.is_draw) {
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-3xl font-bold text-white">Dashboard</h1>
         <p className="text-gray-400 mt-1">
-          Welcome back! Here's what's happening with Intania 888.
+          Welcome back! Here&apos;s what&apos;s happening with Intania 888.
         </p>
       </div>
 

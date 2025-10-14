@@ -15,7 +15,7 @@ const getMatch = async () => {
             return { success: false }
         }
 
-    } catch (error: any) {
+    } catch (error) {
         return { success: false, error }
     }
 }

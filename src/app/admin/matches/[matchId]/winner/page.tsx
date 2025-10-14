@@ -47,9 +47,12 @@ export default function UpdateWinner() {
       }
       alert("Match result updated successfully!");
       router.push("/admin/matches");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating match result:", error);
-      alert(error.response?.data?.message || "Failed to update match result");
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : "Failed to update match result";
+      alert(errorMessage || "Failed to update match result");
     } finally {
       setLoading(false);
     }

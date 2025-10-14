@@ -36,7 +36,6 @@ export default function Home() {
   const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(
     undefined
   );
-  const [fetchError, setFetchError] = useState<string>("");
 
   // Handle filter selection
   const handdleChangeMainFilter = (text: string) => {
@@ -49,7 +48,6 @@ export default function Home() {
     const fetchMatchData = async () => {
       const token = getAccessToken();
       if (!token) {
-        setFetchError("No authentication token found");
         return;
       }
 
@@ -57,7 +55,6 @@ export default function Home() {
         const result = await getMatch();
         const data = result?.data;
         if (!data) {
-          setFetchError("API returned no data");
           return;
         }
 
@@ -70,9 +67,8 @@ export default function Home() {
               7 * 60 * 60 * 1000
           )
         );
-        setFetchError("");
-      } catch (error: any) {
-        setFetchError(`Error: ${error?.message || String(error)}`);
+      } catch (error) {
+        console.error("Failed to fetch matches:", error);
       }
     };
 

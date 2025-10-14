@@ -68,6 +68,7 @@ export default function MatchesPage() {
 
   useEffect(() => {
     applyFilters();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchesData, statusFilter, colorFilter, sportFilter, dateFilter]);
 
   const fetchMatches = async () => {

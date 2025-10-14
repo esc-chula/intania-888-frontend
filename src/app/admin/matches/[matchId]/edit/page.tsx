@@ -45,6 +45,7 @@ export default function EditMatchPage() {
 
   useEffect(() => {
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchId]);
 
   const fetchData = async () => {
@@ -116,9 +117,12 @@ export default function EditMatchPage() {
       });
       alert("Match updated successfully!");
       router.push("/admin/matches");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating match:", error);
-      alert(error.response?.data?.message || "Failed to update match");
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : "Failed to update match";
+      alert(errorMessage || "Failed to update match");
     } finally {
       setLoading(false);
     }
@@ -138,9 +142,12 @@ export default function EditMatchPage() {
       await apiClient.delete(`/matches/${matchId}`);
       alert("Match deleted successfully!");
       router.push("/admin/matches");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error deleting match:", error);
-      alert(error.response?.data?.message || "Failed to delete match");
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : "Failed to delete match";
+      alert(errorMessage || "Failed to delete match");
     } finally {
       setLoading(false);
     }
