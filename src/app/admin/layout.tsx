@@ -15,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         const authorizedAdmins = [
           "6633165121@student.chula.ac.th",
           "6738086221@student.chula.ac.th",
+          "6633149121@student.chula.ac.th",
         ];
         if (!authorizedAdmins.includes(response.data.profile.email)) {
           router.replace("/");
