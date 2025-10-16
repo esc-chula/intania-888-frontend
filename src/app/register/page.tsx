@@ -13,13 +13,7 @@ const RegisterPage = () => {
         ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
         แชร์กันเยอะๆ
       </p>
-      <section className="flex flex-col items-center justify-center space-y-1.5 font-semibold">
-        <Link
-          className="flex justify-center items-center bg-gradient-to-t from-[#4E0F15] to-[#68141C] w-64 h-11 rounded-md"
-          href="/"
-        >
-          เริ่มต้นใช้งาน
-        </Link>
+      <section className="flex flex-col items-center justify-center space-y-1.5 font-semibold pt-2">
         <GoogleLoginButton />
       </section>
       <p className="max-sm:text-xs text-lg">

@@ -26,7 +26,12 @@ const OAuthCallbackHandler = () => {
           if (credential) {
             localStorage.setItem("credentials", JSON.stringify(credential));
             console.log("Credentials stored successfully");
-            router.replace("/");
+
+            if (credential.is_new_user) {
+              router.replace("/register/profile");
+            } else {
+              router.replace("/");
+            }
           } else {
             console.error("No credential received from backend");
           }
