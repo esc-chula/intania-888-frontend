@@ -75,7 +75,7 @@ const MineTable: React.FC = () => {
 
   useEffect(() => {
     loadActiveGame();
-  });
+  }, []);
 
   const startGame = useCallback(async () => {
     if (currentCoin < betAmount) {
@@ -142,8 +142,14 @@ const MineTable: React.FC = () => {
 
           if (isTerminal) {
             await endGame(game.grid);
-            toast.error("คุณแพ้แล้ว!");
-            return game.grid?.[index]?.type === "bomb" ? "bomb" : undefined;
+
+            if (game.status === "won") {
+              toast.success("คุณชนะแล้ว! 🎉");
+            } else if (game.grid?.[index]?.type === "bomb") {
+              toast.error("คุณแพ้แล้ว! 💣");
+            }
+
+            return game.grid?.[index]?.type === "bomb" ? "bomb" : "diamond";
           }
 
           return "diamond";
@@ -164,14 +170,16 @@ const MineTable: React.FC = () => {
       try {
         const result = await revealFromApi(index);
 
-        setGrid((prev) => {
-          const next = [...prev];
-          next[index] = {
-            revealed: true,
-            type: result === "diamond" ? "diamond" : "bomb",
-          };
-          return next;
-        });
+        if (result) {
+          setGrid((prev) => {
+            const next = [...prev];
+            next[index] = {
+              revealed: true,
+              type: result,
+            };
+            return next;
+          });
+        }
       } catch (err) {
         console.error("handleToggle error:", err);
       }
