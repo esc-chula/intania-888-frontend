@@ -5,7 +5,7 @@ export const Footer = () => {
   return (
     <div className="fixed bottom-0 overflow-clip w-full flex justify-center cursor-pointer animate-blink z-10">
       <Link
-        href="https://intania.link/intania-shop-sweatshirt"
+        href="https://docs.google.com/forms/d/1bq6gw44xRH98jXVkAk4u8svNsEBPmBtEvvdvkL4zpKQ"
         className="relative"
         target="_blank"
       >
