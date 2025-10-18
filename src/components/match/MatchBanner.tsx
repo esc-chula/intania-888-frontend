@@ -15,13 +15,15 @@ export const Banner = ({
   sport: string;
   league: string;
 }) => {
+  const sportDisplay = sportTextMap[sport]?.split(" ")[0] || sport || "กีฬา";
+
   return (
     <div
       className="flex flex-row h-10 sm:h-14 w-full text-[0.7rem] sm:text-lg font-semibold overflow-hidden relative"
       style={{ backgroundColor: colorBgMap[league] }}
     >
       <div className="w-[30%] sm:w-[25%] flex items-center justify-start pl-2 sm:pl-4">
-        {sportTextMap[sport].split(" ")[0]}
+        {sportDisplay}
       </div>
       <div className="w-[45%] sm:w-[50%] flex items-center justify-start pl-4 flex-row space-x-1">
         <MapPin height={20} />

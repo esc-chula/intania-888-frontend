@@ -7,15 +7,16 @@ const getMatch = async () => {
     try {
         const response: AxiosResponse = await apiClient.get("/matches")
         const dateNow = new Date(new Date((await apiClient.get("/matches/current/time")).data.currentTime).getTime() + (7 * 60 * 60 * 1000));
+
         if (response.status == 200) {
             const cleanedData = cleanData({ rawData: response.data, dateNow });
             return { success: true, data :  cleanedData }
         } else {
             return { success: false }
         }
-        
+
     } catch (error) {
-        console.error(error)
+        return { success: false, error }
     }
 }
 

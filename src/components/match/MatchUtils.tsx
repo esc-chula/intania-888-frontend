@@ -4,6 +4,7 @@ import {
   rawDataInterface,
   RoundItem,
 } from "./MatchInterface";
+import { getLocationForSport } from "@/utils/location";
 
 // Data Cleanning --------------
 export const cleanData = (props: {
@@ -22,22 +23,24 @@ export const cleanData = (props: {
     itemsDate.types.map((itemTypes) => {
       // each match (banner match)
 
+      // Skip if no matches in this type
+      if (!itemTypes.matches || itemTypes.matches.length === 0) {
+        return;
+      }
+
       const sport = itemTypes.matches[0].type;
       const league =
-        itemTypes.matches[0].type.slice(-2) == "JR"
+        itemTypes.matches[0].type?.slice(-2) == "JR"
           ? "freshman"
-          : itemTypes.matches[0].type.slice(-2) == "SR"
+          : itemTypes.matches[0].type?.slice(-2) == "SR"
           ? "senior"
           : "all";
-      const location = "สนามกีฬาคิดไปเอง";
 
       // each round (a white row)
       const round: RoundItem[] = [];
       itemTypes.matches.map((item) => {
         const strTime = new Date(item.start_time);
-        strTime.setHours(strTime.getHours() - 7);
         const endTime = new Date(item.end_time);
-        endTime.setHours(endTime.getHours() - 7);
         round.push({
           match_id: item.id,
           time_start: strTime,
@@ -59,6 +62,12 @@ export const cleanData = (props: {
               : "bet",
         });
       });
+
+      // Calculate location based on first match's sport type and start time
+      const location = round.length > 0
+        ? getLocationForSport(sport, round[0].time_start)
+        : "Unknown date or sport";
+
       matches.push({
         location,
         sport,

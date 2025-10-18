@@ -37,6 +37,7 @@ const SlipElement: React.FC<SlipElementProps> = ({
 
   useEffect(() => {
     handleUpdateBettingOn();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeam]);
 
   return (

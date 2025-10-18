@@ -15,13 +15,16 @@ const handleGoogleLogin = async () => {
 
 const handleCallback = async (code: string) => {
     try {
+        console.log("Sending code to backend:", code);
         const response: AxiosResponse = await apiClient.post('/auth/login/callback', { code })
-        
+        console.log("Backend response:", response.data);
+
         const { credential } = response.data;
 
         return credential;
     } catch (error) {
-        console.error(error);
+        console.error("Backend callback error:", error);
+        throw error;
     }
 }
 

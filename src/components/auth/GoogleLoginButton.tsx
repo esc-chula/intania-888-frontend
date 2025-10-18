@@ -5,7 +5,7 @@ import { handleGoogleLogin } from '@/api/auth/google'
 
 const GoogleLoginButton = () => {
   return (
-    <button onClick={handleGoogleLogin} className='flex justify-center items-center bg-neutral-200 text-black w-64 h-11 rounded-md'>เข้าสู่ระบบ</button>
+    <button onClick={handleGoogleLogin} className='flex justify-center items-center bg-gradient-to-t from-[#4E0F15] to-[#68141C] w-64 h-11 rounded-md'>เริ่มต้นใช้งาน</button>
   )
 }
 
