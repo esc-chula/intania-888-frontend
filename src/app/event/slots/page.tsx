@@ -20,7 +20,7 @@ export default function Home() {
       </div>
       <SlotMachine />
       <Link href="/event" className="flex-1">
-        <p className="text-white underline text-md">กลับ</p>
+        <p className="text-white underline text-md">กลับสู่หน้าอีเวนต์</p>
       </Link>
       <Footer />
     </div>
