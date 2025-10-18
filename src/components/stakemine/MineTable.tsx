@@ -49,7 +49,7 @@ const MineTable: React.FC = () => {
   }, []);
 
   // --- load active game on mount ---
-  const loadActiveGame = async () => {
+  const loadActiveGame = useCallback(async () => {
     try {
       const result = await getActive();
 
@@ -71,11 +71,11 @@ const MineTable: React.FC = () => {
       console.error("Error loading active game:", err);
       toast.error("ไม่สามารถโหลดเกมได้");
     }
-  };
+  }, [restoreGridFromApi]);
 
   useEffect(() => {
     loadActiveGame();
-  }, []);
+  }, [loadActiveGame]);
 
   const startGame = useCallback(async () => {
     if (currentCoin < betAmount) {
