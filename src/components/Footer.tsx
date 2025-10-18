@@ -14,7 +14,7 @@ export const Footer = () => {
           alt="sweatshirt_banner"
           width={2214}
           height={330}
-          className="object-contain w-auto h-24 hover:scale-110 duration-500"
+          className="object-contain w-auto hover:scale-110 duration-500"
         />
       </Link>
     </div>
