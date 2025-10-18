@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const Footer = () => {
   return (
-    <div className="fixed bottom-0 bg-[#821922] h-24 overflow-clip w-full flex justify-center cursor-pointer animate-blink z-10">
+    <div className="fixed bottom-0 overflow-clip w-full flex justify-center cursor-pointer animate-blink z-10">
       <Link
         href="https://intania.link/intania-shop-sweatshirt"
         className="relative"
