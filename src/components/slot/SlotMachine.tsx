@@ -67,7 +67,7 @@ const SlotMachine = () => {
   //     }
   //     return process.env.NEXT_PUBLIC_FORCE_ALIEN === '1';
   // })();
-  const isForceAliens = false;
+  // const isForceAliens = false;
 
   const generateReelSymbols = useCallback((): string[] => {
     const reel: string[] = [];
