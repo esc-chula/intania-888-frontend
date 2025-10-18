@@ -66,13 +66,13 @@ export default function Home() {
               <p className="text-6xl sm:text-7xl">💣</p>
               <p className="text-xl">Mines</p>
             </Link>
-            <Link
+            {/* <Link
               href="/event"
               className="flex flex-1 items-center justify-center shadow-lg rounded-md py-4 px-3 bg-white flex-col space-y-4 cursor-pointer hover:bg-gray-50"
             >
               <p className="text-6xl sm:text-7xl">🪖</p>
               <p className="text-xl">War Game</p>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>
