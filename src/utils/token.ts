@@ -19,6 +19,6 @@ export const refreshToken = async () => {
         })
         const credential = response.data;
 
-        localStorage.setItem('credential', credential);
+        localStorage.setItem('credentials', JSON.stringify(credential));
     }
 }
