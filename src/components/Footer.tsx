@@ -10,7 +10,7 @@ export const Footer = () => {
         target="_blank"
       >
         <Image
-          src="/sweatshirt_banner.png"
+          src="/banner-2.png"
           alt="sweatshirt_banner"
           width={2214}
           height={330}
