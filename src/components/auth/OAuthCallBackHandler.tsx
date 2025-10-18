@@ -19,13 +19,13 @@ const OAuthCallbackHandler = () => {
     if (code) {
       const handleOAuthCallback = async () => {
         try {
-          console.log("Processing OAuth callback with code:", code);
+          if (process.env.NODE_ENV === "development") {
+            console.log("Processing OAuth callback with code:", code);
+          }
           const credential = await handleCallback(code);
-          console.log("Received credential:", credential);
 
           if (credential) {
             localStorage.setItem("credentials", JSON.stringify(credential));
-            console.log("Credentials stored successfully");
 
             if (credential.is_new_user) {
               router.replace("/register/profile");
