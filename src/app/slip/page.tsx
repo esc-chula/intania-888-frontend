@@ -53,8 +53,9 @@ export default function Home() {
       } else {
         toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน");
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "";
+    } catch (error) {
+      const errorMessage = (error as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message ||
+                          (error as { message?: string })?.message || "";
       if (errorMessage.includes("started") || errorMessage.includes("expired")) {
         toast.error("ไม่สามารถเดิมพันได้ เนื่องจากมีการแข่งขันที่เริ่มแล้วหรือหมดเวลา");
       } else {

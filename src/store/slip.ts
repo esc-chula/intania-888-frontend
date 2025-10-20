@@ -54,7 +54,8 @@ export const useSlipStore = create(
                     const updatedSlips = [...state.slipItems, slip];
                     return {
                         slipItems: updatedSlips,
-                        totalRate: get().calculateTotalRate(updatedSlips), 
+                        totalRate: get().calculateTotalRate(updatedSlips),
+                    };
                 }),
 
             removeSlipItem: (match_id) =>
