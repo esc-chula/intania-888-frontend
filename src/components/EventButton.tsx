@@ -25,6 +25,7 @@ export const EventButton = ({
   const handleDaily = async () => {
     const res = await loginDaily();
     if (res?.success) {
+      await refreshCoin();
       toast.success("รับเหรียญสำเร็จ");
     } else {
       toast.error("ไม่สามารถรับเหรียญได้");
