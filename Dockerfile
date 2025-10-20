@@ -1,6 +1,6 @@
-FROM node:21-alpine3.18 AS base
+FROM node:22-alpine3.20 AS base
 
-RUN npm i -g pnpm 
+RUN npm i -g pnpm
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 
 RUN pnpm build
 
-FROM node:21-alpine3.18 AS production
+FROM node:22-alpine3.20 AS production
 
 WORKDIR /app
 
