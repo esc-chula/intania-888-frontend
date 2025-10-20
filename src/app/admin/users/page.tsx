@@ -7,9 +7,9 @@ interface User {
   id: string;
   email: string;
   name: string;
-  nickname?: string;
-  role: string;
-  group?: string;
+  nick_name?: string | null;
+  role_id: string;
+  group_id?: string | null;
   remaining_coin: number;
   created_at: string;
 }
@@ -17,8 +17,8 @@ interface User {
 interface EditingUser {
   id: string;
   name: string;
-  nickname: string;
-  role: string;
+  nick_name: string;
+  role_id: string;
   remaining_coin: number;
 }
 
@@ -49,8 +49,8 @@ export default function UsersPage() {
     setEditingUser({
       id: user.id,
       name: user.name,
-      nickname: user.nickname || "",
-      role: user.role,
+      nick_name: user.nick_name || "",
+      role_id: user.role_id,
       remaining_coin: user.remaining_coin,
     });
   };
@@ -66,15 +66,15 @@ export default function UsersPage() {
       setUpdating(true);
       await apiClient.patch(`/users/admin/${editingUser.id}`, {
         name: editingUser.name,
-        nick_name: editingUser.nickname || null,
-        role_id: editingUser.role,
+        nick_name: editingUser.nick_name || null,
+        role_id: editingUser.role_id,
         remaining_coin: editingUser.remaining_coin,
       });
 
       // Update local state
       setUsers(users.map(u =>
         u.id === editingUser.id
-          ? { ...u, name: editingUser.name, nickname: editingUser.nickname, role: editingUser.role, remaining_coin: editingUser.remaining_coin }
+          ? { ...u, name: editingUser.name, nick_name: editingUser.nick_name, role_id: editingUser.role_id, remaining_coin: editingUser.remaining_coin }
           : u
       ));
 
@@ -95,7 +95,7 @@ export default function UsersPage() {
     (user) =>
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (user.nickname && user.nickname.toLowerCase().includes(searchTerm.toLowerCase()))
+      (user.nick_name && user.nick_name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (loading) {
@@ -137,7 +137,7 @@ export default function UsersPage() {
         <div className="bg-gray-900 rounded-lg p-6">
           <Shield className="w-8 h-8 text-purple-500 mb-2" />
           <p className="text-3xl font-bold text-white">
-            {users.filter((u) => u.role === "ADMIN").length}
+            {users.filter((u) => u.role_id === "ADMIN").length}
           </p>
           <p className="text-sm text-gray-400">Admins</p>
         </div>
@@ -203,8 +203,8 @@ export default function UsersPage() {
                           />
                           <input
                             type="text"
-                            value={editingUser.nickname}
-                            onChange={(e) => setEditingUser({ ...editingUser, nickname: e.target.value })}
+                            value={editingUser.nick_name}
+                            onChange={(e) => setEditingUser({ ...editingUser, nick_name: e.target.value })}
                             className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-sm text-white focus:ring-2 focus:ring-blue-500"
                             placeholder="Nickname"
                           />
@@ -212,8 +212,8 @@ export default function UsersPage() {
                       ) : (
                         <div>
                           <p className="text-sm font-medium text-white">{user.name}</p>
-                          {user.nickname && (
-                            <p className="text-sm text-gray-400">@{user.nickname}</p>
+                          {user.nick_name && (
+                            <p className="text-sm text-gray-400">@{user.nick_name}</p>
                           )}
                         </div>
                       )}
@@ -222,9 +222,9 @@ export default function UsersPage() {
                       {user.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {user.group ? (
+                      {user.group_id ? (
                         <span className="px-2 py-1 bg-blue-600 text-white rounded-full text-xs font-medium">
-                          {user.group}
+                          {user.group_id}
                         </span>
                       ) : (
                         <span className="text-sm text-gray-500">-</span>
@@ -233,8 +233,8 @@ export default function UsersPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {isEditing ? (
                         <select
-                          value={editingUser.role}
-                          onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                          value={editingUser.role_id}
+                          onChange={(e) => setEditingUser({ ...editingUser, role_id: e.target.value })}
                           className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs text-white focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="USER">USER</option>
@@ -243,12 +243,12 @@ export default function UsersPage() {
                       ) : (
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            user.role === "ADMIN"
+                            user.role_id === "ADMIN"
                               ? "bg-purple-600 text-white"
                               : "bg-gray-700 text-gray-300"
                           }`}
                         >
-                          {user.role}
+                          {user.role_id}
                         </span>
                       )}
                     </td>

@@ -21,34 +21,31 @@ export function parseThaiDate(thaiDateString: string): Date {
 
 
 const DATE_RANGES = {
-  groupStage: { start: new Date("2024-10-10"), end: new Date("2024-10-30T23:59:59") },
-  semiFinal: { start: new Date("2024-10-31"), end: new Date("2024-11-05") },
-  final: { start: new Date("2024-11-05"), end: new Date("2024-11-08") },
+  groupStage: { start: new Date("2025-10-17"), end: new Date("2025-11-03T23:59:59") },
+  final: { start: new Date("2025-11-05"), end: new Date("2025-11-07T23:59:59") },
 } as const;
 
 const LOCATION_MAP: Record<Round, Record<Sport, string>> = {
   groupStage: {
-    BASKETBALL: "สนามบาสภาคโยธา",
+    BASKETBALL: "สนามโยธา",
     FOOTBALL: "ลานพระบรมรูปสองรัชกาล",
-    VOLLEYBALL: "ชั้น 12 ตึก 100 ปี",
-    CHAIRBALL: "ชั้น 12 ตึก 100 ปี",
-  },
-  semiFinal: {
-    BASKETBALL: "สนามบาสภาคโยธา",
-    FOOTBALL: "สนามจินดารักษ์",
-    VOLLEYBALL: "ชั้น 12 ตึก 100 ปี",
-    CHAIRBALL: "ชั้น 12 ตึก 100 ปี",
+    VOLLEYBALL: "ตึก 100 ปี ชั้น 12",
+    CHAIRBALL: "ตึก 100 ปี ชั้น 12",
+    RUNNING: "ลานเกียร์",
+    TUG_OF_WAR: "ลานเกียร์",
   },
   final: {
-    BASKETBALL: "Sport Complex",
-    FOOTBALL: "สนามเทพหัสดิน",
-    VOLLEYBALL: "ชั้น 12 ตึก 100 ปี",
-    CHAIRBALL: "ชั้น 12 ตึก 100 ปี",
+    BASKETBALL: "สนามกีฬาในร่ม 1",
+    FOOTBALL: "สนามจุ๊บ",
+    VOLLEYBALL: "ตึก 100 ปี ชั้น 12",
+    CHAIRBALL: "ตึก 100 ปี ชั้น 12",
+    RUNNING: "ลานเกียร์",
+    TUG_OF_WAR: "ลานเกียร์",
   },
 };
 
-type Sport = "BASKETBALL" | "FOOTBALL" | "VOLLEYBALL" | "CHAIRBALL";
-type Round = "groupStage" | "semiFinal" | "final";
+type Sport = "BASKETBALL" | "FOOTBALL" | "VOLLEYBALL" | "CHAIRBALL" | "RUNNING" | "TUG_OF_WAR";
+type Round = "groupStage" | "final";
 
 const getRoundForDate = (date: Date): Round | null => {
 

@@ -13,7 +13,7 @@ export const cleanData = (props: {
 }): allMatchInterface[] => {
   const data: allMatchInterface[] = [];
   const temp = props.rawData.sort((a: rawDataInterface, b: rawDataInterface) =>
-    Number(new Date(a.date).getDate() - new Date(b.date).getDate())
+    new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   temp.map((itemsDate) => {

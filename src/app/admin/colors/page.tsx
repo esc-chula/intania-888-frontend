@@ -50,12 +50,12 @@ export default function ColorsPage() {
   };
 
   const colorGroups = {
-    VIOLET: ["A", "C", "F"],
-    BLUE: ["DOG", "N", "R"],
-    GREEN: ["H", "S", "T"],
-    PINK: ["E", "L", "P"],
-    ORANGE: ["J", "K", "M"],
-    YELLOW: ["B", "G", "Q"],
+    VIOLET: ["DOG", "J", "R"],
+    BLUE: ["E", "K", "N"],
+    GREEN: ["B", "C", "M"],
+    PINK: ["G", "H", "T"],
+    ORANGE: ["P", "Q", "S"],
+    YELLOW: ["A", "F", "L"],
   };
 
   if (loading) {

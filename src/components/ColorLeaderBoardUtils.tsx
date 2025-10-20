@@ -22,10 +22,10 @@ export interface leaderboardDataInterface {
 }
 
 export const groupColor: { [key: string]: string } = {
-  PINK: "[E,L,P]",
-  ORANGE: "[J,K,M]",
-  GREEN: "[H,S,T]",
-  BLUE: "[Dog,N,R]",
-  VIOLET: "[A,C,F]",
-  YELLOW: "[B,G,Q]",
+  PINK: "[G,H,T]",
+  ORANGE: "[P,Q,S]",
+  GREEN: "[B,C,M]",
+  BLUE: "[E,K,N]",
+  VIOLET: "[Dog,J,R]",
+  YELLOW: "[A,F,L]",
 };
