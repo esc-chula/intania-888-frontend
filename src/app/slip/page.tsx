@@ -53,8 +53,13 @@ export default function Home() {
       } else {
         toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน");
       }
-    } catch (error) {
-      toast.error("เกิดข้อผิดพลาดในการทำการเดิมพันหรือเงินไม่พอ");
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || "";
+      if (errorMessage.includes("started") || errorMessage.includes("expired")) {
+        toast.error("ไม่สามารถเดิมพันได้ เนื่องจากมีการแข่งขันที่เริ่มแล้วหรือหมดเวลา");
+      } else {
+        toast.error("เกิดข้อผิดพลาดในการทำการเดิมพันหรือเงินไม่พอ");
+      }
       console.error(error);
     } finally {
       setIsLoading(false);

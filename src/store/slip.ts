@@ -36,18 +36,25 @@ export const useSlipStore = create(
             addSlipItem: (slip) =>
                 set((state) => {
                     const exists = state.slipItems.some((item) => item.match_id === slip.match_id);
-                    
-                    if (!exists) {
-                        toast.success('เพิ่มลงในสลิปเรียบร้อยแล้ว!'); 
-                        const updatedSlips = [...state.slipItems, slip];
-                        return {
-                            slipItems: updatedSlips,
-                            totalRate: get().calculateTotalRate(updatedSlips), // Update totalRate
-                        };
-                    } else {
+
+                    if (exists) {
                         toast.error('มีสลิปนี้อยู่แล้วในระบบ!');
                         return state;
                     }
+
+                    const currentTime = new Date();
+                    const matchStartTime = new Date(slip.date);
+
+                    if (currentTime >= matchStartTime) {
+                        toast.error('ไม่สามารถเพิ่มการแข่งขันที่เริ่มแล้วหรือหมดเวลาแล้ว!');
+                        return state;
+                    }
+
+                    toast.success('เพิ่มลงในสลิปเรียบร้อยแล้ว!');
+                    const updatedSlips = [...state.slipItems, slip];
+                    return {
+                        slipItems: updatedSlips,
+                        totalRate: get().calculateTotalRate(updatedSlips), 
                 }),
 
             removeSlipItem: (match_id) =>
@@ -89,29 +96,40 @@ export const useSlipStore = create(
             },
 
             updateSlipRates: async () => {
-                const state = get(); 
+                const state = get();
+                const currentTime = new Date();
 
                 const updatedSlips = await Promise.all(
                     state.slipItems.map(async (slip) => {
                         const matchData = await getMatchById(slip.match_id);
 
                         if (matchData?.success) {
-                            const newRate = slip.betting_on === slip.team_a_color 
-                                ? matchData.data.team_a_rate 
-                                : slip.betting_on === slip.team_b_color 
-                                ? matchData.data.team_b_rate 
+                            const newRate = slip.betting_on === slip.team_a_color
+                                ? matchData.data.team_a_rate
+                                : slip.betting_on === slip.team_b_color
+                                ? matchData.data.team_b_rate
                                 : slip.rate;
 
                             return { ...slip, rate: newRate || 2 };
                         }
 
-                        return slip; 
+                        return slip;
                     })
                 );
 
+                const validSlips = updatedSlips.filter((slip) => {
+                    const matchStartTime = new Date(slip.date);
+                    return currentTime < matchStartTime;
+                });
+
+                if (validSlips.length < updatedSlips.length) {
+                    const removedCount = updatedSlips.length - validSlips.length;
+                    toast.error(`ลบ ${removedCount} การแข่งขันที่หมดเวลาแล้วออกจากสลิป`);
+                }
+
                 set({
-                    slipItems: updatedSlips,
-                    totalRate: get().calculateTotalRate(updatedSlips),
+                    slipItems: validSlips,
+                    totalRate: get().calculateTotalRate(validSlips),
                 });
             },
         }),
