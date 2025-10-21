@@ -54,6 +54,9 @@ export default function CreateMatchPage() {
       { id: "VOLLEYBALL_FEMALE_ALL", title: "วอลเลย์บอล หญิง ทุกชั้นปี" },
       { id: "CHAIRBALL_FEMALE_JR", title: "แชร์บอล หญิง ปี1" },
       { id: "CHAIRBALL_FEMALE_SR", title: "แชร์บอล หญิง ปี2-4" },
+      { id: "TRADITIONAL_SPORTS", title: "กีฬาพื้นบ้าน" },
+      { id: "TUG_OF_WAR_CHAK_YOR", title: "ชักเย่อ" },
+      { id: "RUNNING_PIAW", title: "วิ่งเปี้ยว" },
     ];
     setSportTypes(sportTypes);
   };

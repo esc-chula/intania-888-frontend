@@ -33,6 +33,9 @@ const LOCATION_MAP: Record<Round, Record<Sport, string>> = {
     CHAIRBALL: "ตึก 100 ปี ชั้น 12",
     RUNNING: "ลานเกียร์",
     TUG_OF_WAR: "ลานเกียร์",
+    TRADITIONAL_SPORTS: "ลานเกียร์",
+    TUG_OF_WAR_CHAK_YOR: "ลานเกียร์",
+    RUNNING_PIAW: "ลานเกียร์",
   },
   final: {
     BASKETBALL: "สนามกีฬาในร่ม 1",
@@ -41,10 +44,13 @@ const LOCATION_MAP: Record<Round, Record<Sport, string>> = {
     CHAIRBALL: "ตึก 100 ปี ชั้น 12",
     RUNNING: "ลานเกียร์",
     TUG_OF_WAR: "ลานเกียร์",
+    TRADITIONAL_SPORTS: "ลานเกียร์",
+    TUG_OF_WAR_CHAK_YOR: "ลานเกียร์",
+    RUNNING_PIAW: "ลานเกียร์",
   },
 };
 
-type Sport = "BASKETBALL" | "FOOTBALL" | "VOLLEYBALL" | "CHAIRBALL" | "RUNNING" | "TUG_OF_WAR";
+type Sport = "BASKETBALL" | "FOOTBALL" | "VOLLEYBALL" | "CHAIRBALL" | "RUNNING" | "TUG_OF_WAR" | "TRADITIONAL_SPORTS" | "TUG_OF_WAR_CHAK_YOR" | "RUNNING_PIAW";
 type Round = "groupStage" | "final";
 
 const getRoundForDate = (date: Date): Round | null => {
