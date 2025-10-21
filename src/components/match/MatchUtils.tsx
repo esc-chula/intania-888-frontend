@@ -86,9 +86,11 @@ export const cleanData = (props: {
 };
 
 // Time Formatting --------------
+// Convert UTC to Bangkok time (UTC+7) for display
 export const formatTime = (date: Date) => {
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const bangkokTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+  const hours = bangkokTime.getUTCHours().toString().padStart(2, "0");
+  const minutes = bangkokTime.getUTCMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 };
 

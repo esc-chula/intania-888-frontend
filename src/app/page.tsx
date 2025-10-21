@@ -59,12 +59,10 @@ export default function Home() {
         }
 
         setAllMatch(data);
+        // Keep dateNow in UTC for comparisons
         setDateNow(
           new Date(
-            new Date(
-              (await apiClient.get("/matches/current/time")).data.currentTime
-            ).getTime() +
-              7 * 60 * 60 * 1000
+            (await apiClient.get("/matches/current/time")).data.currentTime
           )
         );
       } catch (error) {
