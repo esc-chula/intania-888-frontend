@@ -106,6 +106,7 @@ const groupAndColorMap: { [key: string]: string } = {
   A: "YELLOW",
   B: "GREEN",
   C: "GREEN",
+  DOG: "VIOLET",
   Dog: "VIOLET",
   E: "BLUE",
   F: "YELLOW",
