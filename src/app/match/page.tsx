@@ -19,7 +19,7 @@ import { Footer } from "@/components/Footer";
 
 export default function Home() {
   // declare useState
-  const [mainFilter, setMainFilter] = useState("upcomming");
+  const [mainFilter, setMainFilter] = useState("upcoming");
   const [filter, setFilter] = useState("");
   const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(
     undefined
@@ -79,7 +79,7 @@ export default function Home() {
       return res?.data;
     };
 
-    if (mainFilter != "upcomming") {
+    if (mainFilter != "upcoming") {
       fetchMatchSub({
         type_id: selectorTextMap[filter],
         group_id: "A",
@@ -99,7 +99,7 @@ export default function Home() {
 
     const sport = selectorTextMap[filter];
 
-    if (mainFilter === "upcomming") {
+    if (mainFilter === "upcoming") {
       show = show
         ?.map((match) => {
           const filterM = match.matches

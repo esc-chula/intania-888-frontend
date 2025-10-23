@@ -6,11 +6,11 @@ export const MatchMainFilter = (props: {
     <div className="w-full flex flex-row space-x-2 sm:space-x-4 items-center justify-center">
       <button
         className={`${
-          props.mainFilter === "upcomming"
+          props.mainFilter === "upcoming"
             ? "bg-neutral-700 text-white"
             : "bg-neutral-800 text-neutral-300 "
         } flex items-center justify-center h-10 w-40 sm:h-14 sm:w-48  text-[0.8rem] sm:text-lg rounded-lg font-semibold`}
-        onClick={() => props.handdleChangeMainFilter("upcomming")}
+        onClick={() => props.handdleChangeMainFilter("upcoming")}
       >
         ตารางการแข่งขัน
       </button>

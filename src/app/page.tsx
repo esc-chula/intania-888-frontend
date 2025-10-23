@@ -21,7 +21,7 @@ import { getAccessToken } from "@/utils/token";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
-  const [mainFilter, setMainFilter] = useState("upcomming");
+  const [mainFilter, setMainFilter] = useState("upcoming");
   const [filter, setFilter] = useState("");
   const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(
     undefined
@@ -85,7 +85,7 @@ export default function Home() {
     let show = allMatch;
     const sport = selectorTextMap[filter];
 
-    if (mainFilter === "upcomming") {
+    if (mainFilter === "upcoming") {
       show = show
         ?.map((match) => {
           const filteredMatches = match.matches
@@ -177,13 +177,7 @@ export default function Home() {
               teamA={teamA}
               teamB={teamB}
             />
-          ) : mainFilter === "upcomming" ? (
-            <EmptyState texts={["ไม่มีการแข่งขันที่กำลังแข่งในขณะนี้"]} />
-          ) : (
-            <EmptyState texts={["ยังไม่มีการแข่งขันที่เสร็จสิ้นในขณะนี้"]} />
-          )}
-
-          {showMatch?.length ? (
+          ) : showMatch?.length ? (
             showMatch.map((match, index) => (
               <DisplayMatchs
                 key={index}
@@ -192,7 +186,11 @@ export default function Home() {
                 date_D={match.date_D}
               />
             ))
-          ) : null}
+          ) : mainFilter === "upcoming" ? (
+            <EmptyState texts={["ไม่มีการแข่งขันที่กำลังแข่งในขณะนี้"]} />
+          ) : (
+            <EmptyState texts={["ยังไม่มีการแข่งขันที่เสร็จสิ้นในขณะนี้"]} />
+          )}
 
           <span className="w-2 h-4" />
         </div>
