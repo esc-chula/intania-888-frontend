@@ -10,12 +10,37 @@ const OAuthCallbackHandler = () => {
   const code = searchParams.get("code");
   const error = searchParams.get("error");
 
+  const accessToken = searchParams.get("access_token");
+  const refreshToken = searchParams.get("refresh_token");
+  const expiresIn = searchParams.get("expires_in");
+  const isNewUser = searchParams.get("is_new_user");
+
   useEffect(() => {
     if (error) {
       console.error("OAuth error:", error);
       return;
     }
 
+    // Handle third-party redirect mode (credentials in URL)
+    if (accessToken && refreshToken) {
+      const credential = {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        expires_in: expiresIn ? parseInt(expiresIn) : 3600,
+        is_new_user: isNewUser === "true",
+      };
+
+      localStorage.setItem("credentials", JSON.stringify(credential));
+
+      if (credential.is_new_user) {
+        router.replace("/register/profile");
+      } else {
+        router.replace("/");
+      }
+      return;
+    }
+
+    // Handle original mode (exchange code for credentials)
     if (code) {
       const handleOAuthCallback = async () => {
         try {
@@ -41,7 +66,7 @@ const OAuthCallbackHandler = () => {
       };
       handleOAuthCallback();
     }
-  }, [code, error, router]);
+  }, [code, error, router, accessToken, refreshToken, expiresIn, isNewUser]);
 
   return null;
 };
