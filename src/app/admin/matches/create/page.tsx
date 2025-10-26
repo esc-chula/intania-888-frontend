@@ -82,6 +82,8 @@ export default function CreateMatchPage() {
 
     try {
       setLoading(true);
+      // datetime-local input values are in local time (Bangkok for our users)
+      // new Date() treats them as local time and toISOString() converts to UTC
       await apiClient.post("/matches", {
         team_a: formData.team_a_id,
         team_b: formData.team_b_id,

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiClient } from "@/api/axios";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
+import { convertUTCToBangkok } from "@/utils/datetime";
 
 interface Color {
   id: string;
@@ -73,13 +74,14 @@ export default function EditMatchPage() {
       setSportTypes(sportTypes);
 
       // Set form data from match
+      // Convert UTC times to Bangkok time (UTC+7) for display
       const matchData = matchRes.data;
       setFormData({
         team_a_id: matchData.team_a,
         team_b_id: matchData.team_b,
         type_id: matchData.type,
-        start_time: new Date(matchData.start_time).toISOString().slice(0, 16),
-        end_time: new Date(matchData.end_time).toISOString().slice(0, 16),
+        start_time: convertUTCToBangkok(matchData.start_time),
+        end_time: convertUTCToBangkok(matchData.end_time),
       });
     } catch (error) {
       console.error("Error fetching data:", error);
