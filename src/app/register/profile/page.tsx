@@ -19,12 +19,10 @@ const RegisterProfile = () => {
       return;
     }
     
-    const profile = user.profile;
-    const success = await handleUpdateProfile(profile.id, {
+    const success = await handleUpdateProfile({
       nickName,
-      groupId: group,
-      remainingCoin: 888.88
-    });
+      groupId: group
+    }, user.csrf_token);
 
     if (!success) {
       console.error("update profile not successful");
