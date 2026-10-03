@@ -1,0 +1,45 @@
+export const TEAM_COLOR_IDS = [
+  "VIOLET",
+  "BLUE",
+  "GREEN",
+  "PINK",
+  "ORANGE",
+  "YELLOW",
+] as const;
+
+export type TeamColorId = (typeof TEAM_COLOR_IDS)[number];
+
+export type MoneyString = string & { readonly __money: unique symbol };
+
+export interface TeamCoinRankingDto {
+  rank: number;
+  color_id: TeamColorId;
+  title: string;
+  team_coins: MoneyString;
+}
+
+export interface TeamCoinLeaderboardResponse {
+  rankings: TeamCoinRankingDto[];
+}
+
+export interface TeamCoinRankingItem {
+  rank: number;
+  colorId: TeamColorId;
+  title: string;
+  teamCoins: MoneyString;
+}
+
+export interface TeamCoinViewItem {
+  rank: number;
+  colorId: TeamColorId;
+  title: string;
+  teamCoinsText: string;
+  isCurrentTeam: boolean;
+}
+
+export interface TeamCoinDisplayProps {
+  items: readonly TeamCoinViewItem[];
+}
+
+export type LeaderboardMetric = "coins" | "accuracy";
+
