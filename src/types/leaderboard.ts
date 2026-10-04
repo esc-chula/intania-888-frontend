@@ -37,4 +37,16 @@ export interface TeamCoinViewItem {
   isCurrentTeam: boolean;
 }
 
+export interface TeamAccuracyRankingItem {
+  rank: number;
+  colorId: TeamColorId;
+  title: string;
+  right: number;
+  wrong: number;
+}
+
+export interface TeamAccuracyViewItem extends TeamAccuracyRankingItem {
+  isCurrentTeam: boolean;
+}
+
 export type LeaderboardMetric = "coins" | "accuracy";
