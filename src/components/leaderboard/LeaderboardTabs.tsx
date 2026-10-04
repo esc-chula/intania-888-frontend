@@ -1,75 +1,70 @@
 "use client";
 
-import Link from "next/link";
-import { LeaderboardMetric } from "@/types/leaderboard";
-
-interface LeaderboardTabsProps {
-  scope: "individual" | "team";
-  value?: LeaderboardMetric;
-  onChange?: (value: LeaderboardMetric) => void;
-  accuracyDisabled?: boolean;
+export interface TabOption<T extends string> {
+  value: T;
+  label: string;
+  disabled?: boolean;
 }
 
-const tabClass = (active: boolean) =>
-  `flex h-11 min-w-28 items-center justify-center rounded px-5 font-semibold transition-colors ${
-    active
-      ? "bg-neutral-600 text-white"
-      : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
-  }`;
+interface LeaderboardTabsProps<T extends string> {
+  tabs: readonly TabOption<T>[];
+  value: T;
+  onChange: (value: T) => void;
+  variant?: "primary" | "segmented";
+  ariaLabel?: string;
+}
 
-export const LeaderboardTabs = ({
-  scope,
-  value = "coins",
+export const LeaderboardTabs = <T extends string>({
+  tabs,
+  value,
   onChange,
-  accuracyDisabled = false,
-}: LeaderboardTabsProps) => {
-  return (
-    <div className="flex flex-col items-center gap-3" aria-label="ตัวเลือกตารางอันดับ">
-      <nav className="flex gap-2" aria-label="ประเภทตารางอันดับ">
-        <Link
-          href="/coins"
-          className={tabClass(scope === "individual")}
-          aria-current={scope === "individual" ? "page" : undefined}
-        >
-          อันดับบุคคล
-        </Link>
-        <Link
-          href="/leaderboard/team?view=coins"
-          className={tabClass(scope === "team")}
-          aria-current={scope === "team" ? "page" : undefined}
-        >
-          อันดับทีม
-        </Link>
-      </nav>
+  variant = "primary",
+  ariaLabel = "ตัวเลือกตารางอันดับ",
+}: LeaderboardTabsProps<T>) => {
+  const isSegmented = variant === "segmented";
 
-      {scope === "team" && (
-        <div
-          className="flex rounded bg-neutral-900 p-1"
-          role="tablist"
-          aria-label="ข้อมูลอันดับทีม"
-        >
+  return (
+    <div
+      role="tablist"
+      aria-label={ariaLabel}
+      className={`flex flex-row items-center ${
+        isSegmented
+          ? "gap-2 rounded-lg bg-neutral-800 p-1.5 sm:gap-5 sm:p-2"
+          : "gap-3 sm:gap-5"
+      }`}
+    >
+      {tabs.map((tab) => {
+        const isActive = tab.value === value;
+
+        return (
           <button
+            key={tab.value}
             type="button"
             role="tab"
-            aria-selected={value === "coins"}
-            className={tabClass(value === "coins")}
-            onClick={() => onChange?.("coins")}
+            aria-selected={isActive}
+            aria-disabled={tab.disabled}
+            disabled={tab.disabled}
+            onClick={() => {
+              if (!tab.disabled) onChange(tab.value);
+            }}
+            className={`rounded-lg font-semibold text-white transition-colors ${
+              isActive
+                ? "bg-neutral-700"
+                : tab.disabled
+                  ? "cursor-not-allowed bg-neutral-800 opacity-40"
+                  : isSegmented
+                    ? "bg-neutral-800 hover:bg-neutral-700/50"
+                    : "bg-neutral-800 hover:bg-neutral-700/60"
+            } ${
+              isSegmented
+                ? "h-10 w-32 text-sm sm:h-14 sm:w-[180px] sm:text-xl"
+                : "h-12 w-36 text-base sm:h-[72px] sm:w-[220px] sm:text-2xl"
+            }`}
           >
-            เหรียญทีม
+            {tab.label}
           </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={value === "accuracy"}
-            disabled={accuracyDisabled}
-            className={`${tabClass(value === "accuracy")} disabled:cursor-not-allowed disabled:opacity-40`}
-            onClick={() => onChange?.("accuracy")}
-          >
-            ความแม่นยำ
-          </button>
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 };
-

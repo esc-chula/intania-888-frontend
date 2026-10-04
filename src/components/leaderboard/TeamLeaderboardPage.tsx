@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Coins } from "lucide-react";
 import { getTeamCoinLeaderboard, TeamCoinLeaderboardError } from "@/api/leaderboard/teamCoin";
 import { getColorIdByGroupId } from "@/constant/teamColor";
 import useAuth from "@/hooks/useAuth";
@@ -13,11 +14,30 @@ import {
 } from "@/types/leaderboard";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
-import { LeaderboardTabs } from "./LeaderboardTabs";
-import { TeamCoinPodium } from "./TeamCoinPodium";
-import { TeamCoinTable } from "./TeamCoinTable";
+import { Shirt } from "@/components/match/MatchColorLogo";
+import {
+  LeaderboardTable,
+  LeaderboardRow,
+} from "./LeaderboardTable";
+import { LeaderboardTabs, TabOption } from "./LeaderboardTabs";
+import { Podium, PodiumEntry } from "./Podium";
 
 const ACCURACY_ENABLED = false;
+type LeaderboardScope = "individual" | "team";
+
+const scopeTabs: readonly TabOption<LeaderboardScope>[] = [
+  { value: "individual", label: "อันดับบุคคล" },
+  { value: "team", label: "อันดับทีม" },
+];
+
+const metricTabs: readonly TabOption<LeaderboardMetric>[] = [
+  { value: "coins", label: "เหรียญทีม" },
+  {
+    value: "accuracy",
+    label: "ความแม่นยำ",
+    disabled: !ACCURACY_ENABLED,
+  },
+];
 
 const TeamCoinLoading = () => (
   <div className="flex w-full max-w-md animate-pulse flex-col items-center gap-3" aria-label="กำลังโหลดตารางอันดับทีม">
@@ -85,8 +105,66 @@ export const TeamLeaderboardPage = () => {
     [currentTeamId, rankings]
   );
 
-  const topThree = viewItems.filter((item) => item.rank <= 3);
-  const remainingTeams = viewItems.filter((item) => item.rank >= 4);
+  const podiumEntries = useMemo<PodiumEntry[]>(
+    () =>
+      ([1, 2, 3] as const).map((rank) => {
+        const item = viewItems.find((entry) => entry.rank === rank);
+
+        if (!item) {
+          return { color: "TBA", name: "-", stat: "-" };
+        }
+
+        return {
+          color: item.colorId,
+          name: item.title,
+          subtitle: item.isCurrentTeam ? (
+            <span className="text-xs font-semibold text-amber-300 sm:text-sm">
+              (สีของคุณ)
+            </span>
+          ) : undefined,
+          stat: (
+            <>
+              {item.teamCoinsText}
+              <Coins className="h-3 w-3 text-yellow-400 sm:h-5 sm:w-5" />
+            </>
+          ),
+        };
+      }),
+    [viewItems]
+  );
+
+  const remainingRows = useMemo<LeaderboardRow[]>(
+    () =>
+      viewItems
+        .filter((item) => item.rank >= 4 && item.rank <= 6)
+        .map((item) => ({
+          key: item.colorId,
+          rank: item.rank,
+          highlight: item.isCurrentTeam,
+          name: (
+            <div className="flex items-center gap-2">
+              <Shirt color={item.colorId} className="h-6 sm:h-9" />
+              <span>{item.title}</span>
+              {item.isCurrentTeam && (
+                <span className="text-xs text-neutral-600 sm:text-sm">
+                  (สีของคุณ)
+                </span>
+              )}
+            </div>
+          ),
+          value: item.teamCoinsText,
+        })),
+    [viewItems]
+  );
+
+  const handleScopeChange = useCallback(
+    (scope: LeaderboardScope) => {
+      router.push(
+        scope === "individual" ? "/coins" : "/leaderboard/team?view=coins"
+      );
+    },
+    [router]
+  );
 
   const handleViewChange = useCallback(
     (view: LeaderboardMetric) => {
@@ -109,10 +187,17 @@ export const TeamLeaderboardPage = () => {
 
         <h1 className="text-2xl font-semibold">ตารางอันดับ</h1>
         <LeaderboardTabs
-          scope="team"
+          tabs={scopeTabs}
+          value="team"
+          onChange={handleScopeChange}
+          ariaLabel="ประเภทตารางอันดับ"
+        />
+        <LeaderboardTabs
+          tabs={metricTabs}
           value={activeView}
           onChange={handleViewChange}
-          accuracyDisabled={!ACCURACY_ENABLED}
+          variant="segmented"
+          ariaLabel="ข้อมูลอันดับทีม"
         />
 
         {loading ? (
@@ -140,12 +225,19 @@ export const TeamLeaderboardPage = () => {
           </section>
         ) : (
           <div className="flex w-full flex-col items-center gap-3" role="tabpanel">
-            <TeamCoinPodium items={topThree} />
-            <TeamCoinTable items={remainingTeams} />
+            <Podium entries={podiumEntries} />
+            <LeaderboardTable
+              valueHeader={
+                <>
+                  <span>จำนวนเหรียญ</span>
+                  <Coins className="h-4 w-4 text-yellow-400 sm:h-6 sm:w-6" />
+                </>
+              }
+              rows={remainingRows}
+            />
           </div>
         )}
       </main>
     </div>
   );
 };
-

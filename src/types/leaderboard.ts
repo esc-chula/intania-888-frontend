@@ -37,9 +37,4 @@ export interface TeamCoinViewItem {
   isCurrentTeam: boolean;
 }
 
-export interface TeamCoinDisplayProps {
-  items: readonly TeamCoinViewItem[];
-}
-
 export type LeaderboardMetric = "coins" | "accuracy";
-
