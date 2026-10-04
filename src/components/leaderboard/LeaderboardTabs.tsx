@@ -3,6 +3,8 @@
 export interface TabOption<T extends string> {
   value: T;
   label: string;
+  // e.g. a feature whose backend is not ready yet
+  disabled?: boolean;
 }
 
 interface LeaderboardTabsProps<T extends string> {
@@ -38,10 +40,16 @@ export const LeaderboardTabs = <T extends string>({
             key={tab.value}
             role="tab"
             aria-selected={isActive}
-            onClick={() => onChange(tab.value)}
+            disabled={tab.disabled}
+            aria-disabled={tab.disabled}
+            onClick={() => {
+              if (!tab.disabled) onChange(tab.value);
+            }}
             className={`rounded-lg font-semibold text-white transition-colors ${
               isActive
                 ? "bg-neutral-700"
+                : tab.disabled
+                ? "bg-neutral-800 opacity-40 cursor-not-allowed"
                 : isSegmented
                 ? "bg-neutral-800 hover:bg-neutral-700/50"
                 : "bg-neutral-800 hover:bg-neutral-700/60"
