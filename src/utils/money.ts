@@ -17,3 +17,22 @@ export const formatMoneyString = (value: MoneyString): string => {
   return `${groupedWhole}.${fraction}`;
 };
 
+export const compareMoneyStrings = (
+  left: MoneyString,
+  right: MoneyString
+): number => {
+  const [leftWhole, leftFraction] = left.split(".");
+  const [rightWhole, rightFraction] = right.split(".");
+  const normalizedLeftWhole = leftWhole.replace(/^0+(?=\d)/, "");
+  const normalizedRightWhole = rightWhole.replace(/^0+(?=\d)/, "");
+
+  if (normalizedLeftWhole.length !== normalizedRightWhole.length) {
+    return normalizedLeftWhole.length - normalizedRightWhole.length;
+  }
+
+  const wholeComparison = normalizedLeftWhole.localeCompare(
+    normalizedRightWhole
+  );
+
+  return wholeComparison || leftFraction.localeCompare(rightFraction);
+};
