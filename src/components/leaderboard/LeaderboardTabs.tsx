@@ -51,7 +51,7 @@ export const LeaderboardTabs = <T extends string>({
               isActive
                 ? "bg-neutral-700"
                 : tab.disabled
-                  ? "cursor-not-allowed bg-neutral-800 opacity-40"
+                  ? "cursor-default bg-neutral-800 opacity-40"
                   : isSegmented
                     ? "bg-neutral-800 hover:bg-neutral-700/50"
                     : "bg-neutral-800 hover:bg-neutral-700/60"
