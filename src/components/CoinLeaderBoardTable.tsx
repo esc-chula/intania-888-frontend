@@ -4,6 +4,7 @@ import { apiClient } from "@/api/axios";
 import { getAllUser } from "@/api/coin/getCoin";
 import { Coins } from "lucide-react";
 import { useEffect, useState } from "react";
+import { groupToColorMap } from "@/constant/teamColor";
 
 export const CoinLeaderBoardTable = () => {
   const [Top10, setTop10] = useState<topInterface[] | undefined>(undefined);
@@ -60,7 +61,7 @@ export const CoinLeaderBoardTable = () => {
                   color={
                     item?.group_id == undefined
                       ? "NONE"
-                      : groupAndColorMap[item?.group_id]
+                      : groupToColorMap[item?.group_id]
                   }
                 />
               </td>
@@ -82,7 +83,7 @@ export const CoinLeaderBoardTable = () => {
               color={
                 myNo?.group_id == undefined
                   ? "NONE"
-                  : groupAndColorMap[myNo?.group_id]
+                  : groupToColorMap[myNo?.group_id]
               }
             />
           </td>
@@ -101,28 +102,6 @@ interface topInterface {
   group_id: string;
   remaining_coin: number;
 }
-
-const groupAndColorMap: { [key: string]: string } = {
-  A: "YELLOW",
-  B: "GREEN",
-  C: "GREEN",
-  DOG: "VIOLET",
-  Dog: "VIOLET",
-  E: "BLUE",
-  F: "YELLOW",
-  G: "PINK",
-  H: "PINK",
-  J: "VIOLET",
-  K: "BLUE",
-  L: "YELLOW",
-  M: "GREEN",
-  N: "BLUE",
-  P: "ORANGE",
-  Q: "ORANGE",
-  R: "VIOLET",
-  S: "ORANGE",
-  T: "PINK",
-};
 
 const NameAndColor = (props: { name: string; color: string }) => {
   if (props.color == "VIOLET")

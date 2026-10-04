@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { CoinLeaderBoardTable } from "@/components/CoinLeaderBoardTable";
 import { Navbar } from "@/components/Navbar";
+import { LeaderboardTabs } from "@/components/leaderboard/LeaderboardTabs";
 
 export default function Home() {
   return (
@@ -13,7 +14,9 @@ export default function Home() {
         ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
         แชร์กันเยอะๆ
       </p>
-      <h1 className="text-2xl font-semibold my-2">ลิสต์รายชื่อมหาเศรษฐี</h1>
+      <h1 className="text-2xl font-semibold my-2">ตารางอันดับ</h1>
+      <LeaderboardTabs scope="individual" />
+      <h2 className="text-xl font-semibold my-2">ลิสต์รายชื่อมหาเศรษฐี</h2>
       <CoinLeaderBoardTable />
     </div>
   );
