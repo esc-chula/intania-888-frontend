@@ -26,17 +26,17 @@ export default function Home() {
             <p className="text-xl underline">อีเวนต์ประจำวัน</p>
             <div className="flex flex-row space-x-1 sm:space-x-2 relative">
               <p className="text-xs sm:text-sm">
-                ล้อกอินประจำวัน รับเลย! วันละ 300
+                ล็อกอินประจำวัน รับเลย! วันละ 300
               </p>
               <Coins className="relative -top-1" width={20} color="Yellow" />
               <p className="text-xs sm:text-sm">
-                อย่าลืมเข้ามาล้อกอินทุกวันนะ!
+                อย่าลืมเข้ามาล็อกอินทุกวันนะ!
               </p>
             </div>
           </div>
 
           <div className="flex items-center justify-between px-4 font-semibold flex-row bg-neutral-100 py-1  text-black">
-            <p className="text-sm sm:text-lg">📌 ล้อกอินประจำวัน</p>
+            <p className="text-sm sm:text-lg">📌 ล็อกอินประจำวัน</p>
             <EventButton Sstate={1} type={"daily"} link={""} />
           </div>
         </div>
