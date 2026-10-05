@@ -45,6 +45,18 @@ export interface TeamAccuracyRankingItem {
   wrong: number;
 }
 
+export interface TeamAccuracyRankingDto {
+  rank: number;
+  color_id: TeamColorId;
+  title: string;
+  right: number;
+  wrong: number;
+}
+
+export interface TeamAccuracyLeaderboardResponse {
+  rankings: TeamAccuracyRankingDto[];
+}
+
 export interface TeamAccuracyViewItem extends TeamAccuracyRankingItem {
   isCurrentTeam: boolean;
 }

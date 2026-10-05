@@ -4,6 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Coins } from "lucide-react";
 import {
+  getTeamAccuracyLeaderboard,
+  TeamAccuracyLeaderboardError,
+} from "@/api/leaderboard/teamAccuracy";
+import {
   getTeamCoinLeaderboard,
   TeamCoinLeaderboardError,
 } from "@/api/leaderboard/teamCoin";
@@ -12,9 +16,9 @@ import { Navbar } from "@/components/Navbar";
 import { Shirt } from "@/components/match/MatchColorLogo";
 import { getColorIdByGroupId } from "@/constant/teamColor";
 import useAuth from "@/hooks/useAuth";
-import { mockTeamAccuracyLeaderboard } from "@/mocks/teamAccuracyLeaderboard";
 import {
   LeaderboardMetric,
+  TeamAccuracyRankingItem,
   TeamAccuracyViewItem,
   TeamCoinRankingItem,
   TeamCoinViewItem,
@@ -39,7 +43,6 @@ const metricTabs: readonly TabOption<LeaderboardMetric>[] = [
   {
     value: "accuracy",
     label: "ความแม่นยำ",
-    disabled: !ACCURACY_MOCK_ENABLED,
   },
 ];
 
@@ -66,44 +69,51 @@ export const TeamLeaderboardPage = () => {
   const searchParams = useSearchParams();
   const { user } = useAuth({ optional: true });
   const [coinRankings, setCoinRankings] = useState<TeamCoinRankingItem[]>([]);
+  const [accuracyRankings, setAccuracyRankings] = useState<
+    TeamAccuracyRankingItem[]
+  >([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<TeamCoinLeaderboardError | null>(null);
+  const [error, setError] = useState<
+    TeamCoinLeaderboardError | TeamAccuracyLeaderboardError | null
+  >(null);
   const [requestVersion, setRequestVersion] = useState(0);
 
   const requestedView = searchParams.get("view");
   const activeView: LeaderboardMetric =
-    ACCURACY_MOCK_ENABLED && requestedView === "accuracy"
-      ? "accuracy"
-      : "coins";
+    requestedView === "accuracy" ? "accuracy" : "coins";
 
   useEffect(() => {
     let cancelled = false;
-
-    if (activeView === "accuracy") {
-      setLoading(false);
-      setError(null);
-      return () => {
-        cancelled = true;
-      };
-    }
 
     const loadLeaderboard = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const data = await getTeamCoinLeaderboard();
-        if (!cancelled) setCoinRankings(data);
+        if (activeView === "accuracy") {
+          const data = await getTeamAccuracyLeaderboard();
+          if (!cancelled) setAccuracyRankings(data);
+        } else {
+          const data = await getTeamCoinLeaderboard();
+          if (!cancelled) setCoinRankings(data);
+        }
       } catch (loadError) {
         if (cancelled) return;
 
-        setError(
-          loadError instanceof TeamCoinLeaderboardError
-            ? loadError
-            : new TeamCoinLeaderboardError(
-                "Unable to load the team leaderboard"
-              )
-        );
+        if (
+          loadError instanceof TeamCoinLeaderboardError ||
+          loadError instanceof TeamAccuracyLeaderboardError
+        ) {
+          setError(loadError);
+        } else {
+          setError(
+            activeView === "accuracy"
+              ? new TeamAccuracyLeaderboardError("Unable to load team accuracy")
+              : new TeamCoinLeaderboardError(
+                  "Unable to load the team leaderboard",
+                ),
+          );
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -127,16 +137,16 @@ export const TeamLeaderboardPage = () => {
         teamCoinsText: formatMoneyString(item.teamCoins),
         isCurrentTeam: item.colorId === currentTeamId,
       })),
-    [coinRankings, currentTeamId]
+    [coinRankings, currentTeamId],
   );
 
   const accuracyViewItems = useMemo<TeamAccuracyViewItem[]>(
     () =>
-      mockTeamAccuracyLeaderboard.map((item) => ({
+      accuracyRankings.map((item) => ({
         ...item,
         isCurrentTeam: item.colorId === currentTeamId,
       })),
-    [currentTeamId]
+    [accuracyRankings, currentTeamId],
   );
 
   const podiumEntries = useMemo<PodiumEntry[]>(
@@ -180,7 +190,7 @@ export const TeamLeaderboardPage = () => {
           ),
         };
       }),
-    [accuracyViewItems, activeView, coinViewItems]
+    [accuracyViewItems, activeView, coinViewItems],
   );
 
   const remainingRows = useMemo<LeaderboardRow[]>(() => {
@@ -235,26 +245,25 @@ export const TeamLeaderboardPage = () => {
   const handleScopeChange = useCallback(
     (scope: LeaderboardScope) => {
       router.push(
-        scope === "individual" ? "/coins" : "/leaderboard/team?view=coins"
+        scope === "individual" ? "/coins" : "/leaderboard/team?view=coins",
       );
     },
-    [router]
+    [router],
   );
 
   const handleViewChange = useCallback(
     (view: LeaderboardMetric) => {
-      if (view === "accuracy" && !ACCURACY_MOCK_ENABLED) return;
       router.replace(`/leaderboard/team?view=${view}`);
     },
-    [router]
+    [router],
   );
 
   const isEmpty =
     activeView === "accuracy"
       ? accuracyViewItems.length === 0
       : coinViewItems.length === 0;
-  const showLoading = activeView === "coins" && loading;
-  const activeError = activeView === "coins" ? error : null;
+  const showLoading = loading;
+  const activeError = error;
 
   return (
     <div className="min-h-screen w-full bg-black pb-16 text-white">
@@ -282,7 +291,7 @@ export const TeamLeaderboardPage = () => {
           ariaLabel="ข้อมูลอันดับทีม"
         />
 
-        {activeView === "accuracy" && (
+        {activeView === "accuracy" && ACCURACY_MOCK_ENABLED && (
           <p className="text-xs text-neutral-400">ข้อมูลจำลองสำหรับพัฒนา UI</p>
         )}
 
