@@ -12,12 +12,12 @@ export interface GridTile {
 export interface Game {
   id: string;
   user_id: string;
-  bet_amount: number;
+  bet_amount: string;
   risk_level: string;
   grid: GridTile[];
   revealed_count: number;
-  current_payout: number;
-  multiplier: number;
+  current_payout: string;
+  multiplier: string;
   status: "active" | "lost"
   created_at: string;
   completed_at?: string | null;
@@ -30,7 +30,10 @@ export interface RevealApiResponse {
 
 export const createGame = async (bet_amount: number, risk_level: string) => {
     try {
-        const response: AxiosResponse = await apiClient.post(`/mines/create`, {bet_amount, risk_level})
+        const response: AxiosResponse = await apiClient.post(`/mines/create`, {
+          bet_amount: bet_amount.toFixed(2),
+          risk_level,
+        })
         if (response.status == 200) {
             return { success: true, data: response.data }
         } else {

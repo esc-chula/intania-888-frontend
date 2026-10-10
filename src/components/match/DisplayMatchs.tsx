@@ -1,7 +1,6 @@
 import { Banner } from "./MatchBanner";
 import { Round } from "./MatchRound";
 import { allMatchInterface } from "./MatchInterface";
-import { getLocationForSport } from "@/utils/location";
 
 export const DisplayMatchs = (props: allMatchInterface) => {
   
@@ -14,7 +13,7 @@ export const DisplayMatchs = (props: allMatchInterface) => {
         return (
           <div key={index}>
             <Banner
-              location={getLocationForSport(match.sport, match.round[0].time_start)}
+              location={match.location}
               sport={match.sport}
               league={match.league}
             />

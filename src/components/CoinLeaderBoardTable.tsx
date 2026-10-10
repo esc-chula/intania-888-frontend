@@ -1,6 +1,5 @@
 "use client";
 
-import { apiClient } from "@/api/axios";
 import { getAllUser } from "@/api/coin/getCoin";
 import { Coins } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,14 +10,17 @@ import {
   compareMoneyStrings,
   formatMoneyString,
 } from "@/utils/money";
+import useAuth from "@/hooks/useAuth";
 
 export const CoinLeaderBoardTable = () => {
   const [top10, setTop10] = useState<RankedUser[] | undefined>(undefined);
   const [myNo, setMyNo] = useState<RankedUser | undefined>(undefined);
+  const { profile, status } = useAuth();
 
   useEffect(() => {
+    if (status !== "authenticated" || !profile) return;
+
     const fetchData = async () => {
-      const myData = (await apiClient.get("/auth/me")).data.profile;
       const allUserResponse = (await getAllUser())?.data as
         | UserCoinResponse[]
         | undefined;
@@ -28,10 +30,9 @@ export const CoinLeaderBoardTable = () => {
         compareMoneyStrings(itemB.remainingCoin, itemA.remainingCoin)
       );
 
-      const myIndex = allUsers.findIndex((item) => item.id === myData.id);
-
+      const myIndex = allUsers.findIndex((item) => item.id === profile.id);
       setMyNo({
-        ...toLeaderboardUser(myData),
+        ...toLeaderboardUser(profile),
         rank: myIndex >= 0 ? myIndex + 1 : "-",
       });
       setTop10(
@@ -43,7 +44,7 @@ export const CoinLeaderBoardTable = () => {
     };
 
     fetchData();
-  }, []);
+  }, [profile, status]);
 
   return (
     <table className="rounded-lg w-[90vw] sm:w-[600px] overflow-hidden text-[0.8rem] sm:text-[1rem] h-auto">

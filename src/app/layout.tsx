@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { IBM_Plex_Sans_Thai } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import { SportCatalogProvider } from "@/components/SportCatalogProvider";
+import { AuthProvider } from "@/hooks/useAuth";
 
 export const metadata: Metadata = {
   title: "Intania 888",
@@ -27,7 +29,9 @@ export default function RootLayout({
         className={`${IBMFont.className} antialiased bg-black`}
       >
         <Toaster />
-        {children}
+        <AuthProvider>
+          <SportCatalogProvider>{children}</SportCatalogProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -15,6 +15,11 @@ interface SportType {
   title: string;
 }
 
+interface Location {
+  id: string;
+  title: string;
+}
+
 interface Match {
   id: string;
   team_a: string;
@@ -26,6 +31,7 @@ interface Match {
   is_draw: boolean;
   start_time: string;
   end_time: string;
+  location: Location;
 }
 
 export default function EditMatchPage() {
@@ -34,12 +40,14 @@ export default function EditMatchPage() {
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState<Color[]>([]);
   const [sportTypes, setSportTypes] = useState<SportType[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [match, setMatch] = useState<Match | null>(null);
 
   const [formData, setFormData] = useState({
     team_a_id: "",
     team_b_id: "",
     type_id: "",
+    location_id: "",
     start_time: "",
     end_time: "",
   });
@@ -51,27 +59,17 @@ export default function EditMatchPage() {
 
   const fetchData = async () => {
     try {
-      const [matchRes, colorsRes] = await Promise.all([
+      const [matchRes, colorsRes, sportTypesRes, locationsRes] = await Promise.all([
         apiClient.get(`/matches/${matchId}`),
         apiClient.get("/colors/leaderboards"),
+        apiClient.get<SportType[]>("/sport-types"),
+        apiClient.get<Location[]>("/locations"),
       ]);
 
       setMatch(matchRes.data);
       setColors(colorsRes.data);
-
-      // Hardcoded sport types from migration script
-      const sportTypes = [
-        { id: "FOOTBALL_MALE_JR", title: "ฟุตบอล ชาย ปี1" },
-        { id: "FOOTBALL_MALE_SR", title: "ฟุตบอล ชาย ปี2-4" },
-        { id: "BASKETBALL_MALE_JR", title: "บาสเกตบอล ชาย ปี1" },
-        { id: "BASKETBALL_MALE_SR", title: "บาสเกตบอล ชาย ปี2-4" },
-        { id: "BASKETBALL_FEMALE_ALL", title: "บาสเกตบอล หญิง ทุกชั้นปี" },
-        { id: "VOLLEYBALL_MALE_ALL", title: "วอลเลย์บอล ชาย ทุกชั้นปี" },
-        { id: "VOLLEYBALL_FEMALE_ALL", title: "วอลเลย์บอล หญิง ทุกชั้นปี" },
-        { id: "CHAIRBALL_FEMALE_JR", title: "แชร์บอล หญิง ปี1" },
-        { id: "CHAIRBALL_FEMALE_SR", title: "แชร์บอล หญิง ปี2-4" },
-      ];
-      setSportTypes(sportTypes);
+      setSportTypes(sportTypesRes.data);
+      setLocations(locationsRes.data);
 
       // Set form data from match
       // Convert UTC times to Bangkok time (UTC+7) for display
@@ -80,6 +78,7 @@ export default function EditMatchPage() {
         team_a_id: matchData.team_a,
         team_b_id: matchData.team_b,
         type_id: matchData.type,
+        location_id: matchData.location.id,
         start_time: convertUTCToBangkok(matchData.start_time),
         end_time: convertUTCToBangkok(matchData.end_time),
       });
@@ -96,6 +95,7 @@ export default function EditMatchPage() {
       !formData.team_a_id ||
       !formData.team_b_id ||
       !formData.type_id ||
+      !formData.location_id ||
       !formData.start_time ||
       !formData.end_time
     ) {
@@ -114,6 +114,7 @@ export default function EditMatchPage() {
         team_a: formData.team_a_id,
         team_b: formData.team_b_id,
         type: formData.type_id,
+        location_id: formData.location_id,
         start_time: new Date(formData.start_time).toISOString(),
         end_time: new Date(formData.end_time).toISOString(),
       });
@@ -190,6 +191,27 @@ export default function EditMatchPage() {
             {sportTypes.map((type) => (
               <option key={type.id} value={type.id}>
                 {type.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Location *
+          </label>
+          <select
+            value={formData.location_id}
+            onChange={(event) =>
+              setFormData({ ...formData, location_id: event.target.value })
+            }
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          >
+            <option value="">Select location</option>
+            {locations.map((location) => (
+              <option key={location.id} value={location.id}>
+                {location.title} ({location.id})
               </option>
             ))}
           </select>

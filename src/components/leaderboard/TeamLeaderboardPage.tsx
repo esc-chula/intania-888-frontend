@@ -69,7 +69,7 @@ const TeamLeaderboardLoading = () => (
 export const TeamLeaderboardPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth({ optional: true });
+  const { profile } = useAuth();
   const [coinRankings, setCoinRankings] = useState<TeamCoinRankingItem[]>([]);
   const [accuracyRankings, setAccuracyRankings] = useState<
     TeamAccuracyRankingItem[]
@@ -128,7 +128,7 @@ export const TeamLeaderboardPage = () => {
     };
   }, [activeView, requestVersion]);
 
-  const currentTeamId = getColorIdByGroupId(user?.profile.group_id);
+  const currentTeamId = getColorIdByGroupId(profile?.group_id);
 
   const coinViewItems = useMemo<TeamCoinViewItem[]>(
     () =>
@@ -324,7 +324,7 @@ export const TeamLeaderboardPage = () => {
           </section>
         ) : (
           <div
-            className="flex w-full flex-col items-center gap-3"
+            className="flex w-full flex-col items-center gap-3 pt-4 sm:pt-6"
             role="tabpanel"
             aria-label={
               activeView === "accuracy" ? "อันดับความแม่นยำ" : "อันดับเหรียญทีม"

@@ -1,10 +1,12 @@
+"use client";
+
 import { MapPin } from "lucide-react";
 import {
   colorBgMap,
   colorDecoMap,
   leagueTextMap,
-  sportTextMap,
 } from "./MatchMapAndList";
+import { useSportCatalog } from "@/components/SportCatalogProvider";
 
 export const Banner = ({
   location,
@@ -15,7 +17,8 @@ export const Banner = ({
   sport: string;
   league: string;
 }) => {
-  const sportDisplay = sportTextMap[sport]?.split(" ")[0] || sport || "กีฬา";
+  const { getSportTitle } = useSportCatalog();
+  const sportDisplay = getSportTitle(sport)?.split(" ")[0] || sport || "กีฬา";
 
   return (
     <div

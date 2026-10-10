@@ -2,10 +2,10 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { AxiosError } from "axios";
-import { Calendar, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { MapPin, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { apiClient } from "@/api/axios";
 
-interface SportType {
+interface Location {
   id: string;
   title: string;
 }
@@ -15,7 +15,7 @@ interface ApiErrorResponse {
   request_id?: string;
 }
 
-const errorMessage = (error: unknown) => {
+const getErrorMessage = (error: unknown) => {
   if (error instanceof AxiosError) {
     const response = error.response?.data as ApiErrorResponse | undefined;
     return response?.request_id
@@ -25,30 +25,30 @@ const errorMessage = (error: unknown) => {
   return "Request failed";
 };
 
-export default function SportTypesPage() {
-  const [sportTypes, setSportTypes] = useState<SportType[]>([]);
+export default function LocationsPage() {
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
 
-  const fetchSportTypes = useCallback(async () => {
+  const fetchLocations = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<SportType[]>("/sport-types");
-      setSportTypes(response.data);
+      const response = await apiClient.get<Location[]>("/locations");
+      setLocations(response.data);
     } catch (requestError) {
-      setError(errorMessage(requestError));
+      setError(getErrorMessage(requestError));
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    void fetchSportTypes();
-  }, [fetchSportTypes]);
+    void fetchLocations();
+  }, [fetchLocations]);
 
   const handleCreate = async (event: FormEvent) => {
     event.preventDefault();
@@ -57,47 +57,49 @@ export default function SportTypesPage() {
     setSaving(true);
     setError(null);
     try {
-      await apiClient.post("/sport-types/admin", {
+      await apiClient.post("/locations/admin", {
         id: id.trim(),
         title: title.trim(),
       });
       setId("");
       setTitle("");
-      await fetchSportTypes();
+      await fetchLocations();
     } catch (requestError) {
-      setError(errorMessage(requestError));
+      setError(getErrorMessage(requestError));
     } finally {
       setSaving(false);
     }
   };
 
-  const handleRename = async (sport: SportType) => {
-    const nextTitle = window.prompt("New sport title", sport.title)?.trim();
-    if (!nextTitle || nextTitle === sport.title) return;
+  const handleRename = async (location: Location) => {
+    const nextTitle = window
+      .prompt("New location title", location.title)
+      ?.trim();
+    if (!nextTitle || nextTitle === location.title) return;
 
     setError(null);
     try {
       await apiClient.patch(
-        `/sport-types/admin/${encodeURIComponent(sport.id)}`,
+        `/locations/admin/${encodeURIComponent(location.id)}`,
         { title: nextTitle },
       );
-      await fetchSportTypes();
+      await fetchLocations();
     } catch (requestError) {
-      setError(errorMessage(requestError));
+      setError(getErrorMessage(requestError));
     }
   };
 
-  const handleDelete = async (sport: SportType) => {
-    if (!window.confirm(`Delete ${sport.title} (${sport.id})?`)) return;
+  const handleDelete = async (location: Location) => {
+    if (!window.confirm(`Delete ${location.title} (${location.id})?`)) return;
 
     setError(null);
     try {
       await apiClient.delete(
-        `/sport-types/admin/${encodeURIComponent(sport.id)}`,
+        `/locations/admin/${encodeURIComponent(location.id)}`,
       );
-      await fetchSportTypes();
+      await fetchLocations();
     } catch (requestError) {
-      setError(errorMessage(requestError));
+      setError(getErrorMessage(requestError));
     }
   };
 
@@ -105,16 +107,16 @@ export default function SportTypesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Sport Types</h1>
+          <h1 className="text-3xl font-bold text-white">Locations</h1>
           <p className="mt-1 text-gray-400">
-            Manage the shared sport catalogue used by match forms.
+            Manage the venue catalogue used by match forms.
           </p>
         </div>
         <button
           type="button"
-          onClick={() => void fetchSportTypes()}
+          onClick={() => void fetchLocations()}
           className="rounded-lg bg-gray-800 p-3 text-gray-200 hover:bg-gray-700"
-          aria-label="Refresh sport types"
+          aria-label="Refresh locations"
         >
           <RefreshCw className="h-5 w-5" />
         </button>
@@ -127,7 +129,7 @@ export default function SportTypesPage() {
         <input
           value={id}
           onChange={(event) => setId(event.target.value)}
-          placeholder="SPORT_ID"
+          placeholder="LOCATION_ID"
           pattern="[A-Za-z0-9_-]{1,100}"
           maxLength={100}
           className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"
@@ -159,38 +161,38 @@ export default function SportTypesPage() {
 
       {loading ? (
         <div className="py-16 text-center text-gray-300">Loading...</div>
-      ) : sportTypes.length === 0 ? (
+      ) : locations.length === 0 ? (
         <div className="rounded-lg bg-gray-900 p-8 text-center text-gray-400">
-          No sport types configured.
+          No locations configured.
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {sportTypes.map((sport) => (
-            <article key={sport.id} className="rounded-lg bg-gray-900 p-5">
-              <div className="mb-4 flex items-start justify-between gap-3">
+          {locations.map((location) => (
+            <article key={location.id} className="rounded-lg bg-gray-900 p-5">
+              <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="mb-2 flex items-center gap-2 text-blue-400">
-                    <Calendar className="h-5 w-5" />
-                    <span className="font-mono text-xs">{sport.id}</span>
+                    <MapPin className="h-5 w-5" />
+                    <span className="font-mono text-xs">{location.id}</span>
                   </div>
                   <h2 className="text-lg font-semibold text-white">
-                    {sport.title}
+                    {location.title}
                   </h2>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    onClick={() => void handleRename(sport)}
+                    onClick={() => void handleRename(location)}
                     className="rounded bg-gray-800 p-2 text-gray-300 hover:text-white"
-                    aria-label={`Rename ${sport.title}`}
+                    aria-label={`Rename ${location.title}`}
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
-                    onClick={() => void handleDelete(sport)}
+                    onClick={() => void handleDelete(location)}
                     className="rounded bg-red-950 p-2 text-red-300 hover:text-red-100"
-                    aria-label={`Delete ${sport.title}`}
+                    aria-label={`Delete ${location.title}`}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

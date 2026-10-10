@@ -5,7 +5,6 @@ import { leaderboardDataInterface, sortLeaderboardDataByWon } from "./ColorLeade
 
 export const LeaderBoardTableDisplay = (props: {
   sport: string;
-  dateNow: Date;
   teamA: leaderboardDataInterface[] | undefined;
   teamB: leaderboardDataInterface[] | undefined;
 }) => {
@@ -13,32 +12,52 @@ export const LeaderBoardTableDisplay = (props: {
     undefined
   );
   const [lastUpdate, setLastUpdate] = useState("");
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    const getData = async () => {
-      const res = await getColorLeaderboard({
-        type_id: props.sport,
-      });
-      return res?.data;
-    };
+    let cancelled = false;
 
     const fetchData = async () => {
-      const data = await getData();
-      setData(sortLeaderboardDataByWon(data));
+      setData(undefined);
+      setLoadError(false);
+      const res = await getColorLeaderboard({
+        type_id: props.sport || undefined,
+      });
+      if (cancelled) return;
+
+      if (!res.success) {
+        setData([]);
+        setLoadError(true);
+        return;
+      }
+
+      setData(sortLeaderboardDataByWon(res.data));
+      const updatedAt = new Date();
+      setLastUpdate(
+        `${updatedAt.getDate()}/${updatedAt.getMonth() + 1}/${
+          updatedAt.getFullYear() + 543
+        } ${updatedAt.getHours()}:${updatedAt
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`,
+      );
     };
 
-    fetchData();
+    void fetchData();
 
-    setLastUpdate(
-      `${props.dateNow.getDate()}/${props.dateNow.getMonth()}/${
-        props.dateNow.getFullYear() + 543
-      } ${props.dateNow.getHours()}:${props.dateNow.getMinutes()}`
-    );
-  }, [props.sport, props.dateNow]);
+    return () => {
+      cancelled = true;
+    };
+  }, [props.sport]);
 
   return (
     <>
       <p className="text-sm text-neutral-500">Update : {lastUpdate}</p>
+      {loadError && (
+        <p className="text-sm text-red-400" role="alert">
+          ไม่สามารถโหลดตารางอันดับสีได้ กรุณาลองใหม่อีกครั้ง
+        </p>
+      )}
       <LeaderBoardTable
         data={data}
         varience={"WDL"}

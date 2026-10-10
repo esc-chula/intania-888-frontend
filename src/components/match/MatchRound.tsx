@@ -4,6 +4,7 @@ import { MatchColorLogo } from "./MatchColorLogo";
 import { RoundItem } from "./MatchInterface";
 import { formatTime } from "./MatchUtils";
 import { useSlipStore } from "@/store/slip";
+import { DEFAULT_RATE, rateToMicroUnits } from "@/utils/rate";
 
 export const Round = ({ round }: { round: RoundItem }) => {
   const addSlipItem = useSlipStore((state) => state.addSlipItem)
@@ -11,7 +12,10 @@ export const Round = ({ round }: { round: RoundItem }) => {
   const handleAddToSlip = () => {
     addSlipItem({
       match_id: round.match_id,
-      rate: round.rateA == 0 ? 2 : round.rateA,
+      rate:
+        rateToMicroUnits(round.rateA) === BigInt(0)
+          ? DEFAULT_RATE
+          : round.rateA,
       betting_on: round.colorA, 
       date: round.time_start,
       sport_type: round.type,
@@ -34,8 +38,8 @@ export const Round = ({ round }: { round: RoundItem }) => {
           <Matchbar
             colorA={round.colorA}
             colorB={round.colorB}
-            scoreA={round.rateA}
-            scoreB={round.rateB}
+            rateA={round.rateA}
+            rateB={round.rateB}
           />
         )}
         {round.status === "playing" && (

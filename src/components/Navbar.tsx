@@ -1,96 +1,77 @@
 "use client";
+
 import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Trophy, ReceiptText, Joystick, Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
-import { apiClient } from "@/api/axios";
-import { AxiosError } from "axios";
+import { formatMoneyString } from "@/utils/money";
+import useAuth from "@/hooks/useAuth";
 
 export const Navbar = (props: { pagenow: string; allowAnonymous?: boolean }) => {
   const router = useRouter();
   const coinPoint = useCoinStore((state) => state.coinPoint);
-  const refreshCoin = useCoinStore((state) => state.refreshCoin); 
+  const { profile, status } = useAuth();
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const me = await apiClient.get("/auth/me");
-        if (me.data.profile?.id && (!me.data.profile?.nick_name || !me.data.profile?.group_id)) {
-            router.push("/register/profile")
-        }
-
-        await refreshCoin(); 
-      } catch (error) {
-        if (error instanceof AxiosError && error.response?.status === 401) {
-          if (!props.allowAnonymous) router.replace("/register");
-          return;
-        }
-
-        console.error("Error fetching user or refreshing coins:", error);
+    if (status === "authenticated" && profile) {
+      if (!profile.nick_name || !profile.group_id) {
+        router.replace("/register/profile");
       }
-    };
+      return;
+    }
 
-    fetchData();
-  }, [refreshCoin, router, props.allowAnonymous]);
+    if (status === "unauthenticated" && !props.allowAnonymous) {
+      router.replace("/register");
+    }
+  }, [profile, props.allowAnonymous, router, status]);
 
   return (
-    <div className="w-full h-[55px] bg-neutral-900 flex flex-row items-center m-0 text-white select-none cursor-pointer overflow-hidden max-sm:text-[0.8rem]">
-      <a
-        href="/"
-        className="w-1/4 h-full items-center justify-center group relative"
-      >
-        <div className="flex flex-row space-x-2 h-full items-center justify-center">
+    <div className="m-0 flex h-[55px] w-full cursor-pointer select-none flex-row items-center overflow-hidden bg-neutral-900 text-white max-sm:text-[0.8rem]">
+      <Link href="/" className="group relative h-full w-1/4 items-center justify-center">
+        <div className="flex h-full flex-row items-center justify-center space-x-2">
           <Trophy />
           <p>แมตช์</p>
         </div>
-        {props.pagenow == "match" ? (
-          <div className="h-1 w-full bg-base-gold absolute bottom-0"></div>
+        {props.pagenow === "match" ? (
+          <div className="absolute bottom-0 h-1 w-full bg-base-gold" />
         ) : (
-          <div className="group-hover:h-1  w-full h-0 group-hover:bg-white transition-all absolute bottom-0"></div>
+          <div className="absolute bottom-0 h-0 w-full transition-all group-hover:h-1 group-hover:bg-white" />
         )}
-      </a>
-      <a
-        href="/slip"
-        className="w-1/4 h-full items-center justify-center group relative"
-      >
-        <div className="flex flex-row space-x-2 h-full items-center justify-center">
+      </Link>
+      <Link href="/slip" className="group relative h-full w-1/4 items-center justify-center">
+        <div className="flex h-full flex-row items-center justify-center space-x-2">
           <ReceiptText />
           <p>สลิป</p>
         </div>
-        {props.pagenow == "slip" ? (
-          <div className="h-1 w-full bg-base-gold absolute bottom-0"></div>
+        {props.pagenow === "slip" ? (
+          <div className="absolute bottom-0 h-1 w-full bg-base-gold" />
         ) : (
-          <div className="group-hover:h-1  w-full h-0 group-hover:bg-white transition-all absolute bottom-0"></div>
+          <div className="absolute bottom-0 h-0 w-full transition-all group-hover:h-1 group-hover:bg-white" />
         )}
-      </a>
-      <a
-        href="/event"
-        className="w-1/4 h-full items-center justify-center group relative"
-      >
-        <div className="flex flex-row space-x-2 h-full items-center justify-center">
+      </Link>
+      <Link href="/event" className="group relative h-full w-1/4 items-center justify-center">
+        <div className="flex h-full flex-row items-center justify-center space-x-2">
           <Joystick />
           <p>อีเวนต์</p>
         </div>
-        {props.pagenow == "event" ? (
-          <div className="h-1 w-full bg-base-gold absolute bottom-0"></div>
+        {props.pagenow === "event" ? (
+          <div className="absolute bottom-0 h-1 w-full bg-base-gold" />
         ) : (
-          <div className="group-hover:h-1  w-full h-0 group-hover:bg-white transition-all absolute bottom-0"></div>
+          <div className="absolute bottom-0 h-0 w-full transition-all group-hover:h-1 group-hover:bg-white" />
         )}
-      </a>
-
-      <a
-        href="/coins"
-        className="w-1/4 h-full items-center justify-center group relative"
-      >
-        <div className="flex flex-row space-x-2 h-full items-center justify-center">
-          <p>{coinPoint}</p> {/* Display the global coin point */}
+      </Link>
+      <Link href="/coins" className="group relative h-full w-1/4 items-center justify-center">
+        <div className="flex h-full flex-row items-center justify-center space-x-2">
+          <p>{formatMoneyString(coinPoint)}</p>
           <Coins color="yellow" />
         </div>
-        {props.pagenow == "coins" ? (
-          <div className="h-1 w-full bg-base-gold absolute bottom-0"></div>
+        {props.pagenow === "coins" ? (
+          <div className="absolute bottom-0 h-1 w-full bg-base-gold" />
         ) : (
-          <div className="group-hover:h-1 w-full h-0 group-hover:bg-white transition-all absolute bottom-0"></div>
+          <div className="absolute bottom-0 h-0 w-full transition-all group-hover:h-1 group-hover:bg-white" />
         )}
-      </a>
+      </Link>
     </div>
   );
 };

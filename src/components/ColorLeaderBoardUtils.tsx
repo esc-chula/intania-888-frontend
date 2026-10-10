@@ -1,5 +1,7 @@
-export const sortLeaderboardDataByWon = (data: leaderboardDataInterface[]) => {
-  return data.sort((a, b) => {
+export const sortLeaderboardDataByWon = (
+  data: readonly leaderboardDataInterface[] = [],
+) => {
+  return [...data].sort((a, b) => {
     if (a.won !== b.won) {
       return b.won - a.won;
     }

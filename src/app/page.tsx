@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
 import { Selector } from "@/components/Selector";
@@ -14,27 +14,39 @@ import {
 } from "@/components/match/MatchMapAndList";
 import { EmptyState } from "@/components/EmptyState";
 import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
-import { apiClient } from "@/api/axios";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
-import OAuthCallbackHandler from "@/components/auth/OAuthCallBackHandler";
-import { getAccessToken } from "@/utils/token";
 import { Footer } from "@/components/Footer";
+import { useSportCatalog } from "@/components/SportCatalogProvider";
 
 export default function Home() {
   const [mainFilter, setMainFilter] = useState("upcoming");
   const [filter, setFilter] = useState("");
-  const [allMatch, setAllMatch] = useState<allMatchInterface[] | undefined>(
-    undefined
-  );
   const [showMatch, setShowMatch] = useState<allMatchInterface[] | undefined>(
     undefined
   );
-  const [dateNow, setDateNow] = useState<Date>(new Date(Date.now()));
   const [teamA, setTeamA] = useState<leaderboardDataInterface[] | undefined>(
     undefined
   );
   const [teamB, setTeamB] = useState<leaderboardDataInterface[] | undefined>(
     undefined
+  );
+  const { sportTypes } = useSportCatalog();
+
+  const sportChoices = useMemo(
+    () =>
+      sportTypes.length > 0
+        ? ["รวมกีฬาทุกประเภท", ...sportTypes.map((sport) => sport.title)]
+        : choicesList,
+    [sportTypes],
+  );
+  const sportIdByTitle = useMemo(
+    () => ({
+      ...selectorTextMap,
+      ...Object.fromEntries(
+        sportTypes.map((sport) => [sport.title, sport.id]),
+      ),
+    }),
+    [sportTypes],
   );
 
   // Handle filter selection
@@ -43,88 +55,28 @@ export default function Home() {
     setFilter("");
   };
 
-  // Get date when page loads
   useEffect(() => {
+    if (mainFilter === "overall") return;
+
+    let cancelled = false;
     const fetchMatchData = async () => {
-      const token = getAccessToken();
-      if (!token) {
-        return;
-      }
-
-      try {
-        const result = await getMatch();
-        const data = result?.data;
-        if (!data) {
-          return;
-        }
-
-        setAllMatch(data);
-        // Keep dateNow in UTC for comparisons
-        setDateNow(
-          new Date(
-            (await apiClient.get("/matches/current/time")).data.currentTime
-          )
-        );
-      } catch (error) {
-        console.error("Failed to fetch matches:", error);
-      }
+      setShowMatch(undefined);
+      const typeId =
+        filter === "" || filter === "รวมกีฬาทุกประเภท"
+          ? undefined
+          : sportIdByTitle[filter];
+      const result = await getMatch({
+        schedule: mainFilter === "upcoming" ? "schedule" : "result",
+        typeId,
+      });
+      if (!cancelled) setShowMatch(result?.data ?? []);
     };
 
-    fetchMatchData();
-  }, []);
-
-  // Filter data
-  useEffect(() => {
-    if (!allMatch) return;
-
-    if (mainFilter === "overall") {
-      setShowMatch(allMatch);
-      return;
-    }
-
-    let show = allMatch;
-    const sport = selectorTextMap[filter];
-
-    if (mainFilter === "upcoming") {
-      show = show
-        ?.map((match) => {
-          const filteredMatches = match.matches
-            .map((m) => {
-              const filteredRounds = m.round.filter((r) => {
-                if (filter !== "รวมกีฬาทุกประเภท" && filter !== "") {
-                  return r.time_end >= dateNow && m.sport === sport;
-                } else {
-                  return r.time_end >= dateNow;
-                }
-              });
-              return { ...m, round: filteredRounds };
-            })
-            .filter((r) => r.round.length > 0);
-          return { ...match, matches: filteredMatches };
-        })
-        .filter((match) => match.matches.length > 0);
-    } else if (mainFilter === "result") {
-      show = show
-        ?.map((match) => {
-          const filteredMatches = match.matches
-            .map((m) => {
-              const filteredRounds = m.round.filter((r) => {
-                if (filter !== "รวมกีฬาทุกประเภท" && filter !== "") {
-                  return r.time_end < dateNow && m.sport === sport;
-                } else {
-                  return r.time_end < dateNow;
-                }
-              });
-              return { ...m, round: filteredRounds };
-            })
-            .filter((r) => r.round.length > 0);
-          return { ...match, matches: filteredMatches };
-        })
-        .filter((match) => match.matches.length > 0);
-    }
-
-    setShowMatch(show);
-  }, [mainFilter, filter, allMatch, dateNow]);
+    void fetchMatchData();
+    return () => {
+      cancelled = true;
+    };
+  }, [filter, mainFilter, sportIdByTitle]);
 
   // Fetch team data for overall view
   useEffect(() => {
@@ -137,17 +89,16 @@ export default function Home() {
       setTeamB(resB?.data);
     };
 
-    const type_id_temp = filter === "" ? "ALL" : selectorTextMap[filter];
+    const type_id_temp = filter === "" ? "ALL" : sportIdByTitle[filter];
     fetchMatchSub({ type_id: type_id_temp });
-  }, [mainFilter, filter]);
+  }, [mainFilter, filter, sportIdByTitle]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <OAuthCallbackHandler />
+    <>
       <div className="flex flex-col items-center justify-start space-y-4 min-h-screen w-screen pb-32 text-white">
         <div className="relative m-0 p-0 top-0 flex flex-col w-full">
           <Header />
-          <Navbar pagenow="match" />
+          <Navbar pagenow="match" allowAnonymous />
         </div>
 
         <div className="w-[95%] sm:w-[700px] items-center flex flex-col space-y-4">
@@ -160,7 +111,7 @@ export default function Home() {
             handdleChangeMainFilter={handdleChangeMainFilter}
           />
           <Selector
-            choicesList={choicesList}
+            choicesList={sportChoices}
             mainFilter={mainFilter}
             filter={filter}
             setFilter={setFilter}
@@ -171,9 +122,8 @@ export default function Home() {
               sport={
                 filter === "รวมกีฬาทุกประเภท" || filter === ""
                   ? ""
-                  : selectorTextMap[filter]
+                  : sportIdByTitle[filter]
               }
-              dateNow={dateNow}
               teamA={teamA}
               teamB={teamB}
             />
@@ -196,6 +146,6 @@ export default function Home() {
         </div>
       </div>
       <Footer />
-    </Suspense>
+    </>
   );
 }

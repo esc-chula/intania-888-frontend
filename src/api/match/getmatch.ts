@@ -2,14 +2,27 @@ import { AxiosResponse } from "axios";
 import { apiClient } from "../axios";
 import { cleanData } from "@/components/match/MatchUtils";
 
+export type MatchSchedule = "schedule" | "result";
 
-const getMatch = async () => {
+interface GetMatchOptions {
+    schedule?: MatchSchedule;
+    typeId?: string;
+}
+
+const getMatch = async (options: GetMatchOptions = {}) => {
     try {
-        const response: AxiosResponse = await apiClient.get("/matches")
-        const dateNow = new Date((await apiClient.get("/matches/current/time")).data.currentTime);
+        const response: AxiosResponse = await apiClient.get("/matches", {
+            params: {
+                schedule: options.schedule,
+                typeId: options.typeId,
+            },
+        })
 
         if (response.status == 200) {
-            const cleanedData = cleanData({ rawData: response.data, dateNow });
+            const cleanedData = cleanData({
+                rawData: response.data,
+                dateNow: new Date(),
+            });
             return { success: true, data :  cleanedData }
         } else {
             return { success: false }

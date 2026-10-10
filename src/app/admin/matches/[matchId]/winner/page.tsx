@@ -41,9 +41,14 @@ export default function UpdateWinner() {
     try {
       setLoading(true);
       if (winner === "draw") {
-        await apiClient.patch(`/matches/${matchId}/draw`);
+        await apiClient.put(`/matches/${matchId}/result`, {
+          outcome: "draw",
+        });
       } else {
-        await apiClient.patch(`/matches/${matchId}/winner/${winner}`);
+        await apiClient.put(`/matches/${matchId}/result`, {
+          outcome: "winner",
+          winner_id: winner,
+        });
       }
       alert("Match result updated successfully!");
       router.push("/admin/matches");

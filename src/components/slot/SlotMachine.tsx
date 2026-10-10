@@ -1,11 +1,15 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Coins } from "lucide-react";
 import Lever from "./Lever";
 import Reel from "./Reel";
 import toast from "react-hot-toast";
 import { useCoinStore } from "@/store/coin";
+import {
+  asMoneyString,
+  compareMoneyStrings,
+} from "@/utils/money";
 import { apiClient } from "@/api/axios";
 import { getSlot } from "@/api/event/slot";
 import {
@@ -15,25 +19,26 @@ import {
   SpinCandidate,
 } from "@/api/event/slot";
 import RaidModal, { RaidCandidate } from "./RaidModal";
+import useAuth from "@/hooks/useAuth";
 
 type RaidResponse = {
-  total_stolen: number;
-  raider_new_balance: number;
+  total_stolen: string;
+  raider_new_balance: string;
   all_candidates: Array<{
     index: number;
     user_id: string;
     name: string;
     role_id: string;
     group_id: string | null;
-    balance_before: number;
-    amount_stolen: number;
+    balance_before: string;
+    amount_stolen: string;
     was_chosen: boolean;
   }>;
   message: string;
 };
 
 const SlotMachine = () => {
-  const refreshCoin = useCoinStore((s) => s.refreshCoin);
+  const { refreshSession } = useAuth();
   const currentCoin = useCoinStore((s) => s.coinPoint);
 
   const reelLength = 100;
@@ -45,6 +50,8 @@ const SlotMachine = () => {
     false,
     false,
   ]);
+  const spinTransactionRef = useRef(false);
+  const [isSpinTransactionActive, setIsSpinTransactionActive] = useState(false);
   const [betAmount, setBetAmount] = useState<50 | 100 | 500>(50);
 
   const [raidOpen, setRaidOpen] = useState(false);
@@ -122,72 +129,80 @@ const SlotMachine = () => {
     return undefined;
   };
 
-  const stopReelsOnResult = (
-    resultSymbols: string[],
-    apiReward: number,
-    token?: StealToken,
-    candidates?: SpinCandidate[]
-  ) => {
-    stopSpin(0, 1000, resultSymbols[0]);
-    stopSpin(1, 2000, resultSymbols[1]);
-    stopSpin(2, 3000, resultSymbols[2], () => {
-      setTimeout(async () => {
-        const isAlienJackpot =
-          resultSymbols.length === 3 && resultSymbols.every((s) => s === "👽");
-        if (isAlienJackpot && token && candidates && candidates.length === 3) {
-          setRaidCandidates(
-            candidates.map((c) => ({
-              index: c.index,
-              name: c.name,
-              group_id: c.group_id,
-            }))
-          );
-          setStealToken(token);
-          setRaidRevealed(false);
-          setRaidAmountsByIndex(undefined);
-          setRaidChosenIndex(undefined);
-          setRaidOpen(true);
-        } else {
-          if (apiReward === 0) {
-            toast.error("เสียใจด้วย คุณไม่ได้รับเหรียญรางวัลในรอบนี้");
-          } else {
-            toast.success(
-              `ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${apiReward} เหรียญ`
-            );
-          }
-          await refreshCoin();
-        }
-      }, 1000);
-    });
-  };
-
   const stopSpin = (
     reelIndex: number,
     delay: number,
     resultSymbol: string,
-    onComplete?: () => void
+  ): Promise<void> =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        setSpinning((prev) => {
+          const next = [...prev] as [boolean, boolean, boolean];
+          next[reelIndex] = false;
+          return next;
+        });
+        setReels((prev) => {
+          const next = [...prev];
+          next[reelIndex] = [resultSymbol];
+          return next;
+        });
+        resolve();
+      }, delay);
+    });
+
+  const stopReelsOnResult = async (
+    resultSymbols: string[],
+    apiReward: string,
+    token?: StealToken,
+    candidates?: SpinCandidate[]
   ) => {
-    setTimeout(() => {
-      setSpinning((prev) => {
-        const next = [...prev] as [boolean, boolean, boolean];
-        next[reelIndex] = false;
-        return next;
-      });
-      setReels((prev) => {
-        const next = [...prev];
-        next[reelIndex] = [resultSymbol];
-        return next;
-      });
-      onComplete?.();
-    }, delay);
+    await Promise.all([
+      stopSpin(0, 1000, resultSymbols[0]),
+      stopSpin(1, 2000, resultSymbols[1]),
+      stopSpin(2, 3000, resultSymbols[2]),
+    ]);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const isAlienJackpot =
+      resultSymbols.length === 3 && resultSymbols.every((s) => s === "👽");
+    if (isAlienJackpot && token && candidates && candidates.length === 3) {
+      setRaidCandidates(
+        candidates.map((c) => ({
+          index: c.index,
+          name: c.name,
+          group_id: c.group_id,
+        }))
+      );
+      setStealToken(token);
+      setRaidRevealed(false);
+      setRaidAmountsByIndex(undefined);
+      setRaidChosenIndex(undefined);
+      setRaidOpen(true);
+      return;
+    }
+
+    if (apiReward === "0.00") {
+      toast.error("เสียใจด้วย คุณไม่ได้รับเหรียญรางวัลในรอบนี้");
+    } else {
+      toast.success(
+        `ยินดีด้วย! คุณได้รับเหรียญรางวัลจำนวน ${apiReward} เหรียญ`
+      );
+    }
+    await refreshSession();
   };
 
   const spin = async () => {
-    if (currentCoin < betAmount) {
+    if (spinTransactionRef.current) return;
+
+    if (
+      compareMoneyStrings(currentCoin, asMoneyString(betAmount.toFixed(2))) < 0
+    ) {
       toast.error("เงินของคุณไม่เพียงพอ");
       return;
     }
-    if (spinning.some(Boolean)) return;
+
+    spinTransactionRef.current = true;
+    setIsSpinTransactionActive(true);
     setReels([
       generateReelSymbols(),
       generateReelSymbols(),
@@ -195,14 +210,23 @@ const SlotMachine = () => {
     ]);
     setSpinning([true, true, true]);
 
-    const result = await fetchResultFromAPI();
-    if (result) {
-      stopReelsOnResult(
+    try {
+      const result = await fetchResultFromAPI();
+      if (!result) {
+        setSpinning([false, false, false]);
+        toast.error("ไม่สามารถหมุนสล็อตได้ กรุณาลองใหม่อีกครั้ง");
+        return;
+      }
+
+      await stopReelsOnResult(
         result.slots,
         result.reward,
         result.stealToken,
         result.candidates
       );
+    } finally {
+      spinTransactionRef.current = false;
+      setIsSpinTransactionActive(false);
     }
   };
 
@@ -216,7 +240,7 @@ const SlotMachine = () => {
     //     });
     //     setRaidAmountsByIndex(mockMap);
     //     setRaidRevealed(true);
-    //     await refreshCoin();
+    //     await refreshSession();
     //     return;
     // }
     if (!stealToken) return;
@@ -228,19 +252,19 @@ const SlotMachine = () => {
       const data = res.data as RaidResponse;
       toast.success(
         data.message ||
-          `ขโมยสำเร็จ! ได้รับ ${data.total_stolen.toFixed(2)} เหรียญ`
+          `ขโมยสำเร็จ! ได้รับ ${data.total_stolen} เหรียญ`
       );
       // map revealed amounts to amount_stolen and capture chosen index
       const map: Record<number, number> = {};
       let chosenIdx: number | undefined = undefined;
       data.all_candidates.forEach((cand) => {
-        map[cand.index] = Number(cand.amount_stolen.toFixed(2));
+        map[cand.index] = Number(cand.amount_stolen);
         if (cand.was_chosen) chosenIdx = cand.index;
       });
       setRaidAmountsByIndex(Object.keys(map).length ? map : undefined);
       setRaidRevealed(true);
       setRaidChosenIndex(chosenIdx);
-      await refreshCoin();
+      await refreshSession();
     } catch (e: unknown) {
       let errMsg = "เกิดข้อผิดพลาดในการ Raid";
       const err = e as { response?: { data?: { error?: string } } };
@@ -286,7 +310,7 @@ const SlotMachine = () => {
 
         {/* Lever */}
         <div className="ml-6 flex flex-col items-center justify-center">
-          <Lever onPullEnd={spin} />
+          <Lever onPullEnd={spin} disabled={isSpinTransactionActive} />
         </div>
       </div>
 
@@ -297,6 +321,7 @@ const SlotMachine = () => {
       <div className="flex items-center justify-center space-x-1.5">
         <button
           onClick={() => setBetAmount(50)}
+          disabled={isSpinTransactionActive}
           className={`rounded-md w-20 h-8 font-extrabold text-base flex items-center justify-center ${
             betAmount === 50 ? "text-black" : "text-gray-600"
           }`}
@@ -313,6 +338,7 @@ const SlotMachine = () => {
 
         <button
           onClick={() => setBetAmount(100)}
+          disabled={isSpinTransactionActive}
           className={`rounded-md w-20 h-8 font-extrabold text-base flex items-center justify-center ${
             betAmount === 100 ? "text-black" : "text-gray-600"
           }`}
@@ -329,6 +355,7 @@ const SlotMachine = () => {
 
         <button
           onClick={() => setBetAmount(500)}
+          disabled={isSpinTransactionActive}
           className={`rounded-md w-20 h-8 font-extrabold text-base flex items-center justify-center ${
             betAmount === 500 ? "text-black" : "text-gray-600"
           }`}
@@ -346,10 +373,16 @@ const SlotMachine = () => {
 
       <button
         onClick={spin}
-        className="text-white text-base flex items-center justify-center font-semibold w-32 h-10 rounded-md"
+        disabled={isSpinTransactionActive}
+        aria-busy={isSpinTransactionActive}
+        className={`text-white text-base flex items-center justify-center font-semibold w-32 h-10 rounded-md ${
+          isSpinTransactionActive
+            ? "cursor-not-allowed opacity-60"
+            : "hover:opacity-90"
+        }`}
         style={{ backgroundColor: "#68141C" }}
       >
-        หมุนเลย!
+        {isSpinTransactionActive ? "กำลังหมุน..." : "หมุนเลย!"}
       </button>
 
       <RaidModal
@@ -364,7 +397,7 @@ const SlotMachine = () => {
           if (raidCandidates.length === 0) {
             toast("ไม่พบบุคคลที่สามารถ Raid ได้ในตอนนี้", { icon: "👀" });
           }
-          await refreshCoin();
+          await refreshSession();
         }}
         onConfirm={handleRaidConfirm}
         revealed={raidRevealed}

@@ -4,7 +4,7 @@ import {
   rawDataInterface,
   RoundItem,
 } from "./MatchInterface";
-import { getLocationForSport } from "@/utils/location";
+import { asRateString, ZERO_RATE } from "@/utils/rate";
 
 // Data Cleanning --------------
 export const cleanData = (props: {
@@ -48,9 +48,15 @@ export const cleanData = (props: {
           type: item.type,
           colorA: item.team_a,
           colorB: item.team_b,
-          rateA: item.team_a_rate === null ? 0 : Number(item.team_a_rate),
+          rateA:
+            item.team_a_rate === null
+              ? ZERO_RATE
+              : asRateString(item.team_a_rate),
           scoreA: item.team_a_score === null ? 0 : Number(item.team_a_score),
-          rateB: item.team_b_rate === null ? 0 : Number(item.team_b_rate),
+          rateB:
+            item.team_b_rate === null
+              ? ZERO_RATE
+              : asRateString(item.team_b_rate),
           scoreB: item.team_b_score === null ? 0 : Number(item.team_b_score),
           status:
             item.team_a === null || item.team_b === null
@@ -63,10 +69,8 @@ export const cleanData = (props: {
         });
       });
 
-      // Calculate location based on first match's sport type and start time
-      const location = round.length > 0
-        ? getLocationForSport(sport, round[0].time_start)
-        : "Unknown date or sport";
+      const location =
+        itemTypes.matches[0].location?.title ?? "ไม่ระบุสถานที่";
 
       matches.push({
         location,
