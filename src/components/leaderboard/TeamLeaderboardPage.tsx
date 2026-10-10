@@ -28,8 +28,10 @@ import { LeaderboardRow, LeaderboardTable } from "./LeaderboardTable";
 import { LeaderboardTabs, TabOption } from "./LeaderboardTabs";
 import { Podium, PodiumEntry } from "./Podium";
 
+const COINS_MOCK_ENABLED =
+  process.env.NEXT_PUBLIC_USE_TEAM_LEADERBOARD_MOCK === "true";
 const ACCURACY_MOCK_ENABLED =
-  process.env.NEXT_PUBLIC_USE_TEAM_ACCURACY_MOCK !== "false";
+  process.env.NEXT_PUBLIC_USE_TEAM_ACCURACY_MOCK === "true";
 
 type LeaderboardScope = "individual" | "team";
 
@@ -264,6 +266,8 @@ export const TeamLeaderboardPage = () => {
       : coinViewItems.length === 0;
   const showLoading = loading;
   const activeError = error;
+  const activeMockEnabled =
+    activeView === "accuracy" ? ACCURACY_MOCK_ENABLED : COINS_MOCK_ENABLED;
 
   return (
     <div className="min-h-screen w-full bg-black pb-16 text-white">
@@ -291,7 +295,7 @@ export const TeamLeaderboardPage = () => {
           ariaLabel="ข้อมูลอันดับทีม"
         />
 
-        {activeView === "accuracy" && ACCURACY_MOCK_ENABLED && (
+        {activeMockEnabled && (
           <p className="text-xs text-neutral-400">ข้อมูลจำลองสำหรับพัฒนา UI</p>
         )}
 

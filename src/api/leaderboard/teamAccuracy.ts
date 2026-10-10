@@ -43,10 +43,10 @@ const parseRanking = (value: unknown): TeamAccuracyRankingItem => {
   if (
     !Number.isInteger(item.rank) ||
     (item.rank ?? 0) < 1 ||
-    !isTeamColorId(item.color_id) ||
+    !isTeamColorId(item.id) ||
     typeof item.title !== "string" ||
     item.title.trim() === "" ||
-    !isCount(item.right) ||
+    !isCount(item.correct) ||
     !isCount(item.wrong)
   ) {
     throw new TeamAccuracyLeaderboardError(
@@ -56,20 +56,15 @@ const parseRanking = (value: unknown): TeamAccuracyRankingItem => {
 
   return {
     rank: item.rank as number,
-    colorId: item.color_id,
+    colorId: item.id,
     title: item.title,
-    right: item.right,
+    right: item.correct,
     wrong: item.wrong,
   };
 };
 
 const parseResponse = (payload: unknown): TeamAccuracyRankingItem[] => {
-  const rankings =
-    typeof payload === "object" &&
-    payload !== null &&
-    Array.isArray((payload as { rankings?: unknown }).rankings)
-      ? (payload as { rankings: unknown[] }).rankings
-      : null;
+  const rankings = Array.isArray(payload) ? payload : null;
 
   if (!rankings) {
     throw new TeamAccuracyLeaderboardError(
@@ -84,14 +79,22 @@ export const getTeamAccuracyLeaderboard = async (): Promise<
   TeamAccuracyRankingItem[]
 > => {
   const useMock =
-    process.env.NEXT_PUBLIC_USE_TEAM_ACCURACY_MOCK !== "false";
+    process.env.NEXT_PUBLIC_USE_TEAM_ACCURACY_MOCK === "true";
 
   if (useMock) {
-    return mockTeamAccuracyLeaderboard.map((item) => ({ ...item }));
+    return mockTeamAccuracyLeaderboard.map((item) => ({
+      rank: item.rank,
+      colorId: item.id,
+      title: item.title,
+      right: item.correct,
+      wrong: item.wrong,
+    }));
   }
 
   try {
-    const response = await apiClient.get<unknown>("/colors/team-accuracy");
+    const response = await apiClient.get<unknown>(
+      "/colors/leaderboards/predictions",
+    );
     return parseResponse(response.data);
   } catch (error) {
     if (error instanceof TeamAccuracyLeaderboardError) throw error;

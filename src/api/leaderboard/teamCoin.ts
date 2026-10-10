@@ -40,7 +40,7 @@ const parseRanking = (value: unknown): TeamCoinRankingItem => {
   if (
     !Number.isInteger(item.rank) ||
     (item.rank ?? 0) < 1 ||
-    !isTeamColorId(item.color_id) ||
+    !isTeamColorId(item.id) ||
     typeof item.title !== "string" ||
     item.title.trim() === ""
   ) {
@@ -49,20 +49,14 @@ const parseRanking = (value: unknown): TeamCoinRankingItem => {
 
   return {
     rank: item.rank as number,
-    colorId: item.color_id,
+    colorId: item.id,
     title: item.title,
-    teamCoins: asMoneyString(item.team_coins),
+    teamCoins: asMoneyString(item.total_coin),
   };
 };
 
 const parseResponse = (payload: unknown): TeamCoinRankingItem[] => {
-  const rankings = Array.isArray(payload)
-    ? payload
-    : typeof payload === "object" &&
-        payload !== null &&
-        Array.isArray((payload as { rankings?: unknown }).rankings)
-      ? (payload as { rankings: unknown[] }).rankings
-      : null;
+  const rankings = Array.isArray(payload) ? payload : null;
 
   if (!rankings) {
     throw new TeamCoinLeaderboardError("Invalid team leaderboard response");
@@ -72,25 +66,25 @@ const parseResponse = (payload: unknown): TeamCoinRankingItem[] => {
 };
 
 const cloneMockResponse = (): TeamCoinRankingItem[] =>
-  mockTeamCoinLeaderboard.rankings.map((item) => ({
+  mockTeamCoinLeaderboard.map((item) => ({
     rank: item.rank,
-    colorId: item.color_id,
+    colorId: item.id,
     title: item.title,
-    teamCoins: item.team_coins,
+    teamCoins: item.total_coin,
   }));
 
 export const getTeamCoinLeaderboard = async (): Promise<
   TeamCoinRankingItem[]
 > => {
   const useMock =
-    process.env.NEXT_PUBLIC_USE_TEAM_LEADERBOARD_MOCK !== "false";
+    process.env.NEXT_PUBLIC_USE_TEAM_LEADERBOARD_MOCK === "true";
 
   if (useMock) {
     return cloneMockResponse();
   }
 
   try {
-    const response = await apiClient.get<unknown>("/colors/team-coins");
+    const response = await apiClient.get<unknown>("/colors/leaderboards/coins");
     return parseResponse(response.data);
   } catch (error) {
     if (error instanceof TeamCoinLeaderboardError) throw error;

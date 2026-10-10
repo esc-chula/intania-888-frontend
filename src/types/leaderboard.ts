@@ -13,14 +13,12 @@ export type MoneyString = string & { readonly __money: unique symbol };
 
 export interface TeamCoinRankingDto {
   rank: number;
-  color_id: TeamColorId;
+  id: TeamColorId;
   title: string;
-  team_coins: MoneyString;
+  total_coin: MoneyString;
 }
 
-export interface TeamCoinLeaderboardResponse {
-  rankings: TeamCoinRankingDto[];
-}
+export type TeamCoinLeaderboardResponse = TeamCoinRankingDto[];
 
 export interface TeamCoinRankingItem {
   rank: number;
@@ -47,15 +45,13 @@ export interface TeamAccuracyRankingItem {
 
 export interface TeamAccuracyRankingDto {
   rank: number;
-  color_id: TeamColorId;
+  id: TeamColorId;
   title: string;
-  right: number;
+  correct: number;
   wrong: number;
 }
 
-export interface TeamAccuracyLeaderboardResponse {
-  rankings: TeamAccuracyRankingDto[];
-}
+export type TeamAccuracyLeaderboardResponse = TeamAccuracyRankingDto[];
 
 export interface TeamAccuracyViewItem extends TeamAccuracyRankingItem {
   isCurrentTeam: boolean;

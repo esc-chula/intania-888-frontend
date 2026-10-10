@@ -1,47 +1,47 @@
-import { TeamAccuracyRankingItem } from "@/types/leaderboard";
+import { TeamAccuracyRankingDto } from "@/types/leaderboard";
 
-// Ranked by Right descending to match the proposed backend response order.
+// Ranked by correct predictions to match the backend response order.
 export const mockTeamAccuracyLeaderboard = [
   {
     rank: 1,
-    colorId: "VIOLET",
+    id: "VIOLET",
     title: "สีม่วง",
-    right: 128,
+    correct: 128,
     wrong: 42,
   },
   {
     rank: 2,
-    colorId: "BLUE",
+    id: "BLUE",
     title: "สีฟ้า",
-    right: 116,
+    correct: 116,
     wrong: 38,
   },
   {
     rank: 3,
-    colorId: "GREEN",
+    id: "GREEN",
     title: "สีเขียว",
-    right: 103,
+    correct: 103,
     wrong: 51,
   },
   {
     rank: 4,
-    colorId: "ORANGE",
+    id: "ORANGE",
     title: "สีส้ม",
-    right: 97,
+    correct: 97,
     wrong: 44,
   },
   {
     rank: 5,
-    colorId: "YELLOW",
+    id: "YELLOW",
     title: "สีเหลือง",
-    right: 84,
+    correct: 84,
     wrong: 49,
   },
   {
     rank: 6,
-    colorId: "PINK",
+    id: "PINK",
     title: "สีชมพู",
-    right: 76,
+    correct: 76,
     wrong: 55,
   },
-] as const satisfies readonly TeamAccuracyRankingItem[];
+] as const satisfies readonly TeamAccuracyRankingDto[];

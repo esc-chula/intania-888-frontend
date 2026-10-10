@@ -20,15 +20,12 @@ export const Navbar = (props: { pagenow: string; allowAnonymous?: boolean }) => 
 
         await refreshCoin(); 
       } catch (error) {
-        if (props.allowAnonymous && error instanceof AxiosError && error.response?.status === 401) {
+        if (error instanceof AxiosError && error.response?.status === 401) {
+          if (!props.allowAnonymous) router.replace("/register");
           return;
-        } else if (error instanceof AxiosError && error.response?.data?.error === "missing authorization header") {
-            router.push("/register");
-        } else if (error instanceof AxiosError && error.response?.data?.error === "invalid or expired token") {
-          router.push("/register");
-        } else {
-          console.error("Error fetching user or refreshing coins:", error);
         }
+
+        console.error("Error fetching user or refreshing coins:", error);
       }
     };
 
