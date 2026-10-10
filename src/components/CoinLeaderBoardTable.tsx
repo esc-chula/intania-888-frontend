@@ -4,26 +4,42 @@ import { apiClient } from "@/api/axios";
 import { getAllUser } from "@/api/coin/getCoin";
 import { Coins } from "lucide-react";
 import { useEffect, useState } from "react";
+import { groupToColorMap } from "@/constant/teamColor";
+import { MoneyString } from "@/types/leaderboard";
+import {
+  asMoneyString,
+  compareMoneyStrings,
+  formatMoneyString,
+} from "@/utils/money";
 
 export const CoinLeaderBoardTable = () => {
-  const [Top10, setTop10] = useState<topInterface[] | undefined>(undefined);
-  const [myNo, setMyNo] = useState<topInterface | undefined>(undefined);
+  const [top10, setTop10] = useState<RankedUser[] | undefined>(undefined);
+  const [myNo, setMyNo] = useState<RankedUser | undefined>(undefined);
+
   useEffect(() => {
     const fetchData = async () => {
       const myData = (await apiClient.get("/auth/me")).data.profile;
-      let allUser = (await getAllUser())?.data;
+      const allUserResponse = (await getAllUser())?.data as
+        | UserCoinResponse[]
+        | undefined;
+      const allUsers = (allUserResponse ?? []).map(toLeaderboardUser);
 
-      allUser = allUser.sort((itemA: topInterface, itemB: topInterface) => {
-        return itemB.remaining_coin - itemA.remaining_coin;
-      });
+      allUsers.sort((itemA, itemB) =>
+        compareMoneyStrings(itemB.remainingCoin, itemA.remainingCoin)
+      );
+
+      const myIndex = allUsers.findIndex((item) => item.id === myData.id);
 
       setMyNo({
-        no: allUser.findIndex((item: { id: string }) => item.id === myData.id),
-        nick_name: myData.nick_name,
-        group_id: myData.group_id,
-        remaining_coin: myData.remaining_coin,
+        ...toLeaderboardUser(myData),
+        rank: myIndex >= 0 ? myIndex + 1 : "-",
       });
-      setTop10(allUser.slice(0, 10));
+      setTop10(
+        allUsers.slice(0, 10).map((item, index) => ({
+          ...item,
+          rank: index + 1,
+        }))
+      );
     };
 
     fetchData();
@@ -45,27 +61,27 @@ export const CoinLeaderBoardTable = () => {
         </tr>
       </thead>
       <tbody>
-        {Top10?.map((item, index) => {
+        {top10?.map((item) => {
           return (
             <tr
-              key={index}
+              key={item.id}
               className="text-black w-full bg-white font-semibold h-12 flex flex-row border-y-[0.5px]"
             >
               <td className="flex items-center justify-center w-[15%] h-full ">
-                {index + 1}
+                {item.rank}
               </td>
               <td className="flex items-center justify-start w-[55%] h-full ">
                 <NameAndColor
-                  name={item?.nick_name || ""}
+                  name={item.nickName || ""}
                   color={
-                    item?.group_id == undefined
+                    item.groupId == undefined
                       ? "NONE"
-                      : groupAndColorMap[item?.group_id]
+                      : groupToColorMap[item.groupId] ?? "NONE"
                   }
                 />
               </td>
               <td className="flex flex-row space-x-2 items-center justify-end pr-10 sm:pr-20 w-[30%] h-full ">
-                <p>{item.remaining_coin.toFixed(2)}</p>
+                <p>{formatMoneyString(item.remainingCoin)}</p>
               </td>
             </tr>
           );
@@ -74,20 +90,20 @@ export const CoinLeaderBoardTable = () => {
       <tfoot className="font-semibold bg-neutral-200 text-black h-12 flex flex-row">
         <tr className="w-full flex flex-row">
           <td className="flex items-center justify-center w-[15%] h-full ">
-            {(myNo?.no || 0) + 1}
+            {myNo?.rank ?? "-"}
           </td>
           <td className="flex items-center justify-start w-[55%] h-full ">
             <NameAndColor
-              name={myNo?.nick_name || ""}
+              name={myNo?.nickName || ""}
               color={
-                myNo?.group_id == undefined
+                myNo?.groupId == undefined
                   ? "NONE"
-                  : groupAndColorMap[myNo?.group_id]
+                  : groupToColorMap[myNo.groupId] ?? "NONE"
               }
             />
           </td>
           <td className="flex flex-row space-x-2 items-center justify-end pr-10 sm:pr-20 w-[30%] h-full ">
-            {myNo?.remaining_coin.toFixed(2)}
+            {myNo ? formatMoneyString(myNo.remainingCoin) : "-"}
           </td>
         </tr>
       </tfoot>
@@ -95,34 +111,30 @@ export const CoinLeaderBoardTable = () => {
   );
 };
 
-interface topInterface {
-  no: number;
-  nick_name: string;
-  group_id: string;
-  remaining_coin: number;
+interface UserCoinResponse {
+  id: string;
+  nick_name: string | null;
+  group_id: string | null;
+  remaining_coin: unknown;
 }
 
-const groupAndColorMap: { [key: string]: string } = {
-  A: "YELLOW",
-  B: "GREEN",
-  C: "GREEN",
-  DOG: "VIOLET",
-  Dog: "VIOLET",
-  E: "BLUE",
-  F: "YELLOW",
-  G: "PINK",
-  H: "PINK",
-  J: "VIOLET",
-  K: "BLUE",
-  L: "YELLOW",
-  M: "GREEN",
-  N: "BLUE",
-  P: "ORANGE",
-  Q: "ORANGE",
-  R: "VIOLET",
-  S: "ORANGE",
-  T: "PINK",
-};
+interface LeaderboardUser {
+  id: string;
+  nickName: string | null;
+  groupId: string | null;
+  remainingCoin: MoneyString;
+}
+
+interface RankedUser extends LeaderboardUser {
+  rank: number | "-";
+}
+
+const toLeaderboardUser = (user: UserCoinResponse): LeaderboardUser => ({
+  id: user.id,
+  nickName: user.nick_name,
+  groupId: user.group_id,
+  remainingCoin: asMoneyString(user.remaining_coin),
+});
 
 const NameAndColor = (props: { name: string; color: string }) => {
   if (props.color == "VIOLET")

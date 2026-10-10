@@ -6,7 +6,7 @@ import { useCoinStore } from "@/store/coin";
 import { apiClient } from "@/api/axios";
 import { AxiosError } from "axios";
 
-export const Navbar = (props: { pagenow: string }) => {
+export const Navbar = (props: { pagenow: string; allowAnonymous?: boolean }) => {
   const router = useRouter();
   const coinPoint = useCoinStore((state) => state.coinPoint);
   const refreshCoin = useCoinStore((state) => state.refreshCoin); 
@@ -20,18 +20,17 @@ export const Navbar = (props: { pagenow: string }) => {
 
         await refreshCoin(); 
       } catch (error) {
-        if (error instanceof AxiosError && error.response?.data?.error === "missing authorization header") {
-            router.push("/register");
-        } else if (error instanceof AxiosError && error.response?.data?.error === "invalid or expired token") {
-          router.push("/register");
-        } else {
-          console.error("Error fetching user or refreshing coins:", error);
+        if (error instanceof AxiosError && error.response?.status === 401) {
+          if (!props.allowAnonymous) router.replace("/register");
+          return;
         }
+
+        console.error("Error fetching user or refreshing coins:", error);
       }
     };
 
     fetchData();
-  }, [refreshCoin, router, coinPoint]);
+  }, [refreshCoin, router, props.allowAnonymous]);
 
   return (
     <div className="w-full h-[55px] bg-neutral-900 flex flex-row items-center m-0 text-white select-none cursor-pointer overflow-hidden max-sm:text-[0.8rem]">

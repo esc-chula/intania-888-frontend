@@ -2,22 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { apiClient } from "@/api/axios";
+import { AxiosError } from "axios";
 
-interface Profile {
+export interface Profile {
     id: string;
     email: string;
     name: string;
-    nickName: string;
-    roleId: string;
-    groupId: string;
-    remainingCoin: number;
+    nick_name: string | null;
+    role_id: string;
+    group_id: string | null;
+    remaining_coin: string;
 }
 
 interface GetMeResponse {
     profile: Profile;
+    csrf_token: string;
 }
 
-const useAuth = () => {
+interface UseAuthOptions {
+    optional?: boolean;
+}
+
+const useAuth = ({ optional = false }: UseAuthOptions = {}) => {
     const [user, setUser] = useState<GetMeResponse | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -27,7 +33,12 @@ const useAuth = () => {
                 const response = await apiClient.get("/auth/me");
                 setUser(response.data);
             } catch (error) {
-                console.error(error);
+                const isUnauthorized =
+                    error instanceof AxiosError && error.response?.status === 401;
+
+                if (!optional || !isUnauthorized) {
+                    console.error(error);
+                }
             } finally {
                 setLoading(false);
             }
@@ -39,7 +50,7 @@ const useAuth = () => {
             setUser(null);
             setLoading(true);
         };
-    }, []);
+    }, [optional]);
 
     return { user, loading };
 }

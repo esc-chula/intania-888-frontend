@@ -4,6 +4,8 @@ import { Shirt, colorMap } from "../match/MatchColorLogo";
 
 export interface PodiumEntry {
   color: string;
+  name?: ReactNode;
+  subtitle?: ReactNode;
   stat: ReactNode;
 }
 
@@ -48,9 +50,10 @@ const PodiumStep = (props: { place: number; entry?: PodiumEntry }) => {
             />
           )}
         </div>
-        <p className="text-lg sm:text-[28px] sm:leading-[48px] font-semibold text-white">
-          {colorMap[color].name}
+        <p className="text-lg font-semibold text-white sm:text-[28px] sm:leading-[48px]">
+          {props.entry?.name ?? colorMap[color].name}
         </p>
+        {props.entry?.subtitle}
         <div className="flex flex-row items-center gap-1 sm:gap-2 bg-white/20 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 text-[0.65rem] sm:text-xl font-semibold text-white whitespace-nowrap">
           {props.entry?.stat ?? "-"}
         </div>

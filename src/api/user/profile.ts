@@ -1,29 +1,32 @@
-import { AxiosResponse } from "axios";
 import { apiClient } from "../axios";
 
 interface UpdateProfileDto {
     nickName: string;
     groupId: string;
-    remainingCoin: number;
 }
 
-
-const handleUpdateProfile = async (userId: string, profileInfo: UpdateProfileDto) => {
-
+const handleUpdateProfile = async (
+    profileInfo: UpdateProfileDto,
+    csrfToken: string
+): Promise<boolean> => {
     try {
-        const response: AxiosResponse = await apiClient.patch(`/users/${userId}`, {
-            nick_name: profileInfo.nickName,
-            group_id: profileInfo.groupId,
-            remaining_coin: profileInfo.remainingCoin
-        })
+        await apiClient.patch(
+            "/users/me",
+            {
+                nick_name: profileInfo.nickName,
+                group_id: profileInfo.groupId,
+            },
+            {
+                headers: {
+                    "X-CSRF-Token": csrfToken,
+                },
+            }
+        );
 
-        if (response.status == 200) {
-            return { success: true }
-        } else {
-            return { success: false }
-        }
+        return true;
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        return false;
     }
 }
 
