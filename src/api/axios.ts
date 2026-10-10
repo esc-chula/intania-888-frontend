@@ -17,31 +17,34 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   async (config) => {
-      const method = config.method?.toLowerCase() ?? "get";
+    const method = config.method?.toLowerCase() ?? "get";
 
-      if (!SAFE_METHODS.has(method)) {
-          csrfRequest ??= apiClient
-              .get<SessionResponse>("/auth/me")
-              .then((response) => response.data.csrf_token)
-              .finally(() => {
-                  csrfRequest = null;
-              });
+    if (!SAFE_METHODS.has(method)) {
+      if (!csrfToken) {
+        csrfRequest ??= apiClient
+          .get<SessionResponse>("/auth/me")
+          .then((response) => response.data.csrf_token)
+          .finally(() => {
+            csrfRequest = null;
+          });
 
-          csrfToken ??= await csrfRequest;
-          if (csrfToken) config.headers.set("X-CSRF-Token", csrfToken);
+        csrfToken = await csrfRequest;
       }
 
-      return config;
+      if (csrfToken) config.headers.set("X-CSRF-Token", csrfToken);
+    }
+
+    return config;
   },
   (error) => {
-      return Promise.reject(error);
-  }
+    return Promise.reject(error);
+  },
 );
 
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-      if (error?.response?.status === 401) csrfToken = null;
-      return Promise.reject(error);
-  }
+    if (error?.response?.status === 401) csrfToken = null;
+    return Promise.reject(error);
+  },
 );
