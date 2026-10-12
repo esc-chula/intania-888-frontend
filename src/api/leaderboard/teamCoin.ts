@@ -1,6 +1,5 @@
 import { AxiosError } from "axios";
 import { apiClient } from "@/api/axios";
-import { mockTeamCoinLeaderboard } from "@/mocks/teamCoinLeaderboard";
 import {
   TEAM_COLOR_IDS,
   TeamCoinRankingDto,
@@ -65,24 +64,9 @@ const parseResponse = (payload: unknown): TeamCoinRankingItem[] => {
   return rankings.map(parseRanking);
 };
 
-const cloneMockResponse = (): TeamCoinRankingItem[] =>
-  mockTeamCoinLeaderboard.map((item) => ({
-    rank: item.rank,
-    colorId: item.id,
-    title: item.title,
-    teamCoins: item.total_coin,
-  }));
-
 export const getTeamCoinLeaderboard = async (): Promise<
   TeamCoinRankingItem[]
 > => {
-  const useMock =
-    process.env.NEXT_PUBLIC_USE_TEAM_LEADERBOARD_MOCK === "true";
-
-  if (useMock) {
-    return cloneMockResponse();
-  }
-
   try {
     const response = await apiClient.get<unknown>("/colors/leaderboards/coins");
     return parseResponse(response.data);
