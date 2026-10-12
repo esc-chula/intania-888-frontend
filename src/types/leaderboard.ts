@@ -4,7 +4,7 @@ export const TEAM_COLOR_IDS = [
   "GREEN",
   "PINK",
   "ORANGE",
-  "YELLOW",
+  "RED",
 ] as const;
 
 export type TeamColorId = (typeof TEAM_COLOR_IDS)[number];

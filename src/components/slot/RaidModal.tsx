@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { Coins } from "lucide-react";
+import { groupToColorMap } from "@/constant/teamColor";
 
 export interface RaidCandidate {
   index: number;
@@ -21,32 +22,11 @@ interface RaidModalProps {
 const groupToThaiColor: Record<string, { label: string; className: string }> = {
   VIOLET: { label: "สีม่วง", className: "text-violet-500" },
   BLUE: { label: "สีฟ้า", className: "text-blue-500" },
-  YELLOW: { label: "สีเหลือง", className: "text-amber-500" },
+  RED: { label: "สีแดง", className: "text-red-500" },
   GREEN: { label: "สีเขียว", className: "text-green-500" },
   PINK: { label: "สีชมพู", className: "text-pink-500" },
   ORANGE: { label: "สีส้ม", className: "text-orange-600" },
   NONE: { label: "สี...", className: "text-gray-400" },
-};
-
-const groupAndColorMap: { [key: string]: keyof typeof groupToThaiColor } = {
-  A: "YELLOW",
-  B: "GREEN",
-  C: "GREEN",
-  Dog: "VIOLET",
-  E: "BLUE",
-  F: "YELLOW",
-  G: "PINK",
-  H: "PINK",
-  J: "VIOLET",
-  K: "BLUE",
-  L: "YELLOW",
-  M: "GREEN",
-  N: "BLUE",
-  P: "ORANGE",
-  Q: "ORANGE",
-  R: "VIOLET",
-  S: "ORANGE",
-  T: "PINK",
 };
 
 const formatAmount = (n: number) =>
@@ -92,7 +72,7 @@ export const RaidModal: React.FC<RaidModalProps> = ({
     () =>
       candidates.map((c) => {
         const colorKey = c.group_id
-          ? groupAndColorMap[c.group_id] || "NONE"
+          ? groupToColorMap[c.group_id] || "NONE"
           : "NONE";
         const meta = groupToThaiColor[colorKey];
         return {

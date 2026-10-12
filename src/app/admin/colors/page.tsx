@@ -39,7 +39,7 @@ export default function ColorsPage() {
       GREEN: "bg-green-600",
       PINK: "bg-pink-600",
       ORANGE: "bg-orange-600",
-      YELLOW: "bg-yellow-600",
+      RED: "bg-red-600",
     };
     return colorMap[colorId] || "bg-gray-600";
   };
@@ -50,12 +50,12 @@ export default function ColorsPage() {
   };
 
   const colorGroups = {
-    VIOLET: ["DOG", "J", "R"],
-    BLUE: ["E", "K", "N"],
-    GREEN: ["B", "C", "M"],
-    PINK: ["G", "H", "T"],
-    ORANGE: ["P", "Q", "S"],
-    YELLOW: ["A", "F", "L"],
+    VIOLET: ["DOG", "T", "J"],
+    BLUE: ["F", "K", "R"],
+    GREEN: ["B", "P", "S"],
+    PINK: ["A", "G", "N"],
+    ORANGE: ["E", "L", "M"],
+    RED: ["C", "H", "Q"],
   };
 
   if (loading) {

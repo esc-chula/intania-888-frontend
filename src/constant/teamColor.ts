@@ -1,25 +1,25 @@
 import { TeamColorId } from "@/types/leaderboard";
 
 export const groupToColorMap: Record<string, TeamColorId> = {
-  A: "YELLOW",
+  A: "PINK",
   B: "GREEN",
-  C: "GREEN",
+  C: "RED",
   DOG: "VIOLET",
   Dog: "VIOLET",
-  E: "BLUE",
-  F: "YELLOW",
+  E: "ORANGE",
+  F: "BLUE",
   G: "PINK",
-  H: "PINK",
+  H: "RED",
   J: "VIOLET",
   K: "BLUE",
-  L: "YELLOW",
-  M: "GREEN",
-  N: "BLUE",
-  P: "ORANGE",
-  Q: "ORANGE",
-  R: "VIOLET",
-  S: "ORANGE",
-  T: "PINK",
+  L: "ORANGE",
+  M: "ORANGE",
+  N: "PINK",
+  P: "GREEN",
+  Q: "RED",
+  R: "BLUE",
+  S: "GREEN",
+  T: "VIOLET",
 };
 
 export const teamColorHex: Record<TeamColorId, string> = {
@@ -28,7 +28,7 @@ export const teamColorHex: Record<TeamColorId, string> = {
   GREEN: "#67DF80",
   PINK: "#EC6FBF",
   ORANGE: "#EF965C",
-  YELLOW: "#F9DF70",
+  RED: "#EF4444",
 };
 
 export const getColorIdByGroupId = (
