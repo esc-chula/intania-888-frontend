@@ -14,6 +14,7 @@ env:
   REGION: asia-southeast1
   IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/intania-888-frontend
   NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+  NEXT_PUBLIC_AUTH_CLIENT_ID: intania-888-web
 
 jobs:
   deploy:
@@ -44,6 +45,7 @@ jobs:
         run: |
           docker build \
             --build-arg NEXT_PUBLIC_API_BASE_URL="${{ env.NEXT_PUBLIC_API_BASE_URL }}" \
+            --build-arg NEXT_PUBLIC_AUTH_CLIENT_ID="${{ env.NEXT_PUBLIC_AUTH_CLIENT_ID }}" \
             -t "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
             -t "${{ env.IMAGE_NAME }}:latest" \
             .
