@@ -20,9 +20,9 @@ export const colorMap: { [key: string]: { name: string; color: string } } = {
     name: "สีม่วง",
     color: "#C450F5",
   },
-  YELLOW: {
-    name: "สีเหลือง",
-    color: "#F9DF70",
+  RED: {
+    name: "สีแดง",
+    color: "#EF4444",
   },
   GREEN: {
     name: "สีเขียว",

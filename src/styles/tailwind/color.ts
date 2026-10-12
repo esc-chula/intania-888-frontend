@@ -5,7 +5,7 @@ export const colorScheme = {
       green: '#67DF80',
       pink: '#EC6FBF',
       orange: '#EF965C',
-      yellow: '#F9DF70',
+      red: '#EF4444',
     },
     base: {
         gold: '#A2790D',

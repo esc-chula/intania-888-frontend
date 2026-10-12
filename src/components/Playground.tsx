@@ -20,8 +20,8 @@ const Playground = () => {
             <div className="w-40 h-10 flex items-center justify-center bg-team-orange">
                 <p>Orange</p>
             </div>
-            <div className="w-40 h-10 flex items-center justify-center bg-team-yellow">
-                <p>Yellow</p>
+            <div className="w-40 h-10 flex items-center justify-center bg-team-red">
+                <p>Red</p>
             </div>
             <div className="w-40 h-10 flex items-center justify-center bg-base-gold">
                 <p>Gold</p>
