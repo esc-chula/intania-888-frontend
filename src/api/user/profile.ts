@@ -1,27 +1,26 @@
 import { apiClient } from "../axios";
 
 interface UpdateProfileDto {
-    nickName: string;
-    groupId: string;
+  nickName: string;
 }
 
-const handleUpdateProfile = async (
-    profileInfo: UpdateProfileDto
-): Promise<boolean> => {
-    try {
-        await apiClient.patch(
-            "/users/me",
-            {
-                nick_name: profileInfo.nickName,
-                group_id: profileInfo.groupId,
-            }
-        );
-
-        return true;
-    } catch (error) {
-        console.error(error);
-        return false;
-    }
+interface RegisterProfileDto extends UpdateProfileDto {
+  groupId: string;
 }
 
-export { handleUpdateProfile }
+const handleUpdateProfile = async (profileInfo: UpdateProfileDto): Promise<void> => {
+  await apiClient.patch("/users/me", {
+    nick_name: profileInfo.nickName,
+  });
+};
+
+const handleRegisterProfile = async (
+  profileInfo: RegisterProfileDto,
+): Promise<void> => {
+  await apiClient.post("/users/me/registration", {
+    nick_name: profileInfo.nickName,
+    group_id: profileInfo.groupId,
+  });
+};
+
+export { handleRegisterProfile, handleUpdateProfile };

@@ -1,70 +1,160 @@
 "use client";
-import React, { useState } from "react";
-import { Intania888Logo } from "../../../../public/logos/Intania888-logo";
+
+import React, { useEffect, useState } from "react";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { Intania888Logo } from "../../../../public/logos/Intania888-logo";
 import { Selector } from "@/components/Selector";
 import { groupList } from "@/constant/groupList";
-import { handleUpdateProfile } from "@/api/user/profile";
+import {
+  handleRegisterProfile,
+  handleUpdateProfile,
+} from "@/api/user/profile";
 import useAuth from "@/hooks/useAuth";
 
+const groupPlaceholder = "--เลือกกรุ๊ป--";
+
 const RegisterProfile = () => {
-  const [nickName, setNickName] = useState("");
-  const [group, setGroup] = useState("--เลือกกรุ๊ป--");
+  const [nickName, setNickName] = useState<string | null>(null);
+  const [group, setGroup] = useState(groupPlaceholder);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { profile, status, refreshSession } = useAuth();
+  const currentNickName = nickName ?? profile?.nick_name ?? "";
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/register");
+      return;
+    }
+
+    if (status === "authenticated" && profile?.nick_name && profile.group_id) {
+      router.replace("/");
+    }
+  }, [profile, router, status]);
+
+  useEffect(() => {
+    if (!profile?.group_id) {
+      setGroup(groupPlaceholder);
+    }
+  }, [profile?.group_id]);
 
   const onClickUpdateProfile = async () => {
-
     if (status !== "authenticated" || !profile) {
       return;
     }
-    
-    const success = await handleUpdateProfile({
-      nickName,
-      groupId: group
-    });
 
-    if (!success) {
-      console.error("update profile not successful");
+    setErrorMessage(null);
+
+    const normalizedNickName = currentNickName.trim();
+    if (!normalizedNickName) {
+      setErrorMessage("กรุณากรอกชื่อเล่น");
       return;
     }
-    
-    await refreshSession();
-    router.push('/')
+
+    const needsGroupRegistration = !profile.group_id;
+    if (needsGroupRegistration && group === groupPlaceholder) {
+      setErrorMessage("กรุณาเลือกกรุ๊ป");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      if (needsGroupRegistration) {
+        await handleRegisterProfile({
+          nickName: normalizedNickName,
+          groupId: group,
+        });
+      } else {
+        await handleUpdateProfile({ nickName: normalizedNickName });
+      }
+
+      setNickName(null);
+      let session = await refreshSession();
+      if (!session) {
+        setErrorMessage("โหลดข้อมูลบัญชีไม่สำเร็จ กรุณาลองอีกครั้ง");
+        return;
+      }
+
+      if (
+        needsGroupRegistration &&
+        session.profile.group_id &&
+        session.profile.nick_name !== normalizedNickName
+      ) {
+        await handleUpdateProfile({ nickName: normalizedNickName });
+        session = await refreshSession();
+        if (!session) {
+          setErrorMessage("โหลดข้อมูลบัญชีไม่สำเร็จ กรุณาลองอีกครั้ง");
+          return;
+        }
+      }
+
+      if (session.profile.nick_name && session.profile.group_id) {
+        router.push("/");
+      }
+    } catch (requestError) {
+      if (
+        requestError instanceof AxiosError &&
+        requestError.response?.status === 409
+      ) {
+        await refreshSession();
+        setNickName(null);
+        setErrorMessage("กรุ๊ปของคุณถูกกำหนดแล้ว ข้อมูลบัญชีถูกโหลดใหม่");
+      } else {
+        setErrorMessage("บันทึกข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
   return (
-    <div className="flex flex-col items-center justify-center space-y-5 text-white h-screen">
-      <div className="w-72 h-16">
+    <div className="flex h-screen flex-col items-center justify-center space-y-5 text-white">
+      <div className="h-16 w-72">
         <Intania888Logo />
       </div>
-      <div className="flex items-center justify-center flex-col font-semibold space-y-5">
+      <div className="flex flex-col items-center justify-center space-y-5 font-semibold">
         <div className="w-full space-y-3">
           <p>ชื่อ</p>
           <input
-            className="w-full h-12 w-80 bg-white rounded-md text-black pl-3 font-light rounded-xl"
+            className="h-12 w-80 rounded-xl bg-white pl-3 font-light text-black"
             type="text"
             placeholder="ชื่อเล่น"
-            value={nickName}
-            onChange={(e) => setNickName(e.target.value)}
+            value={currentNickName}
+            onChange={(event) => setNickName(event.target.value)}
           />
         </div>
-        <div className="w-full space-y-3">
-          <p>กรุ๊ป</p>
-          <Selector
-            choicesList={groupList}
-            mainFilter="--เลือกกรุ๊ป--"
-            filter={group}
-            setFilter={setGroup}
-          />
-        </div>
+        {profile && !profile.group_id && (
+          <div className="w-full space-y-3">
+            <p>กรุ๊ป</p>
+            <Selector
+              choicesList={groupList}
+              mainFilter={groupPlaceholder}
+              filter={group}
+              setFilter={setGroup}
+            />
+          </div>
+        )}
       </div>
+      {errorMessage && (
+        <p className="max-w-80 text-center text-sm text-red-300" role="alert">
+          {errorMessage}
+        </p>
+      )}
       <section className="flex flex-col items-center justify-center space-y-1.5 font-semibold">
-        <div
-          className="flex justify-center items-center bg-gradient-to-t from-[#4E0F15] to-[#68141C] w-64 h-11 rounded-md"
+        <button
+          className="h-11 w-64 rounded-md bg-gradient-to-t from-[#4E0F15] to-[#68141C] disabled:opacity-50"
+          disabled={isSubmitting || status !== "authenticated" || !profile}
           onClick={onClickUpdateProfile}
+          type="button"
         >
-          เริ่มต้นใช้งาน
-        </div>
+          {isSubmitting
+            ? "กำลังบันทึก..."
+            : profile?.group_id
+              ? "บันทึก"
+              : "เริ่มต้นใช้งาน"}
+        </button>
       </section>
     </div>
   );
