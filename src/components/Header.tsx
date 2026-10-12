@@ -27,19 +27,6 @@ export const Header = () => {
             />
             <p>@intania.games</p>
           </a>
-          <a
-            target="_blank"
-            href="https://www.instagram.com/p/DPfzBbugZZ-/"
-            className="bg-[#00C300] items-center justify-start w-44 sm:w-64 px-2 sm:px-4 font-semibold rounded-lg flex flex-row space-x-2 sm:space-x-5 py-1"
-          >
-            <Image
-              src="/logos/LineLogo.webp"
-              alt="ig_logo"
-              height={30}
-              width={30}
-            />
-            <p>เข้า openchat สีเลย!</p>
-          </a>
         </div>
       </div>
     </header>
