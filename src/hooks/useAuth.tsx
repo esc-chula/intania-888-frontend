@@ -10,7 +10,11 @@ import {
   useState,
 } from "react";
 import { AxiosError } from "axios";
-import { apiClient, setCsrfToken } from "@/api/axios";
+import {
+  apiClient,
+  setCsrfToken,
+  subscribeToUnauthorized,
+} from "@/api/axios";
 import { useCoinStore } from "@/store/coin";
 
 export interface Profile {
@@ -92,6 +96,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await apiClient.post("/auth/logout");
     clearSession();
   }, [clearSession]);
+
+  useEffect(() => subscribeToUnauthorized(clearSession), [clearSession]);
 
   useEffect(() => {
     void refreshSession();

@@ -9,6 +9,7 @@ interface SessionResponse {
 const SAFE_METHODS = new Set(["get", "head", "options"]);
 let csrfToken: string | null = null;
 let csrfRequest: Promise<string | null> | null = null;
+const unauthorizedListeners = new Set<() => void>();
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -18,6 +19,13 @@ export const apiClient = axios.create({
 
 export const setCsrfToken = (token: string | null) => {
   csrfToken = token;
+};
+
+export const subscribeToUnauthorized = (listener: () => void) => {
+  unauthorizedListeners.add(listener);
+  return () => {
+    unauthorizedListeners.delete(listener);
+  };
 };
 
 const loadCsrfToken = async (): Promise<string | null> => {
@@ -52,7 +60,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error?.response?.status === 401) setCsrfToken(null);
+    if (error?.response?.status === 401) {
+      setCsrfToken(null);
+      unauthorizedListeners.forEach((listener) => listener());
+    }
     return Promise.reject(error);
   },
 );
