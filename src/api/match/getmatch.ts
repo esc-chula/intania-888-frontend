@@ -9,19 +9,31 @@ interface GetMatchOptions {
     typeId?: string;
 }
 
+interface CurrentMatchTimeResponse {
+    currentTime: string;
+}
+
 const getMatch = async (options: GetMatchOptions = {}) => {
     try {
-        const response: AxiosResponse = await apiClient.get("/matches", {
-            params: {
-                schedule: options.schedule,
-                typeId: options.typeId,
-            },
-        })
+        const [response, timeResponse] = await Promise.all([
+            apiClient.get("/matches", {
+                params: {
+                    schedule: options.schedule,
+                    typeId: options.typeId,
+                },
+            }),
+            apiClient.get<CurrentMatchTimeResponse>("/matches/current/time"),
+        ]);
 
         if (response.status == 200) {
+            const serverTime = new Date(timeResponse.data.currentTime);
+            if (Number.isNaN(serverTime.getTime())) {
+                throw new Error("Invalid current match time response");
+            }
+
             const cleanedData = cleanData({
                 rawData: response.data,
-                dateNow: new Date(),
+                dateNow: serverTime,
             });
             return { success: true, data :  cleanedData }
         } else {

@@ -8,10 +8,6 @@ import { MatchMainFilter } from "@/components/match/MatchMainFilter";
 import { DisplayMatchs } from "@/components/match/DisplayMatchs";
 import { getMatch, getMatchSub } from "@/api/match/getmatch";
 import { allMatchInterface } from "@/components/match/MatchInterface";
-import {
-  selectorTextMap,
-  choicesList,
-} from "@/components/match/MatchMapAndList";
 import { EmptyState } from "@/components/EmptyState";
 import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
@@ -33,23 +29,14 @@ export default function Home() {
   const { sportTypes } = useSportCatalog();
 
   const sportChoices = useMemo(
-    (): SelectorOption[] => {
-      const sports =
-        sportTypes.length > 0
-          ? sportTypes
-          : choicesList.slice(1).map((title) => ({
-              id: selectorTextMap[title],
-              title,
-            }));
-
-      return [
+    (): SelectorOption[] =>
+      [
         { value: "", label: "รวมกีฬาทุกประเภท" },
-        ...sports.map((sport) => ({
+        ...sportTypes.map((sport) => ({
           value: sport.id,
           label: sport.title,
         })),
-      ];
-    },
+      ],
     [sportTypes],
   );
 
@@ -80,7 +67,11 @@ export default function Home() {
 
   // Fetch team data for overall view
   useEffect(() => {
-    if (mainFilter !== "overall") return;
+    if (mainFilter !== "overall" || !filter) {
+      setTeamA(undefined);
+      setTeamB(undefined);
+      return;
+    }
 
     const fetchMatchSub = async ({ type_id }: { type_id: string }) => {
       const resA = await getMatchSub({ type_id, group_id: "A" });
@@ -89,8 +80,7 @@ export default function Home() {
       setTeamB(resB?.data);
     };
 
-    const type_id_temp = filter || "ALL";
-    fetchMatchSub({ type_id: type_id_temp });
+    void fetchMatchSub({ type_id: filter });
   }, [mainFilter, filter]);
 
   return (
