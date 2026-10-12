@@ -1,6 +1,5 @@
 import { AxiosError } from "axios";
 import { apiClient } from "@/api/axios";
-import { mockTeamAccuracyLeaderboard } from "@/mocks/teamAccuracyLeaderboard";
 import {
   TEAM_COLOR_IDS,
   TeamAccuracyRankingDto,
@@ -78,19 +77,6 @@ const parseResponse = (payload: unknown): TeamAccuracyRankingItem[] => {
 export const getTeamAccuracyLeaderboard = async (): Promise<
   TeamAccuracyRankingItem[]
 > => {
-  const useMock =
-    process.env.NEXT_PUBLIC_USE_TEAM_ACCURACY_MOCK === "true";
-
-  if (useMock) {
-    return mockTeamAccuracyLeaderboard.map((item) => ({
-      rank: item.rank,
-      colorId: item.id,
-      title: item.title,
-      right: item.correct,
-      wrong: item.wrong,
-    }));
-  }
-
   try {
     const response = await apiClient.get<unknown>(
       "/colors/leaderboards/predictions",

@@ -65,17 +65,6 @@ const SlotMachine = () => {
     undefined
   );
 
-  // for testing purpose: set NEXT_PUBLIC_FORCE_ALIEN=1 or add ?forceRaid=1 to URL
-  // const isForceAliens = (() => {
-  //     if (process.env.NODE_ENV === 'production') return false;
-  //     if (typeof window !== 'undefined') {
-  //         const sp = new URLSearchParams(window.location.search);
-  //         if (sp.get('forceRaid') === '1') return true;
-  //     }
-  //     return process.env.NEXT_PUBLIC_FORCE_ALIEN === '1';
-  // })();
-  // const isForceAliens = false;
-
   const generateReelSymbols = useCallback((): string[] => {
     const reel: string[] = [];
     for (let i = 0; i < reelLength; i++) {
@@ -93,26 +82,6 @@ const SlotMachine = () => {
   }, [generateReelSymbols]);
 
   const fetchResultFromAPI = async (): Promise<SpinData | undefined> => {
-    // Dev forcing disabled
-    // if (isForceAliens) {
-    //     const mock: SpinData = {
-    //         reward: 0,
-    //         slots: ['👽', '👽', '👽'],
-    //         stealToken: {
-    //             token: 'dev-mock-token',
-    //             expires_at: new Date(Date.now() + 60_000).toISOString(),
-    //             victim_count: 3,
-    //             message: 'DEV MOCK: token is not valid against backend',
-    //         },
-    //                 candidates: [
-    //                     { index: 0, name: 'ผู้เล่น A', role_id: '2', group_id: '1' },
-    //                     { index: 1, name: 'ผู้เล่น B', role_id: '2', group_id: '2' },
-    //                     { index: 2, name: 'ผู้เล่น C', role_id: '2', group_id: '3' },
-    //                 ],
-    //     };
-    //     await new Promise((r) => setTimeout(r, 3000));
-    //     return mock;
-    // }
     try {
       const result = await new Promise<GetSlotResponse | undefined>(
         (resolve) => {
@@ -231,18 +200,6 @@ const SlotMachine = () => {
   };
 
   const handleRaidConfirm = async (victimIndex: number) => {
-    // if (isForceAliens) {
-    //     toast.success(`ขโมยสำเร็จ! (โหมดทดสอบ) เลือกเป้าหมาย index ${victimIndex}`);
-    //     const mockMap: Record<number, number> = {};
-    //     raidCandidates.forEach((c, i) => {
-    //         const val = (i + 1) * 111.11;
-    //         mockMap[c.index] = Number(val.toFixed(2));
-    //     });
-    //     setRaidAmountsByIndex(mockMap);
-    //     setRaidRevealed(true);
-    //     await refreshSession();
-    //     return;
-    // }
     if (!stealToken) return;
     try {
       const res = await apiClient.post("/events/use-steal-token", {
