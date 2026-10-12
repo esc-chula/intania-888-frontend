@@ -11,24 +11,25 @@ const RegisterProfile = () => {
   const [nickName, setNickName] = useState("");
   const [group, setGroup] = useState("--เลือกกรุ๊ป--");
   const router = useRouter();
-  const { user } = useAuth();
+  const { profile, status, refreshSession } = useAuth();
 
   const onClickUpdateProfile = async () => {
 
-    if (!user) {
+    if (status !== "authenticated" || !profile) {
       return;
     }
     
     const success = await handleUpdateProfile({
       nickName,
       groupId: group
-    }, user.csrf_token);
+    });
 
     if (!success) {
       console.error("update profile not successful");
       return;
     }
     
+    await refreshSession();
     router.push('/')
   };
   return (

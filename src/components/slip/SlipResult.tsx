@@ -2,7 +2,7 @@
 import React from "react";
 import { MatchColorLogo } from "../match/MatchColorLogo";
 import { formatThaiDate } from "../match/MatchUtils";
-import { sportTextMap } from "../match/MatchMapAndList";
+import { useSportCatalog } from "@/components/SportCatalogProvider";
 
 export interface SlipResultProps extends React.ComponentProps<"div"> {
   match: {
@@ -11,7 +11,7 @@ export interface SlipResultProps extends React.ComponentProps<"div"> {
     type: string;
     start_time: string;
   };
-  rate: number;
+  rate: string;
   betting_on: string;
 }
 
@@ -21,10 +21,11 @@ const SlipResult: React.FC<SlipResultProps> = ({
   betting_on,
   className,
 }) => {
+  const { getSportTitle } = useSportCatalog();
   return (
     <div className={`${className} p-3 max-sm:text-xs text-lg bg-white w-full`}>
       <div className="font-semibold text-neutral-700">
-        {formatThaiDate(new Date(new Date(match.start_time).getTime() - (24 * 60 * 60 * 1000)).toISOString())}: {sportTextMap[match.type]}
+        {formatThaiDate(new Date(new Date(match.start_time).getTime() - (24 * 60 * 60 * 1000)).toISOString())}: {getSportTitle(match.type)}
       </div>
       <div className="flex items-center space-x-2">
         <div className="flex justify-center items-center space-x-1.5 text-black font-semibold">

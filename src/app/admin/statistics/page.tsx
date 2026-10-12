@@ -2,11 +2,18 @@
 import { useEffect, useState } from "react";
 import { apiClient } from "@/api/axios";
 import { TrendingUp, DollarSign, Users, Trophy, Target, Activity } from "lucide-react";
+import { AxiosError } from "axios";
+import {
+  asMoneyString,
+  averageMoneyStrings,
+  formatMoneyString,
+  sumMoneyStrings,
+} from "@/utils/money";
 
 interface BettingStats {
   totalBets: number;
-  totalVolume: number;
-  averageBetSize: number;
+  totalVolume: string;
+  averageBetSize: string;
   mostPopularTeam: string;
   mostPopularSport: string;
 }
@@ -15,11 +22,12 @@ export default function StatisticsPage() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<BettingStats>({
     totalBets: 0,
-    totalVolume: 0,
-    averageBetSize: 0,
+    totalVolume: "0.00",
+    averageBetSize: "0.00",
     mostPopularTeam: "-",
     mostPopularSport: "-",
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStatistics();
@@ -28,14 +36,17 @@ export default function StatisticsPage() {
   const fetchStatistics = async () => {
     try {
       setLoading(true);
-      // Fetch all bills using the admin endpoint
-      const billsRes = await apiClient.get("/bills/admin/all").catch(() => ({ data: [] }));
+      setError(null);
+      const billsRes = await apiClient.get("/bills/admin/all");
 
       // Calculate stats from bills if available
       const bills = billsRes.data;
       const totalBets = bills.length;
-      const totalVolume = bills.reduce((sum: number, bill: { total: number }) => sum + bill.total, 0);
-      const averageBetSize = totalBets > 0 ? totalVolume / totalBets : 0;
+      const totals = bills.map((bill: { total: string }) =>
+        asMoneyString(bill.total),
+      );
+      const totalVolume = formatMoneyString(sumMoneyStrings(totals));
+      const averageBetSize = formatMoneyString(averageMoneyStrings(totals));
 
       // Calculate most popular team from bill lines
       const teamCounts: Record<string, number> = {};
@@ -68,6 +79,18 @@ export default function StatisticsPage() {
       });
     } catch (error) {
       console.error("Error fetching statistics:", error);
+      if (error instanceof AxiosError) {
+        const response = error.response?.data as
+          | { code?: string; message?: string; request_id?: string }
+          | undefined;
+        setError(
+          [response?.message ?? "Failed to load statistics", response?.code, response?.request_id]
+            .filter(Boolean)
+            .join(" · "),
+        );
+      } else {
+        setError("Failed to load statistics");
+      }
     } finally {
       setLoading(false);
     }
@@ -77,6 +100,21 @@ export default function StatisticsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-white text-lg">Loading statistics...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4 rounded-lg border border-red-700 bg-red-950/40 p-6 text-red-100">
+        <p>{error}</p>
+        <button
+          type="button"
+          onClick={() => void fetchStatistics()}
+          className="rounded bg-red-700 px-4 py-2 font-semibold hover:bg-red-600"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -104,7 +142,7 @@ export default function StatisticsPage() {
             <DollarSign className="w-8 h-8 text-green-500" />
           </div>
           <p className="text-3xl font-bold text-white">
-            {stats.totalVolume.toLocaleString()} ₿
+            {stats.totalVolume} ₿
           </p>
           <p className="text-sm text-gray-400 mt-1">Total Betting Volume</p>
         </div>
@@ -115,7 +153,7 @@ export default function StatisticsPage() {
             <span className="text-sm text-gray-400">Avg</span>
           </div>
           <p className="text-3xl font-bold text-white">
-            {stats.averageBetSize.toFixed(0)} ₿
+            {stats.averageBetSize} ₿
           </p>
           <p className="text-sm text-gray-400 mt-1">Average Bet Size</p>
         </div>

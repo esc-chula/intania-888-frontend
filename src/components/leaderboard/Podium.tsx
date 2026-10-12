@@ -3,6 +3,7 @@ import { Crown } from "lucide-react";
 import { Shirt, colorMap } from "../match/MatchColorLogo";
 
 export interface PodiumEntry {
+  place: 1 | 2 | 3;
   color: string;
   name?: ReactNode;
   subtitle?: ReactNode;
@@ -33,29 +34,29 @@ const stepStyle: {
   },
 };
 
-const PodiumStep = (props: { place: number; entry?: PodiumEntry }) => {
-  const style = stepStyle[props.place];
-  const color = props.entry?.color ?? "TBA";
+const PodiumStep = ({ entry }: { entry: PodiumEntry }) => {
+  const style = stepStyle[entry.place];
+  const color = entry.color ?? "TBA";
 
   return (
-    <div className="flex flex-col items-center gap-3 sm:gap-5 w-[30%] sm:w-[184px]">
-      <div className="flex flex-col items-center gap-1 sm:gap-2">
+    <div className="flex w-[120px] shrink-0 flex-col items-center gap-3 sm:w-[184px] sm:gap-5">
+      <div className="flex min-w-0 flex-col items-center gap-1 sm:gap-2">
         <div className="relative">
           <Shirt color={color} className="h-14 sm:h-[100px]" />
-          {props.place === 1 && (
+          {entry.place === 1 && (
             <Crown
-              className="absolute -top-5 -right-4 sm:-top-9 sm:-right-7 w-7 h-7 sm:w-12 sm:h-12 rotate-[22.77deg] text-amber-400"
+              className="absolute -right-4 -top-5 h-7 w-7 rotate-[22.77deg] text-amber-400 sm:-right-7 sm:-top-9 sm:h-12 sm:w-12"
               fill="currentColor"
               stroke="#A2790D"
             />
           )}
         </div>
-        <p className="text-lg font-semibold text-white sm:text-[28px] sm:leading-[48px]">
-          {props.entry?.name ?? colorMap[color].name}
+        <p className="max-w-full truncate text-lg font-semibold text-white sm:text-[28px] sm:leading-[48px]">
+          {entry.name ?? colorMap[color].name}
         </p>
-        {props.entry?.subtitle}
-        <div className="flex flex-row items-center gap-1 sm:gap-2 bg-white/20 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 text-[0.65rem] sm:text-xl font-semibold text-white whitespace-nowrap">
-          {props.entry?.stat ?? "-"}
+        {entry.subtitle}
+        <div className="flex flex-row items-center gap-1 whitespace-nowrap rounded-full bg-white/20 px-2 py-1 text-[0.65rem] font-semibold text-white sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xl">
+          {entry.stat}
         </div>
       </div>
       <div
@@ -65,7 +66,7 @@ const PodiumStep = (props: { place: number; entry?: PodiumEntry }) => {
           className={`absolute inset-x-0 bottom-0 ${style.offset} ${style.front} rounded-t-2xl sm:rounded-t-3xl flex items-center justify-center`}
         >
           <span className="text-5xl sm:text-8xl font-semibold text-white">
-            {props.place}
+            {entry.place}
           </span>
         </div>
       </div>
@@ -73,16 +74,19 @@ const PodiumStep = (props: { place: number; entry?: PodiumEntry }) => {
   );
 };
 
-// entries are ordered by rank: [1st, 2nd, 3rd]
 export const Podium = (props: { entries: PodiumEntry[] }) => {
+  const visibleEntries = ([2, 1, 3] as const).flatMap((place) =>
+    props.entries.filter((entry) => entry.place === place),
+  );
+
   return (
-    <div className="flex flex-col items-center w-[90vw] sm:w-[700px]">
-      <div className="flex flex-row items-end justify-center gap-2 sm:gap-5 w-full">
-        <PodiumStep place={2} entry={props.entries[1]} />
-        <PodiumStep place={1} entry={props.entries[0]} />
-        <PodiumStep place={3} entry={props.entries[2]} />
+    <div className="flex max-w-[90vw] flex-col items-center overflow-x-auto pt-6 sm:pt-10">
+      <div className="flex min-w-max flex-row items-end justify-center gap-2 px-1 sm:gap-5">
+        {visibleEntries.map((entry) => (
+          <PodiumStep key={`${entry.place}-${entry.color}`} entry={entry} />
+        ))}
       </div>
-      <div className="bg-[#4E0F15] h-5 sm:h-8 w-full" />
+      <div className="h-5 w-full min-w-full bg-[#4E0F15] sm:h-8" />
     </div>
   );
 };

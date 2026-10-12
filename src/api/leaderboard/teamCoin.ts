@@ -103,4 +103,3 @@ export const getTeamCoinLeaderboard = async (): Promise<
     );
   }
 };
-

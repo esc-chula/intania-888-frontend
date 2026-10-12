@@ -69,7 +69,7 @@ const TeamLeaderboardLoading = () => (
 export const TeamLeaderboardPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth({ optional: true });
+  const { profile } = useAuth();
   const [coinRankings, setCoinRankings] = useState<TeamCoinRankingItem[]>([]);
   const [accuracyRankings, setAccuracyRankings] = useState<
     TeamAccuracyRankingItem[]
@@ -128,7 +128,7 @@ export const TeamLeaderboardPage = () => {
     };
   }, [activeView, requestVersion]);
 
-  const currentTeamId = getColorIdByGroupId(user?.profile.group_id);
+  const currentTeamId = getColorIdByGroupId(profile?.group_id);
 
   const coinViewItems = useMemo<TeamCoinViewItem[]>(
     () =>
@@ -152,14 +152,12 @@ export const TeamLeaderboardPage = () => {
   );
 
   const podiumEntries = useMemo<PodiumEntry[]>(
-    () =>
-      ([1, 2, 3] as const).map((rank) => {
-        if (activeView === "accuracy") {
-          const item = accuracyViewItems.find((entry) => entry.rank === rank);
-
-          if (!item) return { color: "TBA", name: "-", stat: "-" };
-
-          return {
+    () => {
+      if (activeView === "accuracy") {
+        return accuracyViewItems
+          .filter((item) => item.rank >= 1 && item.rank <= 3)
+          .map((item) => ({
+            place: item.rank as 1 | 2 | 3,
             color: item.colorId,
             name: item.title,
             subtitle: item.isCurrentTeam ? <CurrentTeamLabel /> : undefined,
@@ -173,14 +171,13 @@ export const TeamLeaderboardPage = () => {
                 </span>
               </>
             ),
-          };
-        }
+          }));
+      }
 
-        const item = coinViewItems.find((entry) => entry.rank === rank);
-
-        if (!item) return { color: "TBA", name: "-", stat: "-" };
-
-        return {
+      return coinViewItems
+        .filter((item) => item.rank >= 1 && item.rank <= 3)
+        .map((item) => ({
+          place: item.rank as 1 | 2 | 3,
           color: item.colorId,
           name: item.title,
           subtitle: item.isCurrentTeam ? <CurrentTeamLabel /> : undefined,
@@ -190,15 +187,15 @@ export const TeamLeaderboardPage = () => {
               <Coins className="h-3 w-3 text-yellow-400 sm:h-5 sm:w-5" />
             </>
           ),
-        };
-      }),
+        }));
+    },
     [accuracyViewItems, activeView, coinViewItems],
   );
 
   const remainingRows = useMemo<LeaderboardRow[]>(() => {
     if (activeView === "accuracy") {
       return accuracyViewItems
-        .filter((item) => item.rank >= 4 && item.rank <= 6)
+        .filter((item) => item.rank > 3)
         .map((item) => ({
           key: item.colorId,
           rank: item.rank,
@@ -224,7 +221,7 @@ export const TeamLeaderboardPage = () => {
     }
 
     return coinViewItems
-      .filter((item) => item.rank >= 4 && item.rank <= 6)
+      .filter((item) => item.rank > 3)
       .map((item) => ({
         key: item.colorId,
         rank: item.rank,
@@ -324,7 +321,7 @@ export const TeamLeaderboardPage = () => {
           </section>
         ) : (
           <div
-            className="flex w-full flex-col items-center gap-3"
+            className="flex w-full flex-col items-center gap-3 pt-4 sm:pt-6"
             role="tabpanel"
             aria-label={
               activeView === "accuracy" ? "อันดับความแม่นยำ" : "อันดับเหรียญทีม"

@@ -6,8 +6,7 @@ interface UpdateProfileDto {
 }
 
 const handleUpdateProfile = async (
-    profileInfo: UpdateProfileDto,
-    csrfToken: string
+    profileInfo: UpdateProfileDto
 ): Promise<boolean> => {
     try {
         await apiClient.patch(
@@ -15,11 +14,6 @@ const handleUpdateProfile = async (
             {
                 nick_name: profileInfo.nickName,
                 group_id: profileInfo.groupId,
-            },
-            {
-                headers: {
-                    "X-CSRF-Token": csrfToken,
-                },
             }
         );
 

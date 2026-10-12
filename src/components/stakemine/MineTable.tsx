@@ -10,7 +10,12 @@ import {
 } from "@/api/event/stakemine";
 import { Coins } from "lucide-react";
 import { useCoinStore } from "@/store/coin";
+import {
+  asMoneyString,
+  compareMoneyStrings,
+} from "@/utils/money";
 import toast from "react-hot-toast";
+import useAuth from "@/hooks/useAuth";
 
 type Cell = {
   revealed: boolean;
@@ -26,7 +31,7 @@ const createEmptyGrid = (size = GRID_SIZE): Cell[] =>
   }));
 
 const MineTable: React.FC = () => {
-  const refreshCoin = useCoinStore((s) => s.refreshCoin);
+  const { refreshSession } = useAuth();
   const currentCoin = useCoinStore((s) => s.coinPoint);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -57,7 +62,7 @@ const MineTable: React.FC = () => {
         const activeGame = result.data;
         setIsPlaying(true);
         setGameId(activeGame.id);
-        setBetAmount(activeGame.bet_amount);
+        setBetAmount(Number(activeGame.bet_amount));
         restoreGridFromApi(activeGame.grid);
         toast.success("โหลดเกมที่ยังเล่นไม่จบเรียบร้อยแล้ว");
         return;
@@ -78,7 +83,9 @@ const MineTable: React.FC = () => {
   }, [loadActiveGame]);
 
   const startGame = useCallback(async () => {
-    if (currentCoin < betAmount) {
+    if (
+      compareMoneyStrings(currentCoin, asMoneyString(betAmount.toFixed(2))) < 0
+    ) {
       toast.error("เงินของคุณไม่เพียงพอ");
       return;
     }
@@ -91,8 +98,8 @@ const MineTable: React.FC = () => {
         if (result?.success && result.data) {
           setIsPlaying(true);
           setGameId(result.data.id);
-          setMultiplier(result.data.multiplier ?? 1.0);
-          setPayout(result.data.current_payout ?? 0);
+          setMultiplier(Number(result.data.multiplier ?? "1.000000"));
+          setPayout(Number(result.data.current_payout ?? "0.00"));
         }
       }
     } catch (err) {
@@ -117,12 +124,12 @@ const MineTable: React.FC = () => {
         });
 
         setIsPlaying(false);
-        await refreshCoin();
+        await refreshSession();
       } catch (err) {
         console.error("endGame error:", err);
       }
     },
-    [refreshCoin]
+    [refreshSession]
   );
 
   const revealFromApi = useCallback(
@@ -132,8 +139,8 @@ const MineTable: React.FC = () => {
         if (apiResult?.success && apiResult.data) {
           const game = apiResult.data.game;
 
-          if (game.multiplier != null) setMultiplier(game.multiplier);
-          if (game.current_payout != null) setPayout(game.current_payout);
+          if (game.multiplier != null) setMultiplier(Number(game.multiplier));
+          if (game.current_payout != null) setPayout(Number(game.current_payout));
 
           const isTerminal =
             game.status === "lost" ||
@@ -194,14 +201,14 @@ const MineTable: React.FC = () => {
       if (resp?.success && resp.data?.game) {
         await endGame(resp.data.game.grid);
         setIsPlaying(false);
-        await refreshCoin();
+        await refreshSession();
         toast.success("ถอนสำเร็จ!");
       }
     } catch (err) {
       console.error("quit error:", err);
       toast.error("ถอนเงินไม่สำเร็จ");
     }
-  }, [endGame, gameId, refreshCoin]);
+  }, [endGame, gameId, refreshSession]);
 
   const betButtons = useMemo(
     () => [100, 500, 1000],

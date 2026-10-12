@@ -1,5 +1,6 @@
 "use client";
-import axios from 'axios';
+
+import axios from "axios";
 
 interface SessionResponse {
   csrf_token: string;
@@ -8,6 +9,7 @@ interface SessionResponse {
 const SAFE_METHODS = new Set(["get", "head", "options"]);
 let csrfToken: string | null = null;
 let csrfRequest: Promise<string | null> | null = null;
+const unauthorizedListeners = new Set<() => void>();
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -15,36 +17,53 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
+export const setCsrfToken = (token: string | null) => {
+  csrfToken = token;
+};
+
+export const subscribeToUnauthorized = (listener: () => void) => {
+  unauthorizedListeners.add(listener);
+  return () => {
+    unauthorizedListeners.delete(listener);
+  };
+};
+
+const loadCsrfToken = async (): Promise<string | null> => {
+  if (csrfToken) return csrfToken;
+
+  csrfRequest ??= apiClient
+    .get<SessionResponse>("/auth/me")
+    .then((response) => {
+      csrfToken = response.data.csrf_token;
+      return csrfToken;
+    })
+    .finally(() => {
+      csrfRequest = null;
+    });
+
+  return csrfRequest;
+};
+
 apiClient.interceptors.request.use(
   async (config) => {
     const method = config.method?.toLowerCase() ?? "get";
-
     if (!SAFE_METHODS.has(method)) {
-      if (!csrfToken) {
-        csrfRequest ??= apiClient
-          .get<SessionResponse>("/auth/me")
-          .then((response) => response.data.csrf_token)
-          .finally(() => {
-            csrfRequest = null;
-          });
-
-        csrfToken = await csrfRequest;
-      }
-
-      if (csrfToken) config.headers.set("X-CSRF-Token", csrfToken);
+      const token = await loadCsrfToken();
+      if (token) config.headers.set("X-CSRF-Token", token);
     }
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error?.response?.status === 401) csrfToken = null;
+    if (error?.response?.status === 401) {
+      setCsrfToken(null);
+      unauthorizedListeners.forEach((listener) => listener());
+    }
     return Promise.reject(error);
   },
 );

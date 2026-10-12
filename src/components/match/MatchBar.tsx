@@ -1,22 +1,13 @@
 import { colorMap } from "./MatchColorLogo";
+import { RateString } from "@/types/decimal";
+import { getRatePercentages } from "@/utils/rate";
 export const Matchbar = (props: {
   colorA: string;
   colorB: string;
-  scoreA: number;
-  scoreB: number;
+  rateA: RateString;
+  rateB: RateString;
 }) => {
-  let { scoreA, scoreB } = props;
-
-  const totalScore = scoreA + scoreB;
-
-  if (totalScore === 0) {
-    scoreA = 50;
-    scoreB = 50;
-  } else {
-    const percentB = (scoreA / totalScore) * 100;
-    scoreB = Math.round(percentB);
-    scoreA = 100 - scoreB; 
-  }
+  const [scoreA, scoreB] = getRatePercentages(props.rateA, props.rateB);
 
   return (
     <div className="flex flex-col space-y-0  text-[0.55rem] sm:text-[0.8rem] sm:px-4">

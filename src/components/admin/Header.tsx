@@ -1,29 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
-import { apiClient } from "@/api/axios";
 import { LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import useAuth from "@/hooks/useAuth";
 
 export default function Header() {
-  const [user, setUser] = useState<{ email: string; name: string } | null>(null);
   const router = useRouter();
+  const { profile, logout } = useAuth();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await apiClient.get("/auth/me");
-        setUser(response.data.profile);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/register");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace("/register");
+    } catch (error) {
+      console.error("Unable to confirm logout:", error);
+    }
   };
 
   return (
@@ -34,13 +24,13 @@ export default function Header() {
           <p className="text-sm text-gray-400">Manage your Intania 888 platform</p>
         </div>
 
-        {user && (
+        {profile && (
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-white">
               <User className="w-5 h-5" />
               <div>
-                <p className="text-sm font-medium">{user.name}</p>
-                <p className="text-xs text-gray-400">{user.email}</p>
+                <p className="text-sm font-medium">{profile.name}</p>
+                <p className="text-xs text-gray-400">{profile.email}</p>
               </div>
             </div>
             <button

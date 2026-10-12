@@ -14,16 +14,23 @@ interface SportType {
   title: string;
 }
 
+interface Location {
+  id: string;
+  title: string;
+}
+
 export default function CreateMatchPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState<Color[]>([]);
   const [sportTypes, setSportTypes] = useState<SportType[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
 
   const [formData, setFormData] = useState({
     team_a_id: "",
     team_b_id: "",
     type_id: "",
+    location_id: "",
     start_time: "",
     end_time: "",
   });
@@ -31,6 +38,7 @@ export default function CreateMatchPage() {
   useEffect(() => {
     fetchColors();
     fetchSportTypes();
+    fetchLocations();
   }, []);
 
   const fetchColors = async () => {
@@ -43,22 +51,21 @@ export default function CreateMatchPage() {
   };
 
   const fetchSportTypes = async () => {
-    // Hardcoded sport types from migration script
-    const sportTypes = [
-      { id: "FOOTBALL_MALE_JR", title: "ฟุตบอล ชาย ปี1" },
-      { id: "FOOTBALL_MALE_SR", title: "ฟุตบอล ชาย ปี2-4" },
-      { id: "BASKETBALL_MALE_JR", title: "บาสเกตบอล ชาย ปี1" },
-      { id: "BASKETBALL_MALE_SR", title: "บาสเกตบอล ชาย ปี2-4" },
-      { id: "BASKETBALL_FEMALE_ALL", title: "บาสเกตบอล หญิง ทุกชั้นปี" },
-      { id: "VOLLEYBALL_MALE_ALL", title: "วอลเลย์บอล ชาย ทุกชั้นปี" },
-      { id: "VOLLEYBALL_FEMALE_ALL", title: "วอลเลย์บอล หญิง ทุกชั้นปี" },
-      { id: "CHAIRBALL_FEMALE_JR", title: "แชร์บอล หญิง ปี1" },
-      { id: "CHAIRBALL_FEMALE_SR", title: "แชร์บอล หญิง ปี2-4" },
-      { id: "TRADITIONAL_SPORTS", title: "กีฬาพื้นบ้าน" },
-      { id: "TUG_OF_WAR_CHAK_YOR", title: "ชักเย่อ" },
-      { id: "RUNNING_PIAW", title: "วิ่งเปี้ยว" },
-    ];
-    setSportTypes(sportTypes);
+    try {
+      const response = await apiClient.get<SportType[]>("/sport-types");
+      setSportTypes(response.data);
+    } catch (error) {
+      console.error("Error fetching sport types:", error);
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await apiClient.get<Location[]>("/locations");
+      setLocations(response.data);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,6 +75,7 @@ export default function CreateMatchPage() {
       !formData.team_a_id ||
       !formData.team_b_id ||
       !formData.type_id ||
+      !formData.location_id ||
       !formData.start_time ||
       !formData.end_time
     ) {
@@ -88,6 +96,7 @@ export default function CreateMatchPage() {
         team_a: formData.team_a_id,
         team_b: formData.team_b_id,
         type: formData.type_id,
+        location_id: formData.location_id,
         start_time: new Date(formData.start_time).toISOString(),
         end_time: new Date(formData.end_time).toISOString(),
       });
@@ -137,6 +146,27 @@ export default function CreateMatchPage() {
             {sportTypes.map((type) => (
               <option key={type.id} value={type.id}>
                 {type.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Location *
+          </label>
+          <select
+            value={formData.location_id}
+            onChange={(event) =>
+              setFormData({ ...formData, location_id: event.target.value })
+            }
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          >
+            <option value="">Select location</option>
+            {locations.map((location) => (
+              <option key={location.id} value={location.id}>
+                {location.title} ({location.id})
               </option>
             ))}
           </select>

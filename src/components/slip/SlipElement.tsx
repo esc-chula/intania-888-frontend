@@ -5,14 +5,16 @@ import { MatchColorLogo } from "../match/MatchColorLogo";
 import { Selector } from "./SlipSelector";
 import { formatThaiDate } from "../match/MatchUtils";
 import { useSlipStore } from "@/store/slip";
-import { sportTextMap } from "../match/MatchMapAndList";
+import { RateString } from "@/types/decimal";
+import { formatRateString } from "@/utils/rate";
+import { useSportCatalog } from "@/components/SportCatalogProvider";
 
 interface SlipElementProps {
   date: Date;
   sportType: string;
   teamAColor: string;
   teamBColor: string;
-  currentRate: number;
+  currentRate: RateString;
   matchId: string;
 }
 
@@ -24,6 +26,7 @@ const SlipElement: React.FC<SlipElementProps> = ({
   currentRate,
   matchId,
 }) => {
+  const { getSportTitle } = useSportCatalog();
   const [selectedTeam, setSelectedTeam] = useState("เลือกทีม");
   const removeSlipItem = useSlipStore((state) => state.removeSlipItem);
   const updateSlipItem = useSlipStore((state) => state.updateSlipItem);
@@ -50,7 +53,7 @@ const SlipElement: React.FC<SlipElementProps> = ({
         />
       </div>
       <div className="font-semibold text-neutral-700">
-        {formatThaiDate(date.toString())} : {sportTextMap[sportType]}
+        {formatThaiDate(date.toString())} : {getSportTitle(sportType)}
       </div>
       <div className="flex items-center space-x-2">
         <div className="flex justify-center items-center space-x-1.5 text-black font-semibold">
@@ -70,7 +73,7 @@ const SlipElement: React.FC<SlipElementProps> = ({
             setFilter={setSelectedTeam}
           />
           <p className="text-indigo-700 font-semibold">
-            เรทปัจจุบัน: {currentRate.toFixed(2)}
+            เรทปัจจุบัน: {formatRateString(currentRate)}
           </p>
         </div>
       </div>

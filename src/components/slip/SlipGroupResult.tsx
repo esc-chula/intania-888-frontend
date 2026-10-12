@@ -7,7 +7,7 @@ import SlipResult from './SlipResult';
 
 interface SlipGroupResultProps {
     slipId: string;
-    netProfit: number;
+    netProfit: string;
     slipResult: SlipResultProps[];
 }
 

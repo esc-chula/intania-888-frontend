@@ -2,6 +2,13 @@
 import { useEffect, useState } from "react";
 import { apiClient } from "@/api/axios";
 import { Users, Shield, Coins, Search, Edit2, X, Save } from "lucide-react";
+import {
+  asMoneyString,
+  averageMoneyStrings,
+  formatMoneyString,
+  normalizeMoneyStringInput,
+  sumMoneyStrings,
+} from "@/utils/money";
 
 interface User {
   id: string;
@@ -10,7 +17,7 @@ interface User {
   nick_name?: string | null;
   role_id: string;
   group_id?: string | null;
-  remaining_coin: number;
+  remaining_coin: string;
   created_at: string;
 }
 
@@ -18,8 +25,7 @@ interface EditingUser {
   id: string;
   name: string;
   nick_name: string;
-  role_id: string;
-  remaining_coin: number;
+  remaining_coin: string;
 }
 
 export default function UsersPage() {
@@ -50,7 +56,6 @@ export default function UsersPage() {
       id: user.id,
       name: user.name,
       nick_name: user.nick_name || "",
-      role_id: user.role_id,
       remaining_coin: user.remaining_coin,
     });
   };
@@ -61,20 +66,24 @@ export default function UsersPage() {
 
   const handleSaveEdit = async () => {
     if (!editingUser) return;
+    const remainingCoin = normalizeMoneyStringInput(editingUser.remaining_coin);
+    if (!remainingCoin) {
+      alert("Coin balance must be a non-negative amount with at most 2 decimal places.");
+      return;
+    }
 
     try {
       setUpdating(true);
       await apiClient.patch(`/users/admin/${editingUser.id}`, {
         name: editingUser.name,
         nick_name: editingUser.nick_name || null,
-        role_id: editingUser.role_id,
-        remaining_coin: editingUser.remaining_coin,
+        remaining_coin: remainingCoin,
       });
 
       // Update local state
       setUsers(users.map(u =>
         u.id === editingUser.id
-          ? { ...u, name: editingUser.name, nick_name: editingUser.nick_name, role_id: editingUser.role_id, remaining_coin: editingUser.remaining_coin }
+          ? { ...u, name: editingUser.name, nick_name: editingUser.nick_name, remaining_coin: remainingCoin }
           : u
       ));
 
@@ -144,14 +153,22 @@ export default function UsersPage() {
         <div className="bg-gray-900 rounded-lg p-6">
           <Coins className="w-8 h-8 text-yellow-500 mb-2" />
           <p className="text-3xl font-bold text-white">
-            {users.reduce((sum, u) => sum + u.remaining_coin, 0).toFixed(0)}
+            {formatMoneyString(
+              sumMoneyStrings(
+                users.map((user) => asMoneyString(user.remaining_coin)),
+              ),
+            )}
           </p>
           <p className="text-sm text-gray-400">Total Coins</p>
         </div>
         <div className="bg-gray-900 rounded-lg p-6">
           <Coins className="w-8 h-8 text-green-500 mb-2" />
           <p className="text-3xl font-bold text-white">
-            {(users.reduce((sum, u) => sum + u.remaining_coin, 0) / users.length).toFixed(0)}
+            {formatMoneyString(
+              averageMoneyStrings(
+                users.map((user) => asMoneyString(user.remaining_coin)),
+              ),
+            )}
           </p>
           <p className="text-sm text-gray-400">Avg Coins/User</p>
         </div>
@@ -231,40 +248,35 @@ export default function UsersPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {isEditing ? (
-                        <select
-                          value={editingUser.role_id}
-                          onChange={(e) => setEditingUser({ ...editingUser, role_id: e.target.value })}
-                          className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs text-white focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="USER">USER</option>
-                          <option value="ADMIN">ADMIN</option>
-                        </select>
-                      ) : (
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            user.role_id === "ADMIN"
-                              ? "bg-purple-600 text-white"
-                              : "bg-gray-700 text-gray-300"
-                          }`}
-                        >
-                          {user.role_id}
-                        </span>
-                      )}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          user.role_id === "ADMIN"
+                            ? "bg-purple-600 text-white"
+                            : "bg-gray-700 text-gray-300"
+                        }`}
+                      >
+                        {user.role_id}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {isEditing ? (
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="decimal"
                           value={editingUser.remaining_coin}
-                          onChange={(e) => setEditingUser({ ...editingUser, remaining_coin: parseFloat(e.target.value) })}
+                          onChange={(e) =>
+                            setEditingUser({
+                              ...editingUser,
+                              remaining_coin: e.target.value,
+                            })
+                          }
                           className="w-24 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-sm text-white focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
                         <div className="flex items-center space-x-1">
                           <Coins className="w-4 h-4 text-yellow-500" />
                           <span className="text-sm font-medium text-white">
-                            {user.remaining_coin.toFixed(0)}
+                            {formatMoneyString(asMoneyString(user.remaining_coin))}
                           </span>
                         </div>
                       )}

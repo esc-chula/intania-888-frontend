@@ -8,7 +8,10 @@ import {
   Palette,
   BarChart3,
   Calendar,
-  Settings
+  MapPin,
+  ShieldCheck,
+  ReceiptText,
+  Settings,
 } from "lucide-react";
 
 const menuItems = [
@@ -38,9 +41,24 @@ const menuItems = [
     icon: BarChart3,
   },
   {
+    href: "/admin/bills",
+    label: "Bills",
+    icon: ReceiptText,
+  },
+  {
     href: "/admin/sports",
     label: "Sport Types",
     icon: Calendar,
+  },
+  {
+    href: "/admin/locations",
+    label: "Locations",
+    icon: MapPin,
+  },
+  {
+    href: "/admin/policies",
+    label: "Access Policies",
+    icon: ShieldCheck,
   },
   {
     href: "/admin/settings",

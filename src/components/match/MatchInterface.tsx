@@ -1,3 +1,5 @@
+import { RateString } from "@/types/decimal";
+
 export interface matchInterface {
   location: string;
   sport: string;
@@ -21,9 +23,13 @@ export interface rawDataInterface {
       team_b: string;
       team_a_score: number | null;
       team_b_score: number | null;
-      team_a_rate: number;
-      team_b_rate: number;
+      team_a_rate: string;
+      team_b_rate: string;
       type: string;
+      location: {
+        id: string;
+        title: string;
+      };
     }[];
   }[];
 }
@@ -34,9 +40,9 @@ export type RoundItem = {
   time_end: Date;
   colorA: string;
   colorB: string;
-  rateA: number;
+  rateA: RateString;
   scoreA: number;
-  rateB: number;
+  rateB: RateString;
   type: string;
   scoreB: number;
   status: string;

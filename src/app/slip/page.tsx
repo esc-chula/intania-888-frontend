@@ -9,8 +9,12 @@ import { createMySlip } from "@/api/slip/slip";
 import { Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { useCoinStore } from "@/store/coin";
+import useAuth from "@/hooks/useAuth";
 import { Footer } from "@/components/Footer";
+import {
+  calculatePayoutPreview,
+  normalizeMoneyInput,
+} from "@/utils/rate";
 
 export default function Home() {
   const slipItems = useSlipStore((state) => state.slipItems);
@@ -20,26 +24,39 @@ export default function Home() {
   const [betAmount, setBetAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const refreshCoin = useCoinStore((state) => state.refreshCoin);
+  const { refreshSession } = useAuth();
   useEffect(() => {
     updateSlipRates();
   }, [updateSlipRates]);
 
   const handleConfirmBet = async () => {
-    const betAmountNum = parseFloat(betAmount);
+    const normalizedBetAmount = normalizeMoneyInput(betAmount);
 
-    if (slipItems.length === 0 || isNaN(betAmountNum) || betAmountNum <= 0) {
+    if (slipItems.length === 0 || !normalizedBetAmount) {
       toast.error("กรุณาเลือกทีมและจำนวนเหรียญก่อนยืนยัน");
       return;
     }
 
     setIsLoading(true);
-    updateSlipRates();
+    await updateSlipRates();
+    const currentSlips = useSlipStore.getState().slipItems;
+    if (
+      currentSlips.length === 0 ||
+      currentSlips.some(
+        (item) =>
+          item.betting_on !== item.team_a_color &&
+          item.betting_on !== item.team_b_color,
+      )
+    ) {
+      toast.error("กรุณาเลือกทีมให้ครบทุกคู่ก่อนยืนยัน");
+      setIsLoading(false);
+      return;
+    }
+
     const slipData = {
-      total: betAmountNum,
-      lines: slipItems.map((item) => ({
+      total: normalizedBetAmount,
+      lines: currentSlips.map((item) => ({
         match_id: item.match_id,
-        rate: item.rate,
         betting_on: item.betting_on,
       })),
     };
@@ -48,7 +65,7 @@ export default function Home() {
       const response = await createMySlip(slipData);
       if (response?.success) {
         toast.success("การเดิมพันสำเร็จ!");
-        await refreshCoin();
+        await refreshSession();
         setBetAmount(""); // Reset the input to empty after successful submission
       } else {
         toast.error("เกิดข้อผิดพลาดในการทำการเดิมพัน");
@@ -146,7 +163,7 @@ export default function Home() {
             </p>
             <p className="text-black">
               {slipItems.length > 1
-                ? `เรทปัจจุบันรวม : ${totalRate.toFixed(2)}`
+                ? `เรทปัจจุบันรวม : ${totalRate}`
                 : ""}
             </p>
           </section>
@@ -154,7 +171,8 @@ export default function Home() {
             <p className="text-black">จำนวนเหรียญที่ใช้เดิมพัน</p>
             <div className="flex items-center space-x-1">
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 className="text-black text-right h-7 p-2 border border-gray-300 rounded-lg w-24"
                 value={betAmount}
                 onChange={(e) => setBetAmount(e.target.value)} // Handle input as string
@@ -166,9 +184,10 @@ export default function Home() {
             <p className="text-black">เหรียญที่พึงได้</p>
             <div className="flex items-center space-x-1">
               <p className="text-black font-semibold">
-                {isNaN(totalRate * parseFloat(betAmount))
-                  ? "0.00"
-                  : (totalRate * parseFloat(betAmount)).toFixed(2)}
+                {calculatePayoutPreview(
+                  betAmount,
+                  slipItems.map((item) => item.rate),
+                ) ?? "0.00"}
               </p>
               <Coins color="yellow" />
             </div>

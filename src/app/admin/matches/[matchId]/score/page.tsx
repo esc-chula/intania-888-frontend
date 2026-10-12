@@ -51,12 +51,20 @@ export default function UpdateScore() {
 
       // Automatically determine winner based on score
       if (teamAScore > teamBScore) {
-        await apiClient.patch(`/matches/${matchId}/winner/${teamAId}`);
+        await apiClient.put(`/matches/${matchId}/result`, {
+          outcome: "winner",
+          winner_id: teamAId,
+        });
       } else if (teamBScore > teamAScore) {
-        await apiClient.patch(`/matches/${matchId}/winner/${teamBId}`);
+        await apiClient.put(`/matches/${matchId}/result`, {
+          outcome: "winner",
+          winner_id: teamBId,
+        });
       } else {
         // It's a draw
-        await apiClient.patch(`/matches/${matchId}/draw`);
+        await apiClient.put(`/matches/${matchId}/result`, {
+          outcome: "draw",
+        });
       }
 
       toast.success("Score and result updated successfully!", {

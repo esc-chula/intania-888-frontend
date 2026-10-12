@@ -11,8 +11,8 @@ interface Match {
   team_b: string;
   team_a_score: number | null;
   team_b_score: number | null;
-  team_a_rate: number;
-  team_b_rate: number;
+  team_a_rate: string;
+  team_b_rate: string;
   winner: string;
   type: string;
   is_draw: boolean;

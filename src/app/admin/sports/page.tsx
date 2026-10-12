@@ -1,110 +1,207 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Calendar, AlertCircle } from "lucide-react";
+
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import { AxiosError } from "axios";
+import { Calendar, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { apiClient } from "@/api/axios";
+import { useSportCatalog } from "@/components/SportCatalogProvider";
 
 interface SportType {
   id: string;
   title: string;
 }
 
+interface ApiErrorResponse {
+  message?: string;
+  request_id?: string;
+}
+
+const errorMessage = (error: unknown) => {
+  if (error instanceof AxiosError) {
+    const response = error.response?.data as ApiErrorResponse | undefined;
+    return response?.request_id
+      ? `${response.message ?? "Request failed"} (${response.request_id})`
+      : response?.message ?? "Request failed";
+  }
+  return "Request failed";
+};
+
 export default function SportTypesPage() {
+  const { refreshSportTypes } = useSportCatalog();
   const [sportTypes, setSportTypes] = useState<SportType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [id, setId] = useState("");
+  const [title, setTitle] = useState("");
 
-  useEffect(() => {
-    fetchSportTypes();
+  const fetchSportTypes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.get<SportType[]>("/sport-types");
+      setSportTypes(response.data);
+    } catch (requestError) {
+      setError(errorMessage(requestError));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const fetchSportTypes = async () => {
-    setLoading(true);
-    // Hardcoded sport types from migration script with emojis
-    const sportTypes = [
-      { id: "FOOTBALL_MALE_JR", title: "⚽ ฟุตบอล ชาย ปี1" },
-      { id: "FOOTBALL_MALE_SR", title: "⚽ ฟุตบอล ชาย ปี2-4" },
-      { id: "BASKETBALL_MALE_JR", title: "🏀 บาสเกตบอล ชาย ปี1" },
-      { id: "BASKETBALL_MALE_SR", title: "🏀 บาสเกตบอล ชาย ปี2-4" },
-      { id: "BASKETBALL_FEMALE_ALL", title: "🏀 บาสเกตบอล หญิง ทุกชั้นปี" },
-      { id: "VOLLEYBALL_MALE_ALL", title: "🏐 วอลเลย์บอล ชาย ทุกชั้นปี" },
-      { id: "VOLLEYBALL_FEMALE_ALL", title: "🏐 วอลเลย์บอล หญิง ทุกชั้นปี" },
-      { id: "CHAIRBALL_FEMALE_JR", title: "🤾 แชร์บอล หญิง ปี1" },
-      { id: "CHAIRBALL_FEMALE_SR", title: "🤾 แชร์บอล หญิง ปี2-4" },
-    ];
-    setSportTypes(sportTypes);
-    setLoading(false);
+  useEffect(() => {
+    void fetchSportTypes();
+  }, [fetchSportTypes]);
+
+  const handleCreate = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!id.trim() || !title.trim()) return;
+
+    setSaving(true);
+    setError(null);
+    try {
+      await apiClient.post("/sport-types/admin", {
+        id: id.trim(),
+        title: title.trim(),
+      });
+      setId("");
+      setTitle("");
+      await Promise.all([fetchSportTypes(), refreshSportTypes()]);
+    } catch (requestError) {
+      setError(errorMessage(requestError));
+    } finally {
+      setSaving(false);
+    }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-white text-lg">Loading sport types...</div>
-      </div>
-    );
-  }
+  const handleRename = async (sport: SportType) => {
+    const nextTitle = window.prompt("New sport title", sport.title)?.trim();
+    if (!nextTitle || nextTitle === sport.title) return;
+
+    setError(null);
+    try {
+      await apiClient.patch(
+        `/sport-types/admin/${encodeURIComponent(sport.id)}`,
+        { title: nextTitle },
+      );
+      await Promise.all([fetchSportTypes(), refreshSportTypes()]);
+    } catch (requestError) {
+      setError(errorMessage(requestError));
+    }
+  };
+
+  const handleDelete = async (sport: SportType) => {
+    if (!window.confirm(`Delete ${sport.title} (${sport.id})?`)) return;
+
+    setError(null);
+    try {
+      await apiClient.delete(
+        `/sport-types/admin/${encodeURIComponent(sport.id)}`,
+      );
+      await Promise.all([fetchSportTypes(), refreshSportTypes()]);
+    } catch (requestError) {
+      setError(errorMessage(requestError));
+    }
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white">Sport Types</h1>
-          <p className="text-gray-400 mt-1">View all sport types in the system</p>
+          <p className="mt-1 text-gray-400">
+            Manage the shared sport catalogue used by match forms.
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={() => void fetchSportTypes()}
+          className="rounded-lg bg-gray-800 p-3 text-gray-200 hover:bg-gray-700"
+          aria-label="Refresh sport types"
+        >
+          <RefreshCw className="h-5 w-5" />
+        </button>
       </div>
 
-      <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-blue-300 font-medium">Read-Only Data</p>
-            <p className="text-blue-200/80 text-sm mt-1">
-              Sport types are defined in the backend migration script and cannot be modified from the admin panel.
-              To add or modify sport types, update the migration script in the backend code.
-            </p>
-          </div>
-        </div>
-      </div>
+      <form
+        onSubmit={handleCreate}
+        className="grid gap-3 rounded-lg bg-gray-900 p-4 md:grid-cols-[1fr_2fr_auto]"
+      >
+        <input
+          value={id}
+          onChange={(event) => setId(event.target.value)}
+          placeholder="SPORT_ID"
+          pattern="[A-Za-z0-9_-]{1,100}"
+          maxLength={100}
+          className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"
+          required
+        />
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="Display title"
+          maxLength={100}
+          className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"
+          required
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white disabled:bg-gray-600"
+        >
+          <Plus className="h-4 w-4" />
+          Add
+        </button>
+      </form>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {sportTypes.map((sport, index) => (
-          <div key={sport.id} className="bg-gray-900 rounded-lg p-6 hover:bg-gray-800 transition-colors">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Calendar className="w-5 h-5 text-blue-500" />
-                  <span className="text-sm font-medium text-gray-400">#{index + 1}</span>
+      {error && (
+        <div className="rounded-lg border border-red-700 bg-red-950/40 p-4 text-red-200">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="py-16 text-center text-gray-300">Loading...</div>
+      ) : sportTypes.length === 0 ? (
+        <div className="rounded-lg bg-gray-900 p-8 text-center text-gray-400">
+          No sport types configured.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {sportTypes.map((sport) => (
+            <article key={sport.id} className="rounded-lg bg-gray-900 p-5">
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-blue-400">
+                    <Calendar className="h-5 w-5" />
+                    <span className="font-mono text-xs">{sport.id}</span>
+                  </div>
+                  <h2 className="text-lg font-semibold text-white">
+                    {sport.title}
+                  </h2>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-1">{sport.id}</h3>
-                <p className="text-gray-300 text-2xl">{sport.title}</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void handleRename(sport)}
+                    className="rounded bg-gray-800 p-2 text-gray-300 hover:text-white"
+                    aria-label={`Rename ${sport.title}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleDelete(sport)}
+                    className="rounded bg-red-950 p-2 text-red-300 hover:text-red-100"
+                    aria-label={`Delete ${sport.title}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="pt-4 border-t border-gray-800">
-              <span className="text-xs text-gray-500">
-                Defined in migration script
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="bg-gray-900 rounded-lg p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Sport Types Reference</h2>
-        <div className="space-y-2 text-sm">
-          <p className="text-gray-300">
-            <span className="font-medium text-white">Total Sport Types:</span> {sportTypes.length}
-          </p>
-          <p className="text-gray-300">
-            <span className="font-medium text-white">Source:</span>{" "}
-            <code className="bg-gray-800 px-2 py-1 rounded text-blue-400">
-              pkg/database/migration/migration_script.go
-            </code>
-          </p>
-          <p className="text-gray-300">
-            <span className="font-medium text-white">Constants:</span>{" "}
-            <code className="bg-gray-800 px-2 py-1 rounded text-blue-400">
-              utils/constant/sport.type.go
-            </code>
-          </p>
+            </article>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

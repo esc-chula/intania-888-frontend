@@ -7,6 +7,8 @@ import { Coins } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
+  const warGameUrl = process.env.NEXT_PUBLIC_INTANIA_GAMES_URL;
+
   return (
     <div className="flex flex-col items-center justify-start space-y-4 min-h-screen w-screen pb-32">
       <div className="relative m-0 p-0 top-0 flex flex-col w-full">
@@ -26,7 +28,7 @@ export default function Home() {
             <p className="text-xl underline">อีเวนต์ประจำวัน</p>
             <div className="flex flex-row space-x-1 sm:space-x-2 relative">
               <p className="text-xs sm:text-sm">
-                ล็อกอินประจำวัน รับเลย! วันละ 300
+                ล็อกอินประจำวันเพื่อรับเหรียญรางวัล
               </p>
               <Coins className="relative -top-1" width={20} color="Yellow" />
               <p className="text-xs sm:text-sm">
@@ -51,7 +53,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex items-center space-x-4 px-3 font-semibold flex-row bg-neutral-100 py-4  text-black">
+          <div className="grid grid-cols-2 gap-3 bg-neutral-100 px-3 py-4 font-semibold text-black sm:grid-cols-3">
             <Link
               href="/event/slots"
               className="flex flex-1 items-center justify-center shadow-lg rounded-md py-4 px-3 bg-white flex-col space-y-4 cursor-pointer hover:bg-gray-50"
@@ -66,13 +68,26 @@ export default function Home() {
               <p className="text-6xl sm:text-7xl">💣</p>
               <p className="text-xl">Mines</p>
             </Link>
-            {/* <Link
-              href="/event"
-              className="flex flex-1 items-center justify-center shadow-lg rounded-md py-4 px-3 bg-white flex-col space-y-4 cursor-pointer hover:bg-gray-50"
-            >
-              <p className="text-6xl sm:text-7xl">🪖</p>
-              <p className="text-xl">War Game</p>
-            </Link> */}
+            {warGameUrl ? (
+              <a
+                href={warGameUrl}
+                className="col-span-2 flex cursor-pointer flex-col items-center justify-center space-y-4 rounded-md bg-white px-3 py-4 shadow-lg hover:bg-gray-50 sm:col-span-1"
+              >
+                <p className="text-6xl sm:text-7xl">🪖</p>
+                <p className="text-xl">War Game</p>
+              </a>
+            ) : (
+              <div
+                aria-disabled="true"
+                className="col-span-2 flex flex-col items-center justify-center space-y-4 rounded-md bg-neutral-200 px-3 py-4 text-neutral-500 sm:col-span-1"
+              >
+                <p className="text-6xl opacity-60 sm:text-7xl">🪖</p>
+                <div className="text-center">
+                  <p className="text-xl">War Game</p>
+                  <p className="text-xs">ยังไม่เปิดให้บริการ</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
