@@ -3,6 +3,7 @@
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -19,30 +20,29 @@ interface SportType {
 interface SportCatalogContextValue {
   sportTypes: SportType[];
   getSportTitle: (id: string) => string;
+  refreshSportTypes: () => Promise<void>;
 }
 
 const SportCatalogContext = createContext<SportCatalogContextValue>({
   sportTypes: [],
   getSportTitle: (id) => sportTextMap[id] ?? id,
+  refreshSportTypes: async () => undefined,
 });
 
 export const SportCatalogProvider = ({ children }: { children: ReactNode }) => {
   const [sportTypes, setSportTypes] = useState<SportType[]>([]);
 
+  const refreshSportTypes = useCallback(async () => {
+    const response = await apiClient.get<SportType[]>("/sport-types");
+    setSportTypes(response.data);
+  }, []);
+
   useEffect(() => {
-    let active = true;
-    void apiClient
-      .get<SportType[]>("/sport-types")
-      .then((response) => {
-        if (active) setSportTypes(response.data);
-      })
+    void refreshSportTypes()
       .catch(() => {
         // Legacy labels remain available when the public catalogue is offline.
       });
-    return () => {
-      active = false;
-    };
-  }, []);
+  }, [refreshSportTypes]);
 
   const value = useMemo(() => {
     const titleById = Object.fromEntries(
@@ -52,8 +52,9 @@ export const SportCatalogProvider = ({ children }: { children: ReactNode }) => {
       sportTypes,
       getSportTitle: (id: string) =>
         titleById[id] ?? sportTextMap[id] ?? id,
+      refreshSportTypes,
     };
-  }, [sportTypes]);
+  }, [refreshSportTypes, sportTypes]);
 
   return (
     <SportCatalogContext.Provider value={value}>

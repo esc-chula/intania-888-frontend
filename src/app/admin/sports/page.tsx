@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import { Calendar, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { apiClient } from "@/api/axios";
+import { useSportCatalog } from "@/components/SportCatalogProvider";
 
 interface SportType {
   id: string;
@@ -26,6 +27,7 @@ const errorMessage = (error: unknown) => {
 };
 
 export default function SportTypesPage() {
+  const { refreshSportTypes } = useSportCatalog();
   const [sportTypes, setSportTypes] = useState<SportType[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -63,7 +65,7 @@ export default function SportTypesPage() {
       });
       setId("");
       setTitle("");
-      await fetchSportTypes();
+      await Promise.all([fetchSportTypes(), refreshSportTypes()]);
     } catch (requestError) {
       setError(errorMessage(requestError));
     } finally {
@@ -81,7 +83,7 @@ export default function SportTypesPage() {
         `/sport-types/admin/${encodeURIComponent(sport.id)}`,
         { title: nextTitle },
       );
-      await fetchSportTypes();
+      await Promise.all([fetchSportTypes(), refreshSportTypes()]);
     } catch (requestError) {
       setError(errorMessage(requestError));
     }
@@ -95,7 +97,7 @@ export default function SportTypesPage() {
       await apiClient.delete(
         `/sport-types/admin/${encodeURIComponent(sport.id)}`,
       );
-      await fetchSportTypes();
+      await Promise.all([fetchSportTypes(), refreshSportTypes()]);
     } catch (requestError) {
       setError(errorMessage(requestError));
     }

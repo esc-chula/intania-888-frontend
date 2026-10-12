@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { Navbar } from "@/components/Navbar";
-import { Selector } from "@/components/Selector";
+import { Selector, type SelectorOption } from "@/components/Selector";
 import { MatchMainFilter } from "@/components/match/MatchMainFilter";
 import { DisplayMatchs } from "@/components/match/DisplayMatchs";
 import { getMatch, getMatchSub } from "@/api/match/getmatch";
@@ -33,19 +33,23 @@ export default function Home() {
   const { sportTypes } = useSportCatalog();
 
   const sportChoices = useMemo(
-    () =>
-      sportTypes.length > 0
-        ? ["รวมกีฬาทุกประเภท", ...sportTypes.map((sport) => sport.title)]
-        : choicesList,
-    [sportTypes],
-  );
-  const sportIdByTitle = useMemo(
-    () => ({
-      ...selectorTextMap,
-      ...Object.fromEntries(
-        sportTypes.map((sport) => [sport.title, sport.id]),
-      ),
-    }),
+    (): SelectorOption[] => {
+      const sports =
+        sportTypes.length > 0
+          ? sportTypes
+          : choicesList.slice(1).map((title) => ({
+              id: selectorTextMap[title],
+              title,
+            }));
+
+      return [
+        { value: "", label: "รวมกีฬาทุกประเภท" },
+        ...sports.map((sport) => ({
+          value: sport.id,
+          label: sport.title,
+        })),
+      ];
+    },
     [sportTypes],
   );
 
@@ -61,13 +65,9 @@ export default function Home() {
     let cancelled = false;
     const fetchMatchData = async () => {
       setShowMatch(undefined);
-      const typeId =
-        filter === "" || filter === "รวมกีฬาทุกประเภท"
-          ? undefined
-          : sportIdByTitle[filter];
       const result = await getMatch({
         schedule: mainFilter === "upcoming" ? "schedule" : "result",
-        typeId,
+        typeId: filter || undefined,
       });
       if (!cancelled) setShowMatch(result?.data ?? []);
     };
@@ -76,7 +76,7 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, [filter, mainFilter, sportIdByTitle]);
+  }, [filter, mainFilter]);
 
   // Fetch team data for overall view
   useEffect(() => {
@@ -89,9 +89,9 @@ export default function Home() {
       setTeamB(resB?.data);
     };
 
-    const type_id_temp = filter === "" ? "ALL" : sportIdByTitle[filter];
+    const type_id_temp = filter || "ALL";
     fetchMatchSub({ type_id: type_id_temp });
-  }, [mainFilter, filter, sportIdByTitle]);
+  }, [mainFilter, filter]);
 
   return (
     <>
@@ -119,11 +119,7 @@ export default function Home() {
 
           {mainFilter === "overall" ? (
             <LeaderBoardTableDisplay
-              sport={
-                filter === "รวมกีฬาทุกประเภท" || filter === ""
-                  ? ""
-                  : sportIdByTitle[filter]
-              }
+              sport={filter}
               teamA={teamA}
               teamB={teamB}
             />
