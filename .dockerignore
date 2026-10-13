@@ -1,1 +1,16 @@
 node_modules
+.next
+.git
+.github
+.env
+.env.*
+*.env
+*.env.*
+.npmrc
+*.log
+*.tsbuildinfo
+gha-creds-*.json
+intania-888-*.json
+*credentials*.json
+*.pem
+*.key
