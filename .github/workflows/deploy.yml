@@ -1,79 +1,105 @@
 name: Deploy to Cloud Run
 
 on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    tags:
-      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  SERVICE_NAME: intania-888-frontend
+  PROJECT_ID: intania-888
   REGION: asia-southeast1
-  IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/intania-888-frontend
-  NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+  IMAGE_NAME: asia-southeast1-docker.pkg.dev/intania-888/intania888/intania-888-frontend
+  NEXT_PUBLIC_API_BASE_URL: https://888-api.intania.org/api/v1
   NEXT_PUBLIC_AUTH_CLIENT_ID: intania-888-web
+  NEXT_PUBLIC_INTANIA_GAMES_URL: ${{ vars.NEXT_PUBLIC_INTANIA_GAMES_URL || '' }}
+  DEPLOY_COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
 
 jobs:
   deploy:
-    name: Build and Deploy
+    name: Build and deploy frontend
+    if: >-
+      github.repository == 'esc-chula/intania-888-frontend' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_sha == github.sha &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      id-token: write
+    timeout-minutes: 30
+    # Finish a rollout before starting another frontend release.
+    concurrency:
+      group: intania888-web-production
+      cancel-in-progress: false
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Google Auth
-        id: auth
-        uses: google-github-actions/auth@v2
+      - name: Checkout the commit that passed CI
+        uses: actions/checkout@v5
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          ref: ${{ env.DEPLOY_COMMIT }}
+          persist-credentials: false
+
+      - name: Skip a release superseded by a newer main commit
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current_main=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha')
+          if [[ "$DEPLOY_COMMIT" == "$current_main" ]]; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+            echo '::notice::A newer main commit exists; skipping this superseded release.'
+          fi
+
+      # Build before authenticating so build time does not consume token lifetime.
+      - name: Build the production image
+        if: steps.release.outputs.current == 'true'
+        run: |
+          docker build --platform linux/amd64 \
+            --build-arg NEXT_PUBLIC_API_BASE_URL="$NEXT_PUBLIC_API_BASE_URL" \
+            --build-arg NEXT_PUBLIC_AUTH_CLIENT_ID="$NEXT_PUBLIC_AUTH_CLIENT_ID" \
+            --build-arg NEXT_PUBLIC_INTANIA_GAMES_URL="$NEXT_PUBLIC_INTANIA_GAMES_URL" \
+            --tag "$IMAGE_NAME:$DEPLOY_COMMIT" .
+
+      - name: Authenticate to Google Cloud
+        if: steps.release.outputs.current == 'true'
+        id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: projects/461083215931/locations/global/workloadIdentityPools/intania888-github/providers/frontend-production
+          service_account: intania888-web-deployer@intania-888.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 3600s
+          create_credentials_file: false
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        if: steps.release.outputs.current == 'true'
+        uses: google-github-actions/setup-gcloud@v3
 
-      - name: Configure Docker to use gcloud
-        run: gcloud auth configure-docker
-
-      - name: Build and tag Docker image
+      - name: Publish the image and deploy
+        if: steps.release.outputs.current == 'true'
+        env:
+          # Use a one-hour impersonated token for image publishing and rollout.
+          CLOUDSDK_AUTH_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: |
-          docker build \
-            --build-arg NEXT_PUBLIC_API_BASE_URL="${{ env.NEXT_PUBLIC_API_BASE_URL }}" \
-            --build-arg NEXT_PUBLIC_AUTH_CLIENT_ID="${{ env.NEXT_PUBLIC_AUTH_CLIENT_ID }}" \
-            -t "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
-            -t "${{ env.IMAGE_NAME }}:latest" \
-            .
+          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+          docker push "$IMAGE_NAME:$DEPLOY_COMMIT"
 
-      - name: Push Docker image to GCR
-        run: |
-          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          docker push ${{ env.IMAGE_NAME }}:latest
+          digest=$(gcloud artifacts docker images describe "$IMAGE_NAME:$DEPLOY_COMMIT" \
+            --project="$PROJECT_ID" \
+            --format='value(image_summary.digest)')
 
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image ${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --platform managed \
-            --region ${{ env.REGION }} \
-            --allow-unauthenticated \
-            --set-env-vars="NEXT_PUBLIC_API_BASE_URL=${{ env.NEXT_PUBLIC_API_BASE_URL }}" \
-            --min-instances=0 \
-            --max-instances=10 \
-            --memory=512Mi \
-            --cpu=1 \
-            --timeout=300 \
-            --port=3000
+          if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo 'Artifact Registry did not return a valid image digest.' >&2
+            exit 1
+          fi
 
-      - name: Show deployment URL
-        run: |
-          echo "Deployment completed!"
-          gcloud run services describe ${{ env.SERVICE_NAME }} \
-            --platform managed \
-            --region ${{ env.REGION }} \
-            --format 'value(status.url)'
+          bash scripts/deploy-production.sh "$IMAGE_NAME@$digest"
