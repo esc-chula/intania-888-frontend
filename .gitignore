@@ -36,3 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 claude.md
+
+# Google GitHub authentication artifacts
+gha-creds-*.json

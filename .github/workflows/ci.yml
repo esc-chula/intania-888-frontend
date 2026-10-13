@@ -1,63 +1,32 @@
 name: CI
 
 on:
-  workflow_dispatch:
+  pull_request:
   push:
-    branches:
-      - main
-    tags:
-      - "v*"
+    branches: [main]
+  workflow_dispatch:
 
-env:
-  IMAGE_NAME: ghcr.io/esc-chula/intania-888-frontend
-  NEXT_PUBLIC_API_BASE_URL: https://888api.chula.engineering/api/v1
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build
+    name: Build production image
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      packages: write
-
+    timeout-minutes: 20
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to the Container Registry
-        uses: docker/login-action@v2
+      - uses: actions/checkout@v5
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-
-      - name: Gather tags name
+          persist-credentials: false
+      # next build includes lint, TypeScript checks, and route generation.
+      - name: Build with production browser settings
         env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          SHA: ${{ github.sha }}
-          REF: ${{ github.ref }}
-        id: tags
+          NEXT_PUBLIC_API_BASE_URL: https://888-api.intania.org/api/v1
+          NEXT_PUBLIC_AUTH_CLIENT_ID: intania-888-web
+          NEXT_PUBLIC_INTANIA_GAMES_URL: ${{ vars.NEXT_PUBLIC_INTANIA_GAMES_URL || '' }}
         run: |
-          RESULT="$IMAGE_NAME:latest,$IMAGE_NAME:$SHA"
-
-          case "$REF" in
-          refs/tags/v*)
-              RESULT="${RESULT},$IMAGE_NAME:${REF#refs/tags/v}"
-          ;;
-          esac
-
-          echo "tags = $RESULT"
-          echo "tags=$RESULT" >> "$GITHUB_OUTPUT"
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: ${{ steps.tags.outputs.tags }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
-          build-args: NEXT_PUBLIC_API_BASE_URL=${{ env.NEXT_PUBLIC_API_BASE_URL }}
+          docker build --platform linux/amd64 \
+            --build-arg NEXT_PUBLIC_API_BASE_URL="$NEXT_PUBLIC_API_BASE_URL" \
+            --build-arg NEXT_PUBLIC_AUTH_CLIENT_ID="$NEXT_PUBLIC_AUTH_CLIENT_ID" \
+            --build-arg NEXT_PUBLIC_INTANIA_GAMES_URL="$NEXT_PUBLIC_INTANIA_GAMES_URL" \
+            --tag "intania888-web-ci:$GITHUB_SHA" .
