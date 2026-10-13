@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Footer } from "@/components/Footer";
+import { PageWithFooter } from "@/components/PageWithFooter";
 import { Intania888Logo } from "../../public/logos/Intania888-logo";
 
 interface PublicInfoPageProps {
@@ -14,8 +14,8 @@ export const PublicInfoPage = ({
   description,
   children,
 }: PublicInfoPageProps) => (
-  <div className="min-h-screen bg-gradient-to-b from-[#4E0F15] via-black to-black text-white">
-    <header className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-6">
+  <PageWithFooter className="bg-gradient-to-b from-[#4E0F15] via-black to-black text-white">
+    <header className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-6">
       <Link
         href="/"
         aria-label="Intania 888 home"
@@ -26,7 +26,7 @@ export const PublicInfoPage = ({
         </span>
       </Link>
     </header>
-    <main className="mx-auto max-w-3xl px-6 pb-12 pt-8">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 pb-12 pt-8">
       <p className="mb-3 text-sm uppercase tracking-widest text-neutral-300">
         Intania Games
       </p>
@@ -36,6 +36,5 @@ export const PublicInfoPage = ({
         {children}
       </article>
     </main>
-    <Footer />
-  </div>
+  </PageWithFooter>
 );

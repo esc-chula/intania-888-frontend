@@ -2,12 +2,12 @@ import React from "react";
 import { Intania888Logo } from "../../../public/logos/Intania888-logo";
 import Link from "next/link";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
-import { Footer } from "@/components/Footer";
+import { PageWithFooter } from "@/components/PageWithFooter";
 
 const RegisterPage = () => {
   return (
-    <>
-      <main className="flex min-h-screen flex-col items-center justify-center space-y-5 px-5 py-10 text-white">
+    <PageWithFooter>
+      <main className="flex flex-1 flex-col items-center justify-center space-y-5 px-5 py-10 text-white">
         <div className="w-72 h-16">
           <Intania888Logo />
         </div>
@@ -36,8 +36,7 @@ const RegisterPage = () => {
           </Link>
         </nav>
       </main>
-      <Footer />
-    </>
+    </PageWithFooter>
   );
 };
 

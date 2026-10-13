@@ -12,6 +12,7 @@ import {
   TeamCoinLeaderboardError,
 } from "@/api/leaderboard/teamCoin";
 import { Header } from "@/components/Header";
+import { PageWithFooter } from "@/components/PageWithFooter";
 import { Navbar } from "@/components/Navbar";
 import { Shirt } from "@/components/match/MatchColorLogo";
 import { getColorIdByGroupId } from "@/constant/teamColor";
@@ -259,82 +260,84 @@ export const TeamLeaderboardPage = () => {
   const showLoading = loading;
   const activeError = error;
   return (
-    <div className="min-h-screen w-full bg-black pb-16 text-white">
-      <Header />
-      <Navbar pagenow="coins" allowAnonymous />
+    <PageWithFooter>
+      <div className="flex-1 w-full pb-8 text-white">
+        <Header />
+        <Navbar pagenow="coins" allowAnonymous />
 
-      <main className="mx-auto flex w-[92vw] max-w-2xl flex-col items-center gap-4 py-5">
-        <p className="max-w-[70vw] text-center text-sm sm:hidden">
-          ดูและทายผลการแข่งขันกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
-          แชร์กันเยอะๆ
-        </p>
+        <main className="mx-auto flex w-[92vw] max-w-2xl flex-col items-center gap-4 py-5">
+          <p className="max-w-[70vw] text-center text-sm sm:hidden">
+            ดูและทายผลการแข่งขันกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
+            แชร์กันเยอะๆ
+          </p>
 
-        <h1 className="text-2xl font-semibold">ตารางอันดับ</h1>
-        <LeaderboardTabs
-          tabs={scopeTabs}
-          value="team"
-          onChange={handleScopeChange}
-          ariaLabel="ประเภทตารางอันดับ"
-        />
-        <LeaderboardTabs
-          tabs={metricTabs}
-          value={activeView}
-          onChange={handleViewChange}
-          variant="segmented"
-          ariaLabel="ข้อมูลอันดับทีม"
-        />
+          <h1 className="text-2xl font-semibold">ตารางอันดับ</h1>
+          <LeaderboardTabs
+            tabs={scopeTabs}
+            value="team"
+            onChange={handleScopeChange}
+            ariaLabel="ประเภทตารางอันดับ"
+          />
+          <LeaderboardTabs
+            tabs={metricTabs}
+            value={activeView}
+            onChange={handleViewChange}
+            variant="segmented"
+            ariaLabel="ข้อมูลอันดับทีม"
+          />
 
-        {showLoading ? (
-          <TeamLeaderboardLoading />
-        ) : activeError ? (
-          <section className="flex max-w-md flex-col items-center gap-3 rounded-lg bg-neutral-900 p-6 text-center">
-            <h2 className="text-lg font-semibold">ไม่สามารถโหลดอันดับทีมได้</h2>
-            <p className="text-sm text-neutral-300">{activeError.message}</p>
-            {activeError.requestId && (
-              <p className="text-xs text-neutral-500">
-                Request ID: {activeError.requestId}
-              </p>
-            )}
-            <button
-              type="button"
-              className="rounded bg-[#4E0F15] px-5 py-2 font-semibold hover:bg-[#68141C]"
-              onClick={() => setRequestVersion((version) => version + 1)}
-            >
-              ลองใหม่
-            </button>
-          </section>
-        ) : isEmpty ? (
-          <section className="rounded-lg bg-neutral-900 p-6 text-center">
-            <h2 className="text-lg font-semibold">ยังไม่มีข้อมูลอันดับทีม</h2>
-          </section>
-        ) : (
-          <div
-            className="flex w-full flex-col items-center gap-3 pt-4 sm:pt-6"
-            role="tabpanel"
-            aria-label={
-              activeView === "accuracy" ? "อันดับความแม่นยำ" : "อันดับเหรียญทีม"
-            }
-          >
-            <Podium entries={podiumEntries} />
-            <LeaderboardTable
-              valueHeader={
-                activeView === "accuracy" ? (
-                  <div className="grid w-full grid-cols-2 text-center">
-                    <span>ถูก</span>
-                    <span>ผิด</span>
-                  </div>
-                ) : (
-                  <>
-                    <span>จำนวนเหรียญ</span>
-                    <Coins className="h-4 w-4 text-yellow-400 sm:h-6 sm:w-6" />
-                  </>
-                )
+          {showLoading ? (
+            <TeamLeaderboardLoading />
+          ) : activeError ? (
+            <section className="flex max-w-md flex-col items-center gap-3 rounded-lg bg-neutral-900 p-6 text-center">
+              <h2 className="text-lg font-semibold">ไม่สามารถโหลดอันดับทีมได้</h2>
+              <p className="text-sm text-neutral-300">{activeError.message}</p>
+              {activeError.requestId && (
+                <p className="text-xs text-neutral-500">
+                  Request ID: {activeError.requestId}
+                </p>
+              )}
+              <button
+                type="button"
+                className="rounded bg-[#4E0F15] px-5 py-2 font-semibold hover:bg-[#68141C]"
+                onClick={() => setRequestVersion((version) => version + 1)}
+              >
+                ลองใหม่
+              </button>
+            </section>
+          ) : isEmpty ? (
+            <section className="rounded-lg bg-neutral-900 p-6 text-center">
+              <h2 className="text-lg font-semibold">ยังไม่มีข้อมูลอันดับทีม</h2>
+            </section>
+          ) : (
+            <div
+              className="flex w-full flex-col items-center gap-3 pt-4 sm:pt-6"
+              role="tabpanel"
+              aria-label={
+                activeView === "accuracy" ? "อันดับความแม่นยำ" : "อันดับเหรียญทีม"
               }
-              rows={remainingRows}
-            />
-          </div>
-        )}
-      </main>
-    </div>
+            >
+              <Podium entries={podiumEntries} />
+              <LeaderboardTable
+                valueHeader={
+                  activeView === "accuracy" ? (
+                    <div className="grid w-full grid-cols-2 text-center">
+                      <span>ถูก</span>
+                      <span>ผิด</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span>จำนวนเหรียญ</span>
+                      <Coins className="h-4 w-4 text-yellow-400 sm:h-6 sm:w-6" />
+                    </>
+                  )
+                }
+                rows={remainingRows}
+              />
+            </div>
+          )}
+        </main>
+      </div>
+    </PageWithFooter>
   );
 };
