@@ -11,7 +11,7 @@ import { allMatchInterface } from "@/components/match/MatchInterface";
 import { EmptyState } from "@/components/EmptyState";
 import { LeaderBoardTableDisplay } from "@/components/ColorLeaderBoardDisplay";
 import { leaderboardDataInterface } from "@/components/ColorLeaderBoardUtils";
-import { Footer } from "@/components/Footer";
+import { PageWithFooter } from "@/components/PageWithFooter";
 import { useSportCatalog } from "@/components/SportCatalogProvider";
 
 export default function Home() {
@@ -84,8 +84,8 @@ export default function Home() {
   }, [mainFilter, filter]);
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-start space-y-4 min-h-screen w-screen pb-32 text-white">
+    <PageWithFooter>
+      <div className="flex flex-1 flex-col items-center gap-4 w-full pb-8 text-white">
         <div className="relative m-0 p-0 top-0 flex flex-col w-full">
           <Header />
           <Navbar pagenow="match" allowAnonymous />
@@ -131,7 +131,6 @@ export default function Home() {
           <span className="w-2 h-4" />
         </div>
       </div>
-      <Footer />
-    </>
+    </PageWithFooter>
   );
 }

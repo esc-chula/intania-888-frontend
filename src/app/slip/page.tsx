@@ -10,7 +10,7 @@ import { Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
-import { Footer } from "@/components/Footer";
+import { PageWithFooter } from "@/components/PageWithFooter";
 import {
   calculatePayoutPreview,
   normalizeMoneyInput,
@@ -85,126 +85,127 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start space-y-4 min-h-screen w-screen pb-32">
-      <div className="relative m-0 p-0 top-0 flex flex-col w-full">
-        <Header />
-        <Navbar pagenow="slip" />
-      </div>
-      <div className="flex items-center justify-center flex-col space-y-4">
-        <p className="text-sm max-w-[70%] text-center sm:hidden text-white">
-          ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
-          แชร์กันเยอะๆ
-        </p>
-        <div className="flex items-center justify-center space-x-2.5">
-          <Link
-            href="/slip"
-            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-700 flex items-center justify-center"
-          >
-            สลิปปัจจุบัน
-          </Link>
-          <Link
-            href="/slip/history"
-            className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-800 flex items-center justify-center"
-          >
-            ประวัติ
-          </Link>
+    <PageWithFooter>
+      <div className="flex flex-1 flex-col items-center gap-4 w-full pb-8">
+        <div className="relative m-0 p-0 top-0 flex flex-col w-full">
+          <Header />
+          <Navbar pagenow="slip" />
         </div>
-        <div className="flex flex-col">
-          <p className="text-white font-semibold max-sm:text-xs text-lg">
-            โปรดอ่านเงื่อนไขก่อนทายผล :
+        <div className="flex items-center justify-center flex-col space-y-4">
+          <p className="text-sm max-w-[70%] text-center sm:hidden text-white">
+            ดูและทายผลการแข่งกีฬา intania game ฟรี! เว็บเดียวในวิศวะจุฬา
+            แชร์กันเยอะๆ
           </p>
-          <ul className="text-white max-sm:text-xs text-lg space-y-1">
-            <li>
-              1. เรทมีการเปลี่ยนแปลงตลอดเวลา โดยจะยึดตามตอนที่ผู้ใช้ทำการทาย
-            </li>
-            <li>
-              2. หากเลือกทายผลเพียง 1 คู่ จะเป็นการทายผล{" "}
-              <span className="font-bold">แบบเดี่ยว</span> โดยอัตโนมัติ
-            </li>
-            <li>
-              3. หากเลือกทายผลมากกว่า 1 คู่ จะเป็นการทายผล{" "}
-              <span className="font-bold">แบบชุด</span> โดยอัตโนมัติ
-            </li>
-            <li className="pl-4">
-              3.1 การทายผลแบบชุดจะได้เรทที่สูงกว่าการทายแบบเดี่ยว
-            </li>
-            <li className="pl-4">
-              3.2 การทายผลแบบชุดหากทายผิดแม้แต่ 1 คู่ จะถือว่าทายผิดทั้งหมด
-            </li>
-          </ul>
-        </div>
-      </div>
-      <main className="flex flex-col items-center justify-center text-white p-4 w-96 rounded-lg">
-        <section className="w-full flex items-center justify-center bg-gradient-to-t from-[#4E0F15] to-[#68141C] p-4 rounded-t-lg">
-          <div className="w-28">
-            <Intania888Logo />
-          </div>
-        </section>
-        <section className="w-full flex items-center justify-center flex-col">
-          {slipItems.map((element, idx) => (
-            <SlipElement
-              key={idx}
-              matchId={element.match_id}
-              date={element.date}
-              sportType={element.sport_type}
-              teamAColor={element.team_a_color}
-              teamBColor={element.team_b_color}
-              currentRate={element.rate}
-            />
-          ))}
-        </section>
-        <section className="flex items-center flex-col w-full">
-          <section className="w-full bg-neutral-300 font-semibold text-sm h-10 flex items-center justify-between pl-3 pr-3">
-            <p className="text-black">
-              รูปแบบการทาย:{" "}
-              <span className="text-indigo-700">
-                {slipItems.length > 1 ? "แบบชุด" : "แบบเดี่ยว"}
-              </span>
-            </p>
-            <p className="text-black">
-              {slipItems.length > 1
-                ? `เรทปัจจุบันรวม : ${totalRate}`
-                : ""}
-            </p>
-          </section>
-          <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
-            <p className="text-black">จำนวนเหรียญที่ใช้เดิมพัน</p>
-            <div className="flex items-center space-x-1">
-              <input
-                type="text"
-                inputMode="decimal"
-                className="text-black text-right h-7 p-2 border border-gray-300 rounded-lg w-24"
-                value={betAmount}
-                onChange={(e) => setBetAmount(e.target.value)} // Handle input as string
-              />
-              <Coins color="yellow" />
-            </div>
-          </section>
-          <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
-            <p className="text-black">เหรียญที่พึงได้</p>
-            <div className="flex items-center space-x-1">
-              <p className="text-black font-semibold">
-                {calculatePayoutPreview(
-                  betAmount,
-                  slipItems.map((item) => item.rate),
-                ) ?? "0.00"}
-              </p>
-              <Coins color="yellow" />
-            </div>
-          </section>
-
-          <section className="w-full h-10 flex items-center justify-center p-4 rounded-b-lg bg-green-800">
-            <button
-              className="text-white font-semibold"
-              onClick={handleConfirmBet}
-              disabled={isLoading}
+          <div className="flex items-center justify-center space-x-2.5">
+            <Link
+              href="/slip"
+              className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-700 flex items-center justify-center"
             >
-              {isLoading ? "กำลังยืนยัน..." : "ยืนยันการทาย"}
-            </button>
+              สลิปปัจจุบัน
+            </Link>
+            <Link
+              href="/slip/history"
+              className="max-sm:text-sm text-lg text-white font-semibold rounded-lg h-10 w-40 sm:h-14 sm:w-48 bg-neutral-800 flex items-center justify-center"
+            >
+              ประวัติ
+            </Link>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-white font-semibold max-sm:text-xs text-lg">
+              โปรดอ่านเงื่อนไขก่อนทายผล :
+            </p>
+            <ul className="text-white max-sm:text-xs text-lg space-y-1">
+              <li>
+                1. เรทมีการเปลี่ยนแปลงตลอดเวลา โดยจะยึดตามตอนที่ผู้ใช้ทำการทาย
+              </li>
+              <li>
+                2. หากเลือกทายผลเพียง 1 คู่ จะเป็นการทายผล{" "}
+                <span className="font-bold">แบบเดี่ยว</span> โดยอัตโนมัติ
+              </li>
+              <li>
+                3. หากเลือกทายผลมากกว่า 1 คู่ จะเป็นการทายผล{" "}
+                <span className="font-bold">แบบชุด</span> โดยอัตโนมัติ
+              </li>
+              <li className="pl-4">
+                3.1 การทายผลแบบชุดจะได้เรทที่สูงกว่าการทายแบบเดี่ยว
+              </li>
+              <li className="pl-4">
+                3.2 การทายผลแบบชุดหากทายผิดแม้แต่ 1 คู่ จะถือว่าทายผิดทั้งหมด
+              </li>
+            </ul>
+          </div>
+        </div>
+        <main className="flex flex-col items-center justify-center text-white p-4 w-96 rounded-lg">
+          <section className="w-full flex items-center justify-center bg-gradient-to-t from-[#4E0F15] to-[#68141C] p-4 rounded-t-lg">
+            <div className="w-28">
+              <Intania888Logo />
+            </div>
           </section>
-        </section>
-      </main>
-      <Footer />
-    </div>
+          <section className="w-full flex items-center justify-center flex-col">
+            {slipItems.map((element, idx) => (
+              <SlipElement
+                key={idx}
+                matchId={element.match_id}
+                date={element.date}
+                sportType={element.sport_type}
+                teamAColor={element.team_a_color}
+                teamBColor={element.team_b_color}
+                currentRate={element.rate}
+              />
+            ))}
+          </section>
+          <section className="flex items-center flex-col w-full">
+            <section className="w-full bg-neutral-300 font-semibold text-sm h-10 flex items-center justify-between pl-3 pr-3">
+              <p className="text-black">
+                รูปแบบการทาย:{" "}
+                <span className="text-indigo-700">
+                  {slipItems.length > 1 ? "แบบชุด" : "แบบเดี่ยว"}
+                </span>
+              </p>
+              <p className="text-black">
+                {slipItems.length > 1
+                  ? `เรทปัจจุบันรวม : ${totalRate}`
+                  : ""}
+              </p>
+            </section>
+            <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
+              <p className="text-black">จำนวนเหรียญที่ใช้เดิมพัน</p>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className="text-black text-right h-7 p-2 border border-gray-300 rounded-lg w-24"
+                  value={betAmount}
+                  onChange={(e) => setBetAmount(e.target.value)} // Handle input as string
+                />
+                <Coins color="yellow" />
+              </div>
+            </section>
+            <section className="w-full bg-neutral-200 font-semibold text-sm h-10 flex items-center justify-between px-3">
+              <p className="text-black">เหรียญที่พึงได้</p>
+              <div className="flex items-center space-x-1">
+                <p className="text-black font-semibold">
+                  {calculatePayoutPreview(
+                    betAmount,
+                    slipItems.map((item) => item.rate),
+                  ) ?? "0.00"}
+                </p>
+                <Coins color="yellow" />
+              </div>
+            </section>
+
+            <section className="w-full h-10 flex items-center justify-center p-4 rounded-b-lg bg-green-800">
+              <button
+                className="text-white font-semibold"
+                onClick={handleConfirmBet}
+                disabled={isLoading}
+              >
+                {isLoading ? "กำลังยืนยัน..." : "ยืนยันการทาย"}
+              </button>
+            </section>
+          </section>
+        </main>
+      </div>
+    </PageWithFooter>
   );
 }
