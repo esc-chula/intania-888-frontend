@@ -5,6 +5,7 @@ import { Users, Shield, Coins, Search, Edit2, X, Save } from "lucide-react";
 import {
   asMoneyString,
   averageMoneyStrings,
+  compareMoneyStrings,
   formatMoneyString,
   normalizeMoneyStringInput,
   sumMoneyStrings,
@@ -26,6 +27,7 @@ interface EditingUser {
   name: string;
   nick_name: string;
   remaining_coin: string;
+  originalRemainingCoin: string;
 }
 
 export default function UsersPage() {
@@ -57,6 +59,7 @@ export default function UsersPage() {
       name: user.name,
       nick_name: user.nick_name || "",
       remaining_coin: user.remaining_coin,
+      originalRemainingCoin: user.remaining_coin,
     });
   };
 
@@ -66,34 +69,55 @@ export default function UsersPage() {
 
   const handleSaveEdit = async () => {
     if (!editingUser) return;
-    const remainingCoin = normalizeMoneyStringInput(editingUser.remaining_coin);
-    if (!remainingCoin) {
-      alert("Coin balance must be a non-negative amount with at most 2 decimal places.");
+    const normalizedBalance = normalizeMoneyStringInput(
+      editingUser.remaining_coin,
+    );
+    if (!normalizedBalance) {
+      alert(
+        "Coin balance must be a non-negative amount with at most 2 decimal places.",
+      );
       return;
     }
 
+    const balanceChanged =
+      compareMoneyStrings(
+        normalizedBalance,
+        asMoneyString(editingUser.originalRemainingCoin),
+      ) !== 0;
+
     try {
       setUpdating(true);
-      await apiClient.patch(`/users/admin/${editingUser.id}`, {
-        name: editingUser.name,
-        nick_name: editingUser.nick_name || null,
-        remaining_coin: remainingCoin,
-      });
+      const { data: updatedUser } = await apiClient.patch<User>(
+        `/users/admin/${editingUser.id}`,
+        {
+          name: editingUser.name,
+          nick_name: editingUser.nick_name || null,
+          ...(balanceChanged ? { remaining_coin: normalizedBalance } : {}),
+        },
+      );
 
-      // Update local state
-      setUsers(users.map(u =>
-        u.id === editingUser.id
-          ? { ...u, name: editingUser.name, nick_name: editingUser.nick_name, remaining_coin: remainingCoin }
-          : u
-      ));
+      setUsers((currentUsers) =>
+        currentUsers.map((user) =>
+          user.id === editingUser.id
+            ? {
+                ...user,
+                name: updatedUser.name,
+                nick_name: updatedUser.nick_name,
+                remaining_coin: updatedUser.remaining_coin,
+              }
+            : user,
+        ),
+      );
 
       setEditingUser(null);
       alert("User updated successfully!");
     } catch (error) {
       console.error("Error updating user:", error);
-      const errorMessage = error instanceof Error && 'response' in error
-        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
-        : "Failed to update user";
+      const errorMessage =
+        error instanceof Error && "response" in error
+          ? (error as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : "Failed to update user";
       alert(errorMessage || "Failed to update user");
     } finally {
       setUpdating(false);
@@ -104,7 +128,8 @@ export default function UsersPage() {
     (user) =>
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (user.nick_name && user.nick_name.toLowerCase().includes(searchTerm.toLowerCase()))
+      (user.nick_name &&
+        user.nick_name.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   if (loading) {
@@ -120,7 +145,9 @@ export default function UsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">User Management</h1>
-          <p className="text-gray-400 mt-1">View and manage all user accounts</p>
+          <p className="text-gray-400 mt-1">
+            View and manage all user accounts
+          </p>
         </div>
       </div>
 
@@ -207,30 +234,47 @@ export default function UsersPage() {
                 const isEditing = editingUser?.id === user.id;
 
                 return (
-                  <tr key={user.id} className={`transition-colors ${isEditing ? 'bg-gray-800' : 'hover:bg-gray-800'}`}>
+                  <tr
+                    key={user.id}
+                    className={`transition-colors ${isEditing ? "bg-gray-800" : "hover:bg-gray-800"}`}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       {isEditing ? (
                         <div className="space-y-2">
                           <input
                             type="text"
                             value={editingUser.name}
-                            onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                            onChange={(e) =>
+                              setEditingUser({
+                                ...editingUser,
+                                name: e.target.value,
+                              })
+                            }
                             className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-sm text-white focus:ring-2 focus:ring-blue-500"
                             placeholder="Name"
                           />
                           <input
                             type="text"
                             value={editingUser.nick_name}
-                            onChange={(e) => setEditingUser({ ...editingUser, nick_name: e.target.value })}
+                            onChange={(e) =>
+                              setEditingUser({
+                                ...editingUser,
+                                nick_name: e.target.value,
+                              })
+                            }
                             className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-sm text-white focus:ring-2 focus:ring-blue-500"
                             placeholder="Nickname"
                           />
                         </div>
                       ) : (
                         <div>
-                          <p className="text-sm font-medium text-white">{user.name}</p>
+                          <p className="text-sm font-medium text-white">
+                            {user.name}
+                          </p>
                           {user.nick_name && (
-                            <p className="text-sm text-gray-400">@{user.nick_name}</p>
+                            <p className="text-sm text-gray-400">
+                              @{user.nick_name}
+                            </p>
                           )}
                         </div>
                       )}
@@ -276,7 +320,9 @@ export default function UsersPage() {
                         <div className="flex items-center space-x-1">
                           <Coins className="w-4 h-4 text-yellow-500" />
                           <span className="text-sm font-medium text-white">
-                            {formatMoneyString(asMoneyString(user.remaining_coin))}
+                            {formatMoneyString(
+                              asMoneyString(user.remaining_coin),
+                            )}
                           </span>
                         </div>
                       )}
